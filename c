@@ -1,3 +1,3 @@
 #!/bin/sh
 tsc --version
-tsc --rootDir source/ --outDir distrib/  source/*.ts source/host/*.ts source/os/*.ts
+tsc --rootDir source/ --outDir dist/ source/scripts/*.ts

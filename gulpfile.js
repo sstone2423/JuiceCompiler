@@ -17,7 +17,7 @@ gulp.task('compile-typescript', function() {
 			'source/host/*.ts',
 			'source/os/*.ts'
 		],
-		dest: 'distrib/'
+		dest: 'dist/'
 	};
 
 	return gulp.src(typescriptPaths.src)
@@ -34,7 +34,7 @@ gulp.task('compile-typescript', function() {
 gulp.task('copy-css', function() {
 	var cssPaths = {
 		src: ['source/styles/*.css'],
-		dest: 'distrib/styles/'
+		dest: 'dist/styles/'
 	};
 
 	return gulp.src(cssPaths.src)
