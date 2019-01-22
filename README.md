@@ -1,9 +1,6 @@
-# Juice Compiler
+# Juice Compiler: A browser-based Compiler in Typescript
+
 Juice your code into Machine Language!
-
-Browser-based Compiler in TypeScript
-============================================
-
 
 Setup TypeScript
 ================
@@ -23,7 +20,7 @@ Setup Gulp
 ==========
 
 1. `npm install gulp` to get the Gulp Task Runner.
-1. `npm install gulp-tsc` to get the Gulp TypeScript plugin.
+2. `npm install gulp-tsc` to get the Gulp TypeScript plugin.
 
 
 Run `gulp` at the command line in the root directory of this project.
