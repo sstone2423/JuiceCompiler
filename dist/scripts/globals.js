@@ -10,6 +10,7 @@ var _Utils;
 var INFO = "INFO";
 var DEBUG = "DEBUG";
 var tokens = "";
+var lexResults = {};
 var tokenIndex = 0;
 var currentToken = "";
 var errorCount = 0;

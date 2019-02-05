@@ -13,6 +13,7 @@ const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
 
 let tokens = "";
+let lexResults = {};
 let tokenIndex: number = 0;
 let currentToken: string = "";
 let errorCount: number = 0;

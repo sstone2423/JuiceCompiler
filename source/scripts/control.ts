@@ -28,7 +28,7 @@ module JuiceC {
             this.init();
             this.putMessage("Compilation Started");
             // Grab the tokens from the lexer . . .
-            tokens = _Lexer.lex();
+            lexResults = _Lexer.lex();
             this.putMessage("Lex returned [" + tokens + "]");
             // . . . and parse!
             this.parse();
