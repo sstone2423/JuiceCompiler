@@ -6,6 +6,18 @@ var JuiceC;
 (function (JuiceC) {
     var Lexer = /** @class */ (function () {
         function Lexer() {
+            // Token array
+            this.tokens = [];
+            // Error array
+            this.errors = [];
+            // Warning array
+            this.warnings = [];
+            // Pointers that indicate which characters are being matched
+            this.startPtr = 0;
+            this.endPtr = 1;
+            // Initialize to first line and first column
+            this.currentLineNum = 1;
+            this.currentColNum = 0;
         }
         Lexer.prototype.lex = function () {
             // Grab the "raw" source code.

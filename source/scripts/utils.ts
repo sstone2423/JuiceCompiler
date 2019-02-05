@@ -9,7 +9,8 @@ module JuiceC {
 
     export class Utils {
 
-        public static trim(str) {     // Use a regular expression to remove leading and trailing spaces.
+        // Use a regular expression to remove leading and trailing spaces.
+        public static trim(str) {     
             return str.replace(/^\s+ | \s+$/g, "");
             /* 
             Huh?  Take a breath.  Here we go:
@@ -21,8 +22,9 @@ module JuiceC {
             */    	
         }
 
-        public static rot13(str): string {    // An easy-to understand implementation of the famous and common Rot13 obfuscator.                       // You can do this in three lines with a complex regular experssion, but I'd have
-            let retVal = "";    // trouble explaining it in the future.  There's a lot to be said for obvious code.
+        // An easy-to understand implementation of the famous and common Rot13 obfuscator.
+        public static rot13(str): string {      // You can do this in three lines with a complex regular experssion, but I'd have
+            let retVal = "";                    // trouble explaining it in the future.  There's a lot to be said for obvious code.
             for (let i in str) {
                 let ch = str[i];
                 let code = 0;

@@ -9,6 +9,7 @@ var JuiceC;
     var Utils = /** @class */ (function () {
         function Utils() {
         }
+        // Use a regular expression to remove leading and trailing spaces.
         Utils.trim = function (str) {
             return str.replace(/^\s+ | \s+$/g, "");
             /*
@@ -20,6 +21,7 @@ var JuiceC;
             - "" is nothing, which is what we replace the whitespace with.
             */
         };
+        // An easy-to understand implementation of the famous and common Rot13 obfuscator.
         Utils.rot13 = function (str) {
             var retVal = ""; // trouble explaining it in the future.  There's a lot to be said for obvious code.
             for (var i in str) {
