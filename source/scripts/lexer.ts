@@ -175,7 +175,9 @@ module JuiceC {
 					// Push to tokens array
 					this.tokens.push(token);
 				// Test for boolean equals
-				} 
+				}
+			
+			}
 			
 
 		    return sourceCode;
