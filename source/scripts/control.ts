@@ -23,8 +23,7 @@ module JuiceC {
         }
 
         public static btnCompile_click(): void {        
-            // This is executed as a result of the user pressing the 
-            // "compile" button between the two text areas, above.  
+            // This is executed as a result of the user pressing the "compile" button between the two text areas, above.  
             // Note the <input> element's event handler: onclick="btnCompile_click();
             this.init();
             this.putMessage("Compilation Started");
