@@ -5,7 +5,7 @@
 
 module JuiceC {
 
-    export enum ErrorType {
+    export const enum ErrorType {
 
         E_NO_END_QUOTE = "NO END QUOTE",
         E_NO_END_COMMENT = "NO END COMMENT",

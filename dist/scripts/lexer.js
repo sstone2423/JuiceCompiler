@@ -251,11 +251,11 @@ var JuiceC;
                     if (this.endPtr == sourceCode.length) {
                         // If code ends with a trailing start comment, throw error
                         if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
-                            this.errors.push(new JuiceC.Error(JuiceC.ErrorType.E_NO_END_COMMENT, "*/", this.startCommentLine, this.startCommentCol));
+                            this.errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                             // Otherwise, any other character besides EOP is invalid
                         }
                         else {
-                            this.errors.push(new JuiceC.Error(JuiceC.ErrorType.E_INVALID_T, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                         break;
                     }
@@ -273,7 +273,7 @@ var JuiceC;
                         // Otherwise, this is an invalid token so throw an error
                     }
                     else {
-                        this.errors.push(new JuiceC.Error(JuiceC.ErrorType.E_INVALID_T, sourceCode.charAt(this.endPtr - 2), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 2), this.currentLineNum, this.currentColNum));
                         break;
                     }
                 }
@@ -284,13 +284,13 @@ var JuiceC;
             if (this.errors.length == 0) {
                 // If we've reached the end of the source code, but no end comment has been found, throw an error
                 if (this.inComment) {
-                    this.errors.push(new JuiceC.Error(JuiceC.ErrorType.E_NO_END_COMMENT, "*/", this.startCommentLine, this.startCommentCol));
+                    this.errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                 } // If we've reached the end of the source code, but no end quote has been found, throw an error
                 else if (this.foundQuote) {
-                    this.errors.push(new JuiceC.Error(JuiceC.ErrorType.E_NO_END_QUOTE, "\"", this.startQuoteLine, this.startQuoteCol));
+                    this.errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
                 } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
                 else if (!this.foundEOP && this.errors.length == 0) {
-                    this.warnings.push(new JuiceC.Warning(JuiceC.WarningType.W_NO_EOP, "$", this.currentLineNum, this.currentColNum));
+                    this.warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
                 }
             }
             else {

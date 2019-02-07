@@ -28,15 +28,46 @@ var JuiceC;
             this.putMessage("Compilation Started");
             // Grab the tokens from the lexer . . .
             lexResults = _Lexer.lex();
-            this.putMessage("Lex returned [" + tokens + "]");
+            if (lexResults.warnings.length != 0) {
+                lexWarning = true;
+            }
+            if (lexResults.errors.length != 0) {
+                programDetected = true; // we know a program was detected, aka user actually typed code besides comments
+                this.putMessage("______________________________");
+                this.putMessage("Compiling Program " + programCount + " . . .\n");
+                this.lexerLog(lexResults, programCount);
+                programCount++;
+                prevProgramError = true;
+                this.putMessage("Compilation stopped due to Lexer errors . . .");
+                lexError = true;
+            } // No tokens were found but lex completed, meaning that there is no more input to lex
+            else if (lexResults.tokens.length == 0) {
+                isLexComplete = true;
+            }
+            else {
+                programDetected = true; // we know a program was detected, aka user actually typed code besides comments
+                this.putMessage("______________________________");
+                this.putMessage("Compiling Program " + programCount + " . . .\n");
+                this.lexerLog(lexResults, programCount);
+                prevProgramError = false;
+                programCount++;
+            }
+            if (lexResults.complete) {
+                isLexComplete = true;
+            }
+            // If the user tried to compile without typing any code besides comments, throw error
+            if (!programDetected) {
+                this.putMessage("Why are you trying to compile zero code? Cheese and crackers, you dimwit. Go eat a sock.");
+            }
+            this.putMessage("Lex returned [" + lexResults.tokens + "]");
             // . . . and parse!
-            this.parse();
+            //this.parse();
         };
         Control.putMessage = function (msg) {
             document.getElementById("output").value += msg + "\n";
         };
-        // TODO: These parse routines really should be in TypeScript.
-        //       This exercise is left to the read. Consider it project 0.5 .
+        Control.lexerLog = function (lexerResults, programCount) {
+        };
         Control.parse = function () {
             this.putMessage("Parsing [" + tokens + "]");
             // Grab the next token.
@@ -67,7 +98,7 @@ var JuiceC;
             }
         };
         Control.checkToken = function (expectedKind) {
-            // Validate that we have the expected token kind and et the next token.
+            // Validate that we have the expected token kind and get the next token.
             switch (expectedKind) {
                 case "digit":
                     this.putMessage("Expecting a digit");

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-   <title>Juice - A browser-based Compiler in Typescript</title>
+   <title>JuiceC - A browser-based Compiler in Typescript</title>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <!-- Enable bootstrap -->
@@ -9,58 +9,43 @@
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
    <script type="text/javascript" src="dist/scripts/globals.js"></script>
    <script type="text/javascript" src="dist/scripts/control.js"></script>
-   <script type="text/javascript" src="dist/scripts/utils.js"></script>	
+   <script type="text/javascript" src="dist/scripts/utils.js"></script>
+   <script type="text/javascript" src="dist/scripts/error.js"></script>
+   <script type="text/javascript" src="dist/scripts/warning.js"></script>
+   <script type="text/javascript" src="dist/scripts/token.js"></script>
    <script type="text/javascript" src="dist/scripts/lexer.js"></script>	
-   
 </head>
 <body onload="JuiceC.Control.init();">
    <div class="container-fluid">
-         <img src="dist/images/juicelogo.png" 
-               class="mx-auto d-block" 
-               alt="Juice Compiler Logo" />
-         <hr>
-         <p>. . . <em>a simple parser for a simple grammar</em>:</p>
-     
-         <pre>
-            G ::== E
-            E ::== D O E | D
-            D ::== 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
-            O ::== + | -
-         </pre>
+      <img src="dist/images/juicelogo.png" 
+           class="mx-auto d-block" 
+           alt="Juice Compiler Logo" />
+      <hr>
 
-         <!--Lexer row-->
-         <div class="row">
-            <div class="col-sm">
-               <!--Source code and Output row-->
-               <div class="row justify-content-md-center">
-                  <!--Source code column-->
-                  <div class="col-sm-4">
-                     <label for="sourceCode">Source Code</label>
-                     <textarea class="form-control" id="sourceCode" rows="20"></textarea>
-                  </div>
-                  <!--Output column-->
-                  <div class="col-sm-4">
-                     <label for="output">Output</label>
-                     <textarea class="form-control" id="output" rows="20"></textarea>
-                  </div>
+      <!--Lexer row-->
+      <div class="row">
+         <div class="col-sm">
+            <!--Source code and Output row-->
+            <div class="row justify-content-md-center">
+               <!--Source code column-->
+               <div class="col-sm-4">
+                  <label for="sourceCode">Source Code</label>
+                  <textarea class="form-control" id="sourceCode" rows="20"></textarea>
                </div>
-               <!--Compile button row-->
-               <div class="row">
-                  <div class="col-sm text-center my-2">
-                        <button type="button" class="btn btn-primary" id="btnCompile" onclick="JuiceC.Control.btnCompile_click()">Compile</button>
-                  </div>
+               <!--Output column-->
+               <div class="col-sm-4">
+                  <label for="output">Output</label>
+                  <textarea class="form-control" id="output" rows="20"></textarea>
+               </div>
+            </div>
+            <!--Compile button row-->
+            <div class="row">
+               <div class="col-sm text-center my-2">
+                     <button type="button" class="btn btn-primary" id="btnCompile" onclick="JuiceC.Control.btnCompile_click()">Compile</button>
                </div>
             </div>
          </div>
-     
-         <div>
-             <img class="mx-auto d-block"
-                  src="dist/images/CompilerPhases.png" 
-                  alt="Compiler Phases diagram" />
-         </div>   
+      </div> 
    </div>
-    
-   
-
 </body>
 </html>

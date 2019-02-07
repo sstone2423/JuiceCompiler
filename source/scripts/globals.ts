@@ -13,7 +13,13 @@ const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
 
 let tokens = "";
-let lexResults = {};
+let programCount: number = 0;
+let programDetected: boolean = false;
+let prevProgramError: boolean = false;
+let lexResults;
+let lexWarning: boolean = false;
+let lexError: boolean = false;
+let isLexComplete: boolean = false;
 let tokenIndex: number = 0;
 let currentToken: string = "";
 let errorCount: number = 0;
