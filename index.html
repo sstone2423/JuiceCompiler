@@ -5,7 +5,7 @@
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <!-- Enable bootstrap -->
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
    <script type="text/javascript" src="dist/scripts/globals.js"></script>
    <script type="text/javascript" src="dist/scripts/control.js"></script>
@@ -13,6 +13,7 @@
    <script type="text/javascript" src="dist/scripts/error.js"></script>
    <script type="text/javascript" src="dist/scripts/warning.js"></script>
    <script type="text/javascript" src="dist/scripts/token.js"></script>
+   <script type="text/javascript" src="dist/scripts/test.js"></script>
    <script type="text/javascript" src="dist/scripts/lexer.js"></script>	
 </head>
 <body onload="JuiceC.Control.init();">
@@ -30,6 +31,17 @@
                <!--Source code column-->
                <div class="col-sm-4">
                   <label for="sourceCode">Source Code</label>
+                  <div class="dropdown float-right">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Sample tests
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#">Simple Test 1</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#">Simple Test 2</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#">Full program</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#">Multiple programs</a>
+                        </div>
+                      </div>
                   <textarea class="form-control" id="sourceCode" rows="20"></textarea>
                </div>
                <!--Output column-->
@@ -45,7 +57,11 @@
                </div>
             </div>
          </div>
-      </div> 
+      </div>
    </div>
+   <!-- Enable bootstrap -->
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
