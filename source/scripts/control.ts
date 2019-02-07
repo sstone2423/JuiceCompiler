@@ -20,85 +20,102 @@ module JuiceC {
             errorCount = 0;
         }
 
-        public static btnCompile_click(): void {        
-            // This is executed as a result of the user pressing the "compile" button between the two text areas, above.  
-            // Note the <input> element's event handler: onclick="btnCompile_click();
+        // This is executed as a result of the user pressing the "compile" button between the two text areas, above
+        public static btnCompile_click(): void {
+            // Reset the compiler each time the compiler is clicked
             this.init();
-            this.putMessage("Compilation Started");
-            // Grab the tokens from the lexer . . .
+            this.putMessage(INFO + " -" + "\tCompilation started");
+            // Grab the tokens, warnings, errors, and statuses from the lexer
             lexResults = _Lexer.lex();
             console.log(lexResults);
+            // Check if there were warnings
             if (lexResults.warnings.length != 0) {
                 lexWarning = true;
             }
 
+            // Check if there were errors
 			if (lexResults.errors.length != 0) {
-				programDetected = true; // we know a program was detected, aka user actually typed code besides comments
-				this.putMessage("______________________________");
-				this.putMessage("Compiling Program " + programCount + " . . .\n");
-				this.lexerLog(lexResults, programCount);
-				programCount++;
+                this.beginLexLog();
+                // Save the previous program error state
 				prevProgramError = true;
-				this.putMessage("Compilation stopped due to Lexer errors . . .");
+                this.putMessage(INFO + " -" + "\tCompilation stopped due to Lexer errors");
+                // Save the lexer error state
 				lexError = true;
-			} // No tokens were found but lex completed, meaning that there is no more input to lex
+            } 
+            // If no tokens are found, save the lex complete state
 			else if (lexResults.tokens.length == 0) {
 				isLexComplete = true;
-			} else {
-				programDetected = true; // we know a program was detected, aka user actually typed code besides comments
-				this.putMessage("______________________________");
-				this.putMessage("Compiling Program " + programCount + " . . .\n");
-				this.lexerLog(lexResults, programCount);
+            }
+            // Otherwise continue to output the lex log
+            else {
+				this.beginLexLog();
                 prevProgramError = false;
 				programCount++;
-			}
-			if (lexResults.complete){ 
+            }
+            
+			if (lexResults.complete) { 
 				isLexComplete = true;
 			}
 			// If the user tried to compile without typing any code besides comments, throw error
 			if (!programDetected) {
-				this.putMessage("Why are you trying to compile zero code? Cheese and crackers, you dimwit. Go eat a sock.");
+				this.putMessage(INFO + " -" + "\tCompilation failed due to no actual code. This isn't a text editor.");
 			}
 
             // . . . and parse!
             //this.parse();
         }
 
+        // Helper function for duplicated code
+        public static beginLexLog(): void {
+            // Errors mean there was typed code
+			programDetected = true;
+            this.putMessage(INFO + " -" + "\tCompiling Program " + programCount + "\n");
+            // Log/output the lexer analysis results
+            this.lexerLog(lexResults);
+            // Increment the program count
+            programCount++;
+        }
+
         public static putMessage(msg): void {
             (<HTMLInputElement>document.getElementById("output")).value += msg + "\n";
         }
 
-        public static lexerLog(lexerResults, programCount: number) {
-            this.putMessage("Lexical Analysis:");
-			// Print all warnings
-			for (let i = 0; i < lexResults.warnings.length; i++) {
-				if (lexResults.warnings[i].type == JuiceC.WarningType.W_NO_EOP) {
-					this.putMessage("LEXER -> | WARNING: No EOP [$] detected at end-of-file. Adding to end-of-file...");
-					// Insert an EOP into the tokens array
-					lexResults.tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults.line, lexResults.col));
-				}
+        public static lexerLog(lexResults) {
+            // Print all tokens
+            for (let i = 0; i < lexResults.tokens.length; i++) {
+                this.putMessage(DEBUG + " - " + LEXER + " - " + lexResults.tokens[i].type + " [ " + lexResults.tokens[i].value 
+                                + " ] found at (" + lexResults.tokens[i].lineNum + ":" + lexResults.tokens[i].colNum + ")");
+            }
+            // Print all warnings
+            if (lexWarning) {
+                for (let i = 0; i < lexResults.warnings.length; i++) {
+                    // Check for EOP warning
+                    if (lexResults.warnings[i].type == JuiceC.WarningType.W_NO_EOP) {
+                        this.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [$] detected at end-of-file. Adding to end-of-file for you.");
+                        // Insert an EOP into the tokens array
+                        lexResults.tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults.line, lexResults.col));
+                    }
+                }
             }
             // Print all errors
 			for (let i = 0; i < lexResults.errors.length; i++) {
                 // Invalid token check
 				if (lexResults.errors[i].type == JuiceC.ErrorType.E_INVALID_T){
-                    this.putMessage("LEXER -> | ERROR: Unrecognized or Invalid Token [ " + lexResults.errors[i].value 
-                                    + " ] on line " + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized or Invalid Token [ " + lexResults.errors[i].value 
+                                    + " ] found at (" + lexResults.errors[i].lineNumber + ":" + lexResults.errors[i].colNumber + ")");
                 }
                 // Missing end of comment
 				else if (lexResults.errors[i].type == JuiceC.ErrorType.E_NO_END_COMMENT) {
-                    this.putMessage("LEXER -> | ERROR: Missing ending comment brace (*/) for comment starting on line  " 
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at (" 
                                     + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
                 }
                 // Missing end of string quote
 				else if (lexResults.errors[i].type == JuiceC.ErrorType.E_NO_END_QUOTE){
                     this.putMessage("LEXER -> | ERROR: Missing ending quote for String literal starting on line  " 
-                                    + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                                    + lexResults.errors[i].lineNumber + ":" + lexResults.errors[i].colNumber + ")");
 				}
 			}
-			this.putMessage("\n");
-			this.putMessage("Lexical Analysis complete! " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
-			this.putMessage("-------------------------");
+			this.putMessage(INFO + " -" + "\tLexical Analysis complete with " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
         }
 
         public static parse(): void {

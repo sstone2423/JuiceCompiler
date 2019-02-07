@@ -11,6 +11,7 @@ let _Utils: JuiceC.Utils;
 // String constants
 const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
+const LEXER: string = "Lexer";
 
 let tokens = "";
 let programCount: number = 0;

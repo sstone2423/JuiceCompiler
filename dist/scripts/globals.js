@@ -9,6 +9,7 @@ var _Utils;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";
+var LEXER = "Lexer";
 var tokens = "";
 var programCount = 0;
 var programDetected = false;
