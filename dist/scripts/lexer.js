@@ -13,8 +13,9 @@ var JuiceC;
             // Warning array
             this.warnings = [];
             // Program counter
-            this.programs = [];
+            this.programNum = 0;
             this.lexAnalysisResult = {};
+            this.resultsArray = [];
             // Pointers that indicate which characters are being matched
             this.startPtr = 0;
             this.endPtr = 1;
@@ -230,6 +231,9 @@ var JuiceC;
                         // Return the results of lex and then re-init everything so we can lex next program
                         // Define an object to return values in
                         this.lexAnalysisResult = {
+                            "inComment": this.inComment,
+                            "foundQuote": this.foundQuote,
+                            "foundEOP": this.foundEOP,
                             "tokens": this.tokens,
                             "errors": this.errors,
                             "warnings": this.warnings,
@@ -237,19 +241,22 @@ var JuiceC;
                             "line": this.currentLineNum,
                             "col": this.currentColNum
                         };
+                        // Add to the results array in case theres multiple programs
+                        this.resultsArray.push(this.lexAnalysisResult);
                         // Reset lexer values so that we can begin to lex the next program
                         this.endPtr++;
                         this.currentColNum++;
                         this.tokens = [];
                         this.errors = [];
                         this.warnings = [];
-                        return this.lexAnalysisResult;
+                        this.inComment = false;
+                        this.foundEOP = false;
+                        this.foundQuote = false;
                     }
                     /*
                         Illegal Characters
                     */
                     else {
-                        console.log("end of regex comparisons");
                         if (this.endPtr == sourceCode.length) {
                             // If code ends with a trailing start comment, throw error
                             if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
@@ -269,7 +276,6 @@ var JuiceC;
                             this.tokens.push(token);
                         } // Check to see if the next character creates a match for a comment
                         else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr))) {
-                            console.log("inside comment start regex");
                             this.inComment = true;
                             this.startCommentCol = this.currentColNum;
                             this.startCommentLine = this.currentLineNum;
@@ -293,42 +299,24 @@ var JuiceC;
                 this.currentColNum++;
             }
             // If no errors were thrown during lex, check for more errors and warnings
-            if (this.errors.length == 0) {
-                // If we've reached the end of the source code, but no end comment has been found, throw an error
-                if (this.inComment) {
-                    this.errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
-                } // If we've reached the end of the source code, but no end quote has been found, throw an error
-                else if (this.foundQuote) {
-                    this.errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
-                } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
-                else if (!this.foundEOP && this.errors.length == 0) {
-                    this.warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
+            for (var i = 0; i < this.resultsArray.length; i++) {
+                if (this.resultsArray[i].errors.length == 0) {
+                    // If we've reached the end of the source code, but no end comment has been found, throw an error
+                    if (this.resultsArray[i].inComment) {
+                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                    } // If we've reached the end of the source code, but no end quote has been found, throw an error
+                    else if (this.resultsArray[i].foundQuote) {
+                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
+                    } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
+                    else if (!this.resultsArray[i].foundEOP && this.resultsArray[i].errors.length == 0) {
+                        this.resultsArray[i].warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
+                    }
                 }
-            }
-            else {
-                // Define an object to return values in
-                this.lexAnalysisResult = {
-                    "tokens": this.tokens,
-                    "errors": this.errors,
-                    "warnings": this.warnings,
-                    "complete": this.isComplete,
-                    "line": this.currentLineNum,
-                    "col": this.currentColNum
-                };
-                return this.lexAnalysisResult;
             }
             // End of source code so swap the boolean
             this.isComplete = true;
-            // Define an object to return values in
-            this.lexAnalysisResult = {
-                "tokens": this.tokens,
-                "errors": this.errors,
-                "warnings": this.warnings,
-                "complete": this.isComplete,
-                "line": this.currentLineNum,
-                "col": this.currentColNum
-            };
-            return this.lexAnalysisResult;
+            this.resultsArray[this.resultsArray.length - 1].isComplete = true;
+            return this.resultsArray;
         };
         return Lexer;
     }());

@@ -17,7 +17,7 @@ let tokens = "";
 let programCount: number = 0;
 let programDetected: boolean = false;
 let prevProgramError: boolean = false;
-let lexResults;
+let lexResults = [];
 let lexWarning: boolean = false;
 let lexError: boolean = false;
 let isLexComplete: boolean = false;

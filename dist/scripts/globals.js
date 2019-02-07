@@ -14,7 +14,7 @@ var tokens = "";
 var programCount = 0;
 var programDetected = false;
 var prevProgramError = false;
-var lexResults;
+var lexResults = [];
 var lexWarning = false;
 var lexError = false;
 var isLexComplete = false;

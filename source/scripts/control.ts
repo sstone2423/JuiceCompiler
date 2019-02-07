@@ -28,50 +28,55 @@ module JuiceC {
             // Grab the tokens, warnings, errors, and statuses from the lexer
             lexResults = _Lexer.lex();
             console.log(lexResults);
-            // Check if there were warnings
-            if (lexResults.warnings.length != 0) {
-                lexWarning = true;
-            }
+            // Iterate through each program result
+            for (let i = 0; i < lexResults.length; i++) {
+                // Check if there were warnings
+                if (lexResults[i].warnings.length != 0) {
+                    lexWarning = true;
+                } else {
+                    lexWarning = false;
+                }
 
-            // Check if there were errors
-			if (lexResults.errors.length != 0) {
-                this.beginLexLog();
-                // Save the previous program error state
-				prevProgramError = true;
-                this.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
-                // Save the lexer error state
-				lexError = true;
-            } 
-            // If no tokens are found, save the lex complete state
-			else if (lexResults.tokens.length == 0) {
-				isLexComplete = true;
-            }
-            // Otherwise continue to output the lex log
-            else {
-				this.beginLexLog();
-                prevProgramError = false;
-				programCount++;
-            }
-            
-			if (lexResults.complete) { 
-				isLexComplete = true;
-			}
-			// If the user tried to compile without typing any code besides comments, throw error
-			if (!programDetected) {
-				this.putMessage(INFO + "\tCompilation failed due to no actual code. This isn't a text editor.");
-			}
+                // Check if there were errors
+                if (lexResults[i].errors.length != 0) {
+                    this.beginLexLog(i);
+                    // Save the previous program error state
+                    prevProgramError = true;
+                    this.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
+                    // Save the lexer error state
+                    lexError = true;
+                } 
+                // If no tokens are found, save the lex complete state
+                else if (lexResults[i].tokens.length == 0) {
+                    isLexComplete = true;
+                }
+                // Otherwise continue to output the lex log
+                else {
+                    this.beginLexLog(i);
+                    
+                    prevProgramError = false;
+                }
+                
+                if (lexResults[i].complete) { 
+                    isLexComplete = true;
+                }
+                // If the user tried to compile without typing any code besides comments, throw error
+                if (!programDetected) {
+                    this.putMessage(INFO + "\tCompilation failed due to no actual code. This isn't a text editor.");
+                }
 
-            // . . . and parse!
-            //this.parse();
+                // . . . and parse!
+                //this.parse();
+            }
         }
 
         // Helper function for duplicated code
-        public static beginLexLog(): void {
+        public static beginLexLog(programIndex: number): void {
             // Errors mean there was typed code
 			programDetected = true;
             this.putMessage(INFO + "\tCompiling Program " + programCount);
             // Log/output the lexer analysis results
-            this.lexerLog(lexResults);
+            this.lexerLog(lexResults, programIndex);
             // Increment the program count
             programCount++;
         }
@@ -80,42 +85,44 @@ module JuiceC {
             (<HTMLInputElement>document.getElementById("output")).value += msg + "\n";
         }
 
-        public static lexerLog(lexResults) {
+        public static lexerLog(lexResults, programIndex: number) {
+            console.log("lex log began");
             // Print all tokens
-            for (let i = 0; i < lexResults.tokens.length; i++) {
-                this.putMessage(DEBUG + " - " + LEXER + " - " + lexResults.tokens[i].type + " [ " + lexResults.tokens[i].value 
-                                + " ] found at (" + lexResults.tokens[i].lineNum + ":" + lexResults.tokens[i].colNum + ")");
+            for (let i = 0; i < lexResults[programIndex].tokens.length; i++) {
+                console.log("token " + i + ": " + lexResults[programIndex].tokens[i]);
+                this.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type + " [ " + lexResults[programIndex].tokens[i].value 
+                                + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
             }
             // Print all warnings
             if (lexWarning) {
-                for (let i = 0; i < lexResults.warnings.length; i++) {
+                for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
                     // Check for EOP warning
-                    if (lexResults.warnings[i].type == JuiceC.WarningType.W_NO_EOP) {
+                    if (lexResults[programIndex].warnings[programIndex].type == JuiceC.WarningType.W_NO_EOP) {
                         this.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [$] detected at end-of-file. Adding to end-of-file for you.");
                         // Insert an EOP into the tokens array
-                        lexResults.tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults.line, lexResults.col));
+                        lexResults[programIndex].tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                     }
                 }
             }
             // Print all errors
-			for (let i = 0; i < lexResults.errors.length; i++) {
+			for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
                 // Invalid token check
-				if (lexResults.errors[i].type == JuiceC.ErrorType.E_INVALID_T){
-                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized or Invalid Token [ " + lexResults.errors[i].value 
-                                    + " ] found at (" + lexResults.errors[i].lineNumber + ":" + lexResults.errors[i].colNumber + ")");
+				if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_INVALID_T){
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized or Invalid Token [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
                 }
                 // Missing end of comment
-				else if (lexResults.errors[i].type == JuiceC.ErrorType.E_NO_END_COMMENT) {
+				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_COMMENT) {
                     this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at (" 
-                                    + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                                    + lexResults[programIndex].errors[i].lineNumber + " col " + lexResults[programIndex].errors[i].colNumber);
                 }
                 // Missing end of string quote
-				else if (lexResults.errors[i].type == JuiceC.ErrorType.E_NO_END_QUOTE){
+				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_QUOTE){
                     this.putMessage("LEXER -> | ERROR: Missing ending quote for String literal starting on line  " 
-                                    + lexResults.errors[i].lineNumber + ":" + lexResults.errors[i].colNumber + ")");
+                                    + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
 				}
 			}
-			this.putMessage(INFO + "\tLexical Analysis complete with " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
+			this.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
         }
 
         public static parse(): void {
