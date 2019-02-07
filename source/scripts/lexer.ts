@@ -38,9 +38,9 @@ module JuiceC {
 		public lex() {
 			// Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
 		    // Grab the "raw" source code.
-		    let sourceCode = (<HTMLInputElement>document.getElementById("sourceCode")).value;
+			let sourceCode = (<HTMLInputElement>document.getElementById("sourceCode")).value;
 		    // Trim the leading and trailing spaces.
-		    sourceCode = JuiceC.Utils.trim(sourceCode);
+			sourceCode = JuiceC.Utils.trim(sourceCode);
 			// TODO: remove all spaces in the middle; remove line breaks too.
 			// Lex until we reach the end of the source code
 			while (this.startPtr <= sourceCode.length) {
@@ -250,7 +250,7 @@ module JuiceC {
 				else {
 					if (this.endPtr == sourceCode.length) {
 						// If code ends with a trailing start comment, throw error
-						if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr+1))) {
+						if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
 							this.errors.push(new Error(JuiceC.ErrorType.E_NO_END_COMMENT, "*/", this.startCommentLine, this.startCommentCol));
 						// Otherwise, any other character besides EOP is invalid
 						} else {
@@ -316,6 +316,7 @@ module JuiceC {
 				"line": this.currentLineNum,
 				"col": this.currentColNum
 			};
+			
 
 			return this.lexAnalysisResult;
 		}

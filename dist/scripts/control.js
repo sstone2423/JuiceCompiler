@@ -10,8 +10,6 @@ var JuiceC;
         function Control() {
         }
         Control.init = function () {
-            // Clear the message box.
-            document.getElementById("sourceCode").value = "";
             // Set the initial values for our globals
             _Control = new Control();
             _Lexer = new JuiceC.Lexer();
@@ -28,6 +26,7 @@ var JuiceC;
             this.putMessage("Compilation Started");
             // Grab the tokens from the lexer . . .
             lexResults = _Lexer.lex();
+            console.log(lexResults);
             if (lexResults.warnings.length != 0) {
                 lexWarning = true;
             }
@@ -59,7 +58,6 @@ var JuiceC;
             if (!programDetected) {
                 this.putMessage("Why are you trying to compile zero code? Cheese and crackers, you dimwit. Go eat a sock.");
             }
-            this.putMessage("Lex returned [" + lexResults.tokens + "]");
             // . . . and parse!
             //this.parse();
         };
@@ -67,6 +65,36 @@ var JuiceC;
             document.getElementById("output").value += msg + "\n";
         };
         Control.lexerLog = function (lexerResults, programCount) {
+            this.putMessage("Lexical Analysis:");
+            // Print all warnings
+            for (var i = 0; i < lexResults.warnings.length; i++) {
+                if (lexResults.warnings[i].type == "NO EOP" /* W_NO_EOP */) {
+                    this.putMessage("LEXER -> | WARNING: No EOP [$] detected at end-of-file. Adding to end-of-file...");
+                    // Insert an EOP into the tokens array
+                    lexResults.tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults.line, lexResults.col));
+                }
+            }
+            // Print all errors
+            for (var i = 0; i < lexResults.errors.length; i++) {
+                // Invalid token check
+                if (lexResults.errors[i].type == "INVALID TOKEN" /* E_INVALID_T */) {
+                    this.putMessage("LEXER -> | ERROR: Unrecognized or Invalid Token [ " + lexResults.errors[i].value
+                        + " ] on line " + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                }
+                // Missing end of comment
+                else if (lexResults.errors[i].type == "NO END COMMENT" /* E_NO_END_COMMENT */) {
+                    this.putMessage("LEXER -> | ERROR: Missing ending comment brace (*/) for comment starting on line  "
+                        + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                }
+                // Missing end of string quote
+                else if (lexResults.errors[i].type == "NO END QUOTE" /* E_NO_END_QUOTE */) {
+                    this.putMessage("LEXER -> | ERROR: Missing ending quote for String literal starting on line  "
+                        + lexResults.errors[i].lineNumber + " col " + lexResults.errors[i].colNumber);
+                }
+            }
+            this.putMessage("\n");
+            this.putMessage("Lexical Analysis complete! " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
+            this.putMessage("-------------------------");
         };
         Control.parse = function () {
             this.putMessage("Parsing [" + tokens + "]");
