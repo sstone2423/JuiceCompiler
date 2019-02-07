@@ -24,7 +24,7 @@ module JuiceC {
         public static btnCompile_click(): void {
             // Reset the compiler each time the compiler is clicked
             this.init();
-            this.putMessage(INFO + " -" + "\tCompilation started");
+            this.putMessage(INFO + "\tCompilation started");
             // Grab the tokens, warnings, errors, and statuses from the lexer
             lexResults = _Lexer.lex();
             console.log(lexResults);
@@ -38,7 +38,7 @@ module JuiceC {
                 this.beginLexLog();
                 // Save the previous program error state
 				prevProgramError = true;
-                this.putMessage(INFO + " -" + "\tCompilation stopped due to Lexer errors");
+                this.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
                 // Save the lexer error state
 				lexError = true;
             } 
@@ -58,7 +58,7 @@ module JuiceC {
 			}
 			// If the user tried to compile without typing any code besides comments, throw error
 			if (!programDetected) {
-				this.putMessage(INFO + " -" + "\tCompilation failed due to no actual code. This isn't a text editor.");
+				this.putMessage(INFO + "\tCompilation failed due to no actual code. This isn't a text editor.");
 			}
 
             // . . . and parse!
@@ -69,7 +69,7 @@ module JuiceC {
         public static beginLexLog(): void {
             // Errors mean there was typed code
 			programDetected = true;
-            this.putMessage(INFO + " -" + "\tCompiling Program " + programCount + "\n");
+            this.putMessage(INFO + "\tCompiling Program " + programCount);
             // Log/output the lexer analysis results
             this.lexerLog(lexResults);
             // Increment the program count
@@ -115,7 +115,7 @@ module JuiceC {
                                     + lexResults.errors[i].lineNumber + ":" + lexResults.errors[i].colNumber + ")");
 				}
 			}
-			this.putMessage(INFO + " -" + "\tLexical Analysis complete with " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
+			this.putMessage(INFO + "\tLexical Analysis complete with " + lexResults.warnings.length + " WARNING(S) and " + lexResults.errors.length + " ERROR(S)");
         }
 
         public static parse(): void {
