@@ -88,10 +88,11 @@ var JuiceC;
             }
             // Print all warnings
             if (lexWarning) {
+                console.log("entered lexerlog if lexWarning if statement");
                 for (var i = 0; i < lexResults[programIndex].warnings.length; i++) {
                     // Check for EOP warning
                     if (lexResults[programIndex].warnings[programIndex].type == "NO EOP" /* W_NO_EOP */) {
-                        this.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [$] detected at end-of-file. Adding to end-of-file for you.");
+                        this.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                         // Insert an EOP into the tokens array
                         lexResults[programIndex].tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                     }

@@ -52,24 +52,28 @@ module JuiceC {
 						let token: Token = new Token(JuiceC.TokenType.T_LBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
 						// Push to tokens array
 						this.tokens.push(token);
+						this.startPtr = this.endPtr;
 					// Test for right brace
 					} else if (rRBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a RBRACE token
 						let token: Token = new Token(JuiceC.TokenType.T_RBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
 						// Push to tokens array
 						this.tokens.push(token);
+						this.startPtr = this.endPtr;
 					// Test for left paren
 					} else if (rLPAREN.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a LPAREN token
 						let token: Token = new Token(JuiceC.TokenType.T_LPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
 						// Push to tokens array
 						this.tokens.push(token);
+						this.startPtr = this.endPtr;
 					// Test for right paren
 					} else if (rRPAREN.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a RPAREN token
 						let token: Token = new Token(JuiceC.TokenType.T_RPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
 						// Push to tokens array
 						this.tokens.push(token);
+						this.startPtr = this.endPtr;
 					// Test for quote
 					} else if (rQUOTE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a QUOTE token
@@ -224,7 +228,6 @@ module JuiceC {
 							this.foundQuote = false;
 						}
 
-						// Return the results of lex and then re-init everything so we can lex next program
 						// Define an object to return values in
 						this.lexAnalysisResult = {
 							"inComment": this.inComment,
@@ -268,32 +271,51 @@ module JuiceC {
 							break;
 						}
 						// Check to see if the next character creates a match for a Boolean NotEquals
-						this.endPtr++;
-						if (rBOOLOPNOTEQUALS.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						if (rBOOLOPNOTEQUALS.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
 							// Create a BOOLOP token
 							let token: Token = new Token(JuiceC.TokenType.T_BOOLOP, "!=", this.currentLineNum, this.currentColNum);
 							this.tokens.push(token);
 						} // Check to see if the next character creates a match for a comment
-						else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
 							this.inComment = true;
 							this.startCommentCol = this.currentColNum;
 							this.startCommentLine = this.currentLineNum;
-						// Otherwise, this is an invalid token so throw an error
+						// If no other matches, this character is invalid
 						} else {
-							this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_T, sourceCode.charAt(this.endPtr - 2), this.currentLineNum, this.currentColNum));
-							break;
+							this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_T, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
 						}
 					}
 				// If still in comment, ignore all characters besides comment end
 				} else {
 					if (rCOMMENTEND.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
-						// Reset inComment boolean and increment the endPtr by 1. It will incremented again at the end of the iteration
+						// Reset inComment boolean and increment the endPtr by 1. It will increment again at the end of the iteration
 						this.inComment = false;
 						this.endPtr++;
 					}
 				}
 				this.endPtr++;
 				this.currentColNum++;
+			}
+
+			// If the EOP wasn't found, we still need to push the lex results of the program
+			if (!this.foundEOP) {
+				// The 2nd quote error will be thrown in the parser
+				this.foundQuote = false;
+				// Define an object to return values in
+				this.lexAnalysisResult = {
+					"inComment": this.inComment,
+					"foundQuote": this.foundQuote,
+					"foundEOP": this.foundEOP,
+					"tokens": this.tokens,
+					"errors": this.errors,
+					"warnings": this.warnings,
+					"complete": this.isComplete,
+					"line": this.currentLineNum,
+					"col": this.currentColNum
+				};
+
+				// Add to the results array in case theres multiple programs
+				this.resultsArray.push(this.lexAnalysisResult);
 			}
 			
 			// If no errors were thrown during lex, check for more errors and warnings
@@ -306,7 +328,7 @@ module JuiceC {
 					else if (this.resultsArray[i].foundQuote) {
 						this.resultsArray[i].errors.push(new Error(JuiceC.ErrorType.E_NO_END_QUOTE, "\"", this.startQuoteLine, this.startQuoteCol));
 					} // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
-					else if (!this.resultsArray[i].foundEOP && this.resultsArray[i].errors.length == 0) {
+					else if (!this.resultsArray[i].foundEOP) {
 						this.resultsArray[i].warnings.push(new Warning(JuiceC.WarningType.W_NO_EOP, "$", this.currentLineNum, this.currentColNum));
 					}
 				}
