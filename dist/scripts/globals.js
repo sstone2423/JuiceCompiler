@@ -9,7 +9,15 @@ var _Utils;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";
+var LEXER = "Lexer";
 var tokens = "";
+var programCount = 0;
+var programDetected = false;
+var prevProgramError = false;
+var lexResults = [];
+var lexWarning = false;
+var lexError = false;
+var isLexComplete = false;
 var tokenIndex = 0;
 var currentToken = "";
 var errorCount = 0;
