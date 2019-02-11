@@ -44,7 +44,8 @@ module JuiceC {
 			sourceCode = JuiceC.Utils.trim(sourceCode);
 			// TODO: remove all spaces in the middle; remove line breaks too.
 			// Lex until we reach the end of the source code
-			while (this.startPtr <= sourceCode.length) {
+			while (this.startPtr < sourceCode.length) {
+				console.log("startptr: " + this.startPtr);
 				if (!this.inComment) {
 					// Test for left brace
 					if (rLBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
