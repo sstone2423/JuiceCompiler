@@ -6,6 +6,7 @@
    <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <!-- Enable bootstrap -->
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+   <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
    <script type="text/javascript" src="dist/scripts/globals.js"></script>
    <script type="text/javascript" src="dist/scripts/control.js"></script>
@@ -29,7 +30,7 @@
             <!--Source code and Output row-->
             <div class="row justify-content-md-center">
                <!--Source code column-->
-               <div class="col-sm-4">
+               <div class="col-sm-5">
                   <label for="sourceCode">Source Code</label>
                   <div class="dropdown float-right">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -50,12 +51,16 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#">Unterminated Comment</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#">Unterminated String</a>
                         </div>
-                      </div>
+                     </div>
                   <textarea class="form-control" id="sourceCode" rows="20"></textarea>
                </div>
                <!--Output column-->
-               <div class="col-sm-4">
-                  <label for="output">Output</label>
+               <div class="col-sm-5">
+                  <label for="verboseCheck" class="form-check-label">Verbose Mode</label>
+                  <input id="verboseCheck" data-toggle="toggle" data-size="sm" data-on="On" data-off="Off" data-onstyle="primary" data-offstyle="danger" type="checkbox" checked="checked">
+                  <div class="float-right">
+                     <label for="output">Output</label>
+                  </div>
                   <textarea class="form-control" id="output" rows="20"></textarea>
                </div>
             </div>
@@ -72,5 +77,6 @@
    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
 </body>
 </html>

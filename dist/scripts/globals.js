@@ -50,5 +50,6 @@ var rNEWLINE = new RegExp('\n$'); // New line
 var rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
 var rCOMMENTEND = new RegExp('\\*/$'); // End of comment
 var onDocumentLoad = function () {
+    document.getElementById("verboseCheck").checked = true;
     JuiceC.Control.init();
 };

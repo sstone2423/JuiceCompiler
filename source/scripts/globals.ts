@@ -55,5 +55,6 @@ const rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
 const rCOMMENTEND = new RegExp('\\*/$'); // End of comment
 
 let onDocumentLoad = () => {
+    (<HTMLInputElement>document.getElementById("verboseCheck")).checked = true;
     JuiceC.Control.init();
 };
