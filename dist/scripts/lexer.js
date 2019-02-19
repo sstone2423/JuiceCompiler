@@ -301,6 +301,7 @@ var JuiceC;
                     else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         this.errors.push(new JuiceC.Error("INVALID TOKEN IN COMMENT" /* E_INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
+                    this.startPtr++;
                     // If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
                 }
                 else {
@@ -342,7 +343,7 @@ var JuiceC;
             }
             // If the EOP wasn't found, we still need to push the lex results of the program
             // Only push the program if it isn't empty
-            if (!this.foundEOP && this.tokens) {
+            if (!this.foundEOP && this.tokens.length > 0) {
                 // Define an object to return values in
                 this.lexAnalysisResult = {
                     "inComment": this.inComment,

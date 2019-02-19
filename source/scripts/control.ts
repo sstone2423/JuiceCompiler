@@ -107,22 +107,37 @@ module JuiceC {
             }
             // Print all errors
 			for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
-                console.log("entered error lexerlog");
+                console.log("lexresults" + i + ": " + lexResults[programIndex].errors[i].errorType);
                 // Invalid token check
-				if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_INVALID_T){
+				if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_INVALID_T) {
                     this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
                 }
                 // Missing end of comment
-				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_COMMENT) {
+				else if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_NO_END_COMMENT) {
                     this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at (" 
-                                    + lexResults[programIndex].errors[i].lineNumber + " col " + lexResults[programIndex].errors[i].colNumber);
+                                    + lexResults[programIndex].errors[i].lineNumber + " col " + lexResults[programIndex].errors[i].colNumber + ")");
                 }
                 // Missing end of string quote
-				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_QUOTE){
-                    this.putMessage("LEXER -> | ERROR: Missing ending quote for String literal starting on line  " 
+				else if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_NO_END_QUOTE) {
+                    this.putMessage("LEXER -> | ERROR: Missing ending quote for string literal starting at (" 
                                     + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
-				}
+                }
+                // Invalid token in string
+                else if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_INVALID_T_STRING) {
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token in string literal [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ") - Only lowercase characters a - z are allowed");
+                }
+                // Invalid token in comment
+                else if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_INVALID_T_COMMENT) {
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token in comment [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ") - Only characters and digits are allowed");
+                }
+                // Invalid new line
+                else if (lexResults[programIndex].errors[i].errorType == JuiceC.ErrorType.E_INVALID_NEW_LINE) {
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Invalid New Line used [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ") - New lines are not allowed in comments");
+                }
 			}
 			this.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
         }
