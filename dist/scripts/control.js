@@ -102,7 +102,7 @@ var JuiceC;
             for (var i = 0; i < lexResults[programIndex].errors.length; i++) {
                 // Invalid token check
                 if (lexResults[programIndex].errors[i].type == "INVALID TOKEN" /* E_INVALID_T */) {
-                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized or Invalid Token [ " + lexResults[programIndex].errors[i].value
+                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token [ " + lexResults[programIndex].errors[i].value
                         + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
                 }
                 // Missing end of comment

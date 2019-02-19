@@ -300,7 +300,9 @@ module JuiceC {
 			// If the EOP wasn't found, we still need to push the lex results of the program
 			if (!this.foundEOP) {
 				// The 2nd quote error will be thrown in the parser
-				this.foundQuote = false;
+				if (this.foundQuote) {
+					this.errors.push(new Error(JuiceC.ErrorType.E_NO_END_QUOTE, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
+				}
 				// Define an object to return values in
 				this.lexAnalysisResult = {
 					"inComment": this.inComment,
