@@ -44,8 +44,8 @@ module JuiceC {
 			sourceCode = JuiceC.Utils.trim(sourceCode);
 			// TODO: remove all spaces in the middle; remove line breaks too.
 			// Lex until we reach the end of the source code
-			while (this.startPtr <= sourceCode.length) {
-				if (!this.inComment) {
+			while (this.startPtr < sourceCode.length) {
+				if (!this.inComment && !this.foundQuote) {
 					// Test for left brace
 					if (rLBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a LBRACE token
@@ -87,6 +87,8 @@ module JuiceC {
 							this.startQuoteCol = this.currentColNum;
 							this.startQuoteLine = this.currentLineNum;
 						}
+						this.startPtr = this.endPtr;
+
 					/*
 						Keywords Start here
 					*/
@@ -223,9 +225,9 @@ module JuiceC {
 						// Reset the pointer
 						this.startPtr = this.endPtr;
 						this.foundEOP = true;
-						// If still looking for a end quote, reset the boolean. The parser will find this error.
+						// If still looking for a end quote, throw an error
 						if (this.foundQuote) {
-							this.foundQuote = false;
+							this.errors.push(new Error(JuiceC.ErrorType.E_NO_END_QUOTE, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
 						}
 
 						// Define an object to return values in
@@ -285,24 +287,55 @@ module JuiceC {
 							this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_T, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
 						}
 					}
-				// If still in comment, ignore all characters besides comment end
-				} else {
+				// If still in comment, only allow characters and the end comment
+				} else if (this.inComment) {
+					// Check for the end comment
 					if (rCOMMENTEND.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
 						// Reset inComment boolean and increment the endPtr by 1. It will increment again at the end of the iteration
 						this.inComment = false;
 						this.endPtr++;
+					// EOP is invalid inside of a comment. Throw an invalid token error. The missing end comment error will be thrown at the end
+					} else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_T_COMMENT, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
 					}
+				// If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
+				} else {
+					if (rCHAR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						// Create a EOP token
+						let token: Token = new Token(JuiceC.TokenType.T_CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+						this.tokens.push(token);
+					// Check for the end quote. If found, JuiceC is happy
+					} else if (rQUOTE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						// Create a QUOTE token
+						let token: Token = new Token(JuiceC.TokenType.T_QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+						// Push to tokens array
+						this.tokens.push(token);
+						// Reset the foundQuote boolean
+						this.foundQuote = false;
+					// Check to see if the next character creates a match for a comment
+					} else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
+						this.inComment = true;
+						this.startCommentCol = this.currentColNum;
+						this.startCommentLine = this.currentLineNum;
+					// Test for white space
+					} else if (rWHITESPACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+						// Throw error if there is a new line in a string
+						if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+							this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_NEW_LINE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+						}
+					// If its not a character, its an invalid token so throw an error
+					} else {
+						this.errors.push(new Error(JuiceC.ErrorType.E_INVALID_T_STRING, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+					}
+					this.startPtr++;
 				}
 				this.endPtr++;
 				this.currentColNum++;
 			}
 
 			// If the EOP wasn't found, we still need to push the lex results of the program
-			if (!this.foundEOP) {
-				// The 2nd quote error will be thrown in the parser
-				if (this.foundQuote) {
-					this.errors.push(new Error(JuiceC.ErrorType.E_NO_END_QUOTE, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
-				}
+			// Only push the program if it isn't empty
+			if (!this.foundEOP && this.tokens) {
 				// Define an object to return values in
 				this.lexAnalysisResult = {
 					"inComment": this.inComment,
@@ -335,7 +368,6 @@ module JuiceC {
 					}
 				}
 			}
-			
 
 			// End of source code so swap the boolean
 			this.isComplete = true;

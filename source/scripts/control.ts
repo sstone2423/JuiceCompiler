@@ -107,6 +107,7 @@ module JuiceC {
             }
             // Print all errors
 			for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
+                console.log("entered error lexerlog");
                 // Invalid token check
 				if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_INVALID_T){
                     this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token [ " + lexResults[programIndex].errors[i].value 
