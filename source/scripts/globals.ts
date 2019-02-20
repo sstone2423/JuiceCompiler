@@ -5,6 +5,7 @@
 
 // Global classes
 let _Lexer: JuiceC.Lexer;
+let _Parser: JuiceC.Parser;
 let _Control: JuiceC.Control;
 let _Utils: JuiceC.Utils;
 

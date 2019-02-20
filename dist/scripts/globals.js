@@ -4,6 +4,7 @@
 */
 // Global classes
 var _Lexer;
+var _Parser;
 var _Control;
 var _Utils;
 // String constants
