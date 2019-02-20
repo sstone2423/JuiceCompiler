@@ -11,18 +11,15 @@ var _Utils;
 var INFO = "INFO";
 var DEBUG = "DEBUG";
 var LEXER = "Lexer";
-var tokens = "";
+var EOF = "$";
 var programCount = 0;
 var programDetected = false;
-var prevProgramError = false;
 var lexResults = [];
 var lexWarning = false;
 var lexError = false;
-var isLexComplete = false;
 var tokenIndex = 0;
 var currentToken = "";
 var errorCount = 0;
-var EOF = "$";
 // Regex
 var rLBRACE = new RegExp('{$'); // Left Brace
 var rRBRACE = new RegExp('}$'); // Right brace

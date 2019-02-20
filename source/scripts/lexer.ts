@@ -14,7 +14,6 @@ module JuiceC {
 		// Warning array
 		warnings = [];
 		// Program counter
-		programNum: number = 0;
 		lexAnalysisResult = {};
 		resultsArray = [];
 		// Pointers that indicate which characters are being matched
@@ -24,7 +23,6 @@ module JuiceC {
 		currentLineNum: number = 1;
 		currentColNum: number = 0;
 		// Initialize booleans to determine the status of the lex
-		isComplete: boolean = false;
 		inComment: boolean = false;
 		foundEOP: boolean = false;
 		foundQuote: boolean = false;
@@ -238,7 +236,6 @@ module JuiceC {
 							"tokens": this.tokens,
 							"errors": this.errors,
 							"warnings": this.warnings,
-							"complete": this.isComplete,
 							"line": this.currentLineNum,
 							"col": this.currentColNum
 						};
@@ -345,7 +342,6 @@ module JuiceC {
 					"tokens": this.tokens,
 					"errors": this.errors,
 					"warnings": this.warnings,
-					"complete": this.isComplete,
 					"line": this.currentLineNum,
 					"col": this.currentColNum
 				};
@@ -369,10 +365,6 @@ module JuiceC {
 					}
 				}
 			}
-
-			// End of source code so swap the boolean
-			this.isComplete = true;
-			this.resultsArray[this.resultsArray.length - 1].isComplete = true;
 
 			return this.resultsArray;
 		}

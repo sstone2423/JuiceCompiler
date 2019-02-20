@@ -9,7 +9,6 @@ var JuiceC;
         }
         // Parse the completed lex programs
         Parser.prototype.parse = function (tokens) {
-            //this.putMessage("Parsing [" + tokens + "]");
             // Grab the next token.
             currentToken = this.getNextToken();
             // A valid parse derives the G(oal) production, so begin there.
@@ -71,12 +70,12 @@ var JuiceC;
         };
         Parser.prototype.getNextToken = function () {
             var thisToken = EOF; // Let's assume that we're at the EOF.
-            if (tokenIndex < tokens.length) {
-                // If we're not at EOF, then return the next token in the stream and advance the index.
-                thisToken = tokens[tokenIndex];
-                //this.putMessage("Current token:" + thisToken);
-                tokenIndex++;
-            }
+            //if (tokenIndex < tokens.length) {
+            // If we're not at EOF, then return the next token in the stream and advance the index.
+            //thisToken = tokens[tokenIndex];
+            //this.putMessage("Current token:" + thisToken);
+            //tokenIndex++;
+            //}
             return thisToken;
         };
         return Parser;

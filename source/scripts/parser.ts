@@ -8,8 +8,7 @@ module JuiceC {
 	export class Parser {
 
 		// Parse the completed lex programs
-        public parse(tokens): void {
-            //this.putMessage("Parsing [" + tokens + "]");
+        public parse(tokens: Array<JuiceC.Token>): void {
             // Grab the next token.
             currentToken = this.getNextToken();
             // A valid parse derives the G(oal) production, so begin there.
@@ -74,12 +73,12 @@ module JuiceC {
 
         public getNextToken(): string {
             let thisToken = EOF;    // Let's assume that we're at the EOF.
-            if (tokenIndex < tokens.length) {
+            //if (tokenIndex < tokens.length) {
                 // If we're not at EOF, then return the next token in the stream and advance the index.
-                thisToken = tokens[tokenIndex];
+                //thisToken = tokens[tokenIndex];
                 //this.putMessage("Current token:" + thisToken);
-                tokenIndex++;
-            }
+                //tokenIndex++;
+            //}
             return thisToken;
 		}
 		

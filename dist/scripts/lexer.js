@@ -13,7 +13,6 @@ var JuiceC;
             // Warning array
             this.warnings = [];
             // Program counter
-            this.programNum = 0;
             this.lexAnalysisResult = {};
             this.resultsArray = [];
             // Pointers that indicate which characters are being matched
@@ -23,7 +22,6 @@ var JuiceC;
             this.currentLineNum = 1;
             this.currentColNum = 0;
             // Initialize booleans to determine the status of the lex
-            this.isComplete = false;
             this.inComment = false;
             this.foundEOP = false;
             this.foundQuote = false;
@@ -241,7 +239,6 @@ var JuiceC;
                             "tokens": this.tokens,
                             "errors": this.errors,
                             "warnings": this.warnings,
-                            "complete": this.isComplete,
                             "line": this.currentLineNum,
                             "col": this.currentColNum
                         };
@@ -352,7 +349,6 @@ var JuiceC;
                     "tokens": this.tokens,
                     "errors": this.errors,
                     "warnings": this.warnings,
-                    "complete": this.isComplete,
                     "line": this.currentLineNum,
                     "col": this.currentColNum
                 };
@@ -374,9 +370,6 @@ var JuiceC;
                     }
                 }
             }
-            // End of source code so swap the boolean
-            this.isComplete = true;
-            this.resultsArray[this.resultsArray.length - 1].isComplete = true;
             return this.resultsArray;
         };
         return Lexer;

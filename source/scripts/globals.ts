@@ -13,19 +13,16 @@ let _Utils: JuiceC.Utils;
 const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
 const LEXER: string = "Lexer";
+const EOF: string = "$";
 
-let tokens = "";
 let programCount: number = 0;
 let programDetected: boolean = false;
-let prevProgramError: boolean = false;
 let lexResults = [];
 let lexWarning: boolean = false;
 let lexError: boolean = false;
-let isLexComplete: boolean = false;
 let tokenIndex: number = 0;
 let currentToken: string = "";
 let errorCount: number = 0;
-const EOF: string = "$";
 
 // Regex
 const rLBRACE = new RegExp('{$'); // Left Brace

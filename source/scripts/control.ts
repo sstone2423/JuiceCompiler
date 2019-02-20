@@ -14,7 +14,6 @@ module JuiceC {
             _Control = new Control();
             _Lexer = new Lexer();
             _Utils = new Utils();  
-            tokens = "";
             tokenIndex = 0;
             currentToken = ' ';
             errorCount = 0;
@@ -40,8 +39,6 @@ module JuiceC {
                 // Check if there were errors
                 if (lexResults[i].errors.length != 0) {
                     this.beginLexLog(i);
-                    // Save the previous program error state
-                    prevProgramError = true;
                     this.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
                     // Save the lexer error state
                     lexError = true;
@@ -56,8 +53,8 @@ module JuiceC {
                 // Otherwise continue to output the lex log
                 else {
                     this.beginLexLog(i);
-                    prevProgramError = false;
                     // Only parse if there were no errors. No need to waste time and resources
+                    this.putMessage("Parsing [" + lexResults[i].tokens + "]");
                     _Parser.parse(lexResults[i].tokens);
                 }
             }
