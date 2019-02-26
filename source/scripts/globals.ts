@@ -45,5 +45,4 @@ const rCOMMENTEND = new RegExp('\\*/$'); // End of comment
 
 let onDocumentLoad = () => {
     (<HTMLInputElement>document.getElementById("verboseCheck")).checked = true;
-    _Control.init();
 };

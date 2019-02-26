@@ -294,19 +294,19 @@ var JuiceC;
                     for (var i = 0; i < start.length; i++) {
                         //this.cst.addNTNode(start[i], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                         if (i != 0) {
-                            _Control.putMessage("VALID - Expecting [" + start[i - 1] + "], found [" + start[i] + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                            JuiceC.Control.putMessage("VALID - Expecting [" + start[i - 1] + "], found [" + start[i] + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
                         }
                     }
                     // Add final production that was rewritten.
                     //this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    _Control.putMessage("VALID - Expecting [" + start[start.length - 1] + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                    JuiceC.Control.putMessage("VALID - Expecting [" + start[start.length - 1] + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
                 } // If rewriting to some non-terminal only, display it in tree and log
                 else if (rewrite != null) {
                     //this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    _Control.putMessage("VALID - Expecting [" + rewrite + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                    JuiceC.Control.putMessage("VALID - Expecting [" + rewrite + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
                 }
                 // Add terminal to log
-                _Control.putMessage("VALID - Expecting [" + token + "], found [" + this.tokens[this.currentTokenIndex].value + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                JuiceC.Control.putMessage("VALID - Expecting [" + token + "], found [" + this.tokens[this.currentTokenIndex].value + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
                 // Add token to tree
                 //this.cst.addTNode(this.tokens[this.currentTokenIndex], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                 // consume token
