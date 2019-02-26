@@ -8,16 +8,6 @@
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
-   <script type="text/javascript" src="dist/scripts/globals.js"></script>
-   <script type="text/javascript" src="dist/scripts/control.js"></script>
-   <script type="text/javascript" src="dist/scripts/utils.js"></script>
-   <script type="text/javascript" src="dist/scripts/error.js"></script>
-   <script type="text/javascript" src="dist/scripts/warning.js"></script>
-   <script type="text/javascript" src="dist/scripts/token.js"></script>
-   <script type="text/javascript" src="dist/scripts/production.js"></script>
-   <script type="text/javascript" src="dist/scripts/lexer.js"></script>
-   <script type="text/javascript" src="dist/scripts/parser.js"></script>
-   <script type="text/javascript" src="dist/scripts/test.js"></script>
 </head>
 <body onload="JuiceC.Control.init();">
    <div class="container-fluid">
@@ -74,6 +64,7 @@
          </div>
       </div>
    </div>
+   <div id="chart-container"></div>
    <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">JuiceC</a>
       <ul class="navbar-nav navbar-center">
@@ -92,10 +83,21 @@
          </li>
       </ul>
    </nav>
-   <!-- Enable bootstrap -->
+   <!-- Enable Bootstrap -->
    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
+   <!-- Enable Compiler -->
+   <script type="text/javascript" src="dist/scripts/globals.js"></script>
+   <script type="text/javascript" src="dist/scripts/control.js"></script>
+   <script type="text/javascript" src="dist/scripts/utils.js"></script>
+   <script type="text/javascript" src="dist/scripts/error.js"></script>
+   <script type="text/javascript" src="dist/scripts/warning.js"></script>
+   <script type="text/javascript" src="dist/scripts/token.js"></script>
+   <script type="text/javascript" src="dist/scripts/production.js"></script>
+   <script type="text/javascript" src="dist/scripts/lexer.js"></script>
+   <script type="text/javascript" src="dist/scripts/parser.js"></script>
+   <script type="text/javascript" src="dist/scripts/test.js"></script>
 </body>
 </html>

@@ -1,6 +1,10 @@
 ///<reference path="globals.ts" />
 /*
     parser.ts
+
+    LL(1) Recursive Descent Parser. Leftmost Lookahead by 1.
+    This parser takes in the tokens from a successful Lex and enforces the grammar restrictions on those tokens. As it approves
+    each section of the program, it adds it to a Concrete Syntax Tree (CST) which will then be passed to Semantic Analysis.
 */
 var JuiceC;
 (function (JuiceC) {

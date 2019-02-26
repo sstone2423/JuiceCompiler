@@ -1,6 +1,9 @@
 ///<reference path="globals.ts" />
 /*
     error.ts
+
+    Error class for the Lexer and Parser that contain the Error Type, Value that was given instead of the one that was expected,
+    and the Line number and Column number of the error instance.
 */
 var JuiceC;
 (function (JuiceC) {

@@ -1,6 +1,11 @@
 ///<reference path="globals.ts" />
 /* 
-	lexer.ts  
+	lexer.ts
+
+	Lexer checks the code given to ensure that all of the characters belong in the Language Grammar. If they belong, create tokens
+	for each and pass them on to the Parser. If there were errors in the Lexer, stop compiling the current program and report the
+	errors. The only warning currently is for a missing end of program $ character. The Lexer will add the character to the program
+	and report the warning back to the user.
 */
 
 module JuiceC {
