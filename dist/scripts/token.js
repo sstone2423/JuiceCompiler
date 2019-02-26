@@ -6,6 +6,7 @@ var JuiceC;
 (function (JuiceC) {
     var TokenType;
     (function (TokenType) {
+        // Lexer tokens
         TokenType["T_ID"] = "ID";
         TokenType["T_LBRACE"] = "LBRACE";
         TokenType["T_RBRACE"] = "RBRACE";

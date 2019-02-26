@@ -7,6 +7,7 @@ module JuiceC {
 
     export enum TokenType {
 
+        // Lexer tokens
         T_ID = "ID",
         T_LBRACE = "LBRACE",
         T_RBRACE = "RBRACE",
@@ -28,7 +29,7 @@ module JuiceC {
         T_STRING = "STRING",
         T_ADDITION = "ADDITION",
         T_EQUALS = "EQUALS",
-        T_NOTEQUALS = "NOTEQUALS"
+        T_NOTEQUALS = "NOTEQUALS",
 
     }
 

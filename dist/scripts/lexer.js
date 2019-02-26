@@ -229,7 +229,7 @@ var JuiceC;
                         this.foundEOP = true;
                         // If still looking for a end quote, throw an error
                         if (this.foundQuote) {
-                            this.errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
+                            this.errors.push(new JuiceC.Error("No End Quote" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
                         }
                         // Define an object to return values in
                         this.lexAnalysisResult = {
@@ -261,11 +261,11 @@ var JuiceC;
                         if (this.endPtr == sourceCode.length) {
                             // If code ends with a trailing start comment, throw error
                             if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
-                                this.errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                                this.errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                                 // Otherwise, any other character besides EOP is invalid
                             }
                             else {
-                                this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                                this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                             }
                             break;
                         }
@@ -282,7 +282,7 @@ var JuiceC;
                             // If no other matches, this character is invalid
                         }
                         else {
-                            this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                     }
                     // If still in comment, only allow characters and the end comment
@@ -296,7 +296,7 @@ var JuiceC;
                         // EOP is invalid inside of a comment. Throw an invalid token error. The missing end comment error will be thrown at the end
                     }
                     else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
-                        this.errors.push(new JuiceC.Error("INVALID TOKEN IN COMMENT" /* E_INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("Invalid Token in Comment" /* E_INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
                     // If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
@@ -326,12 +326,12 @@ var JuiceC;
                     else if (rWHITESPACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Throw error if there is a new line in a string
                         if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
-                            this.errors.push(new JuiceC.Error("INVALID NEW LINE" /* E_INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("Invalid New Line" /* E_INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                         // If its not a character, its an invalid token so throw an error
                     }
                     else {
-                        this.errors.push(new JuiceC.Error("INVALID TOKEN IN STRING" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("Invalid Token in String" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
                 }
@@ -360,10 +360,10 @@ var JuiceC;
                 if (this.resultsArray[i].errors.length == 0) {
                     // If we've reached the end of the source code, but no end comment has been found, throw an error
                     if (this.resultsArray[i].inComment) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                     } // If we've reached the end of the source code, but no end quote has been found, throw an error
                     else if (this.resultsArray[i].foundQuote) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
                     } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
                     else if (!this.resultsArray[i].foundEOP) {
                         this.resultsArray[i].warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));

@@ -6,20 +6,12 @@
 var _Lexer;
 var _Parser;
 var _Control;
-var _Utils;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";
 var LEXER = "Lexer";
+var PARSER = "Parser";
 var EOF = "$";
-var programCount = 0;
-var programDetected = false;
-var lexResults = [];
-var lexWarning = false;
-var lexError = false;
-var tokenIndex = 0;
-var currentToken = "";
-var errorCount = 0;
 // Regex
 var rLBRACE = new RegExp('{$'); // Left Brace
 var rRBRACE = new RegExp('}$'); // Right brace
@@ -49,5 +41,5 @@ var rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
 var rCOMMENTEND = new RegExp('\\*/$'); // End of comment
 var onDocumentLoad = function () {
     document.getElementById("verboseCheck").checked = true;
-    JuiceC.Control.init();
+    _Control.init();
 };
