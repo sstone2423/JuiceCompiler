@@ -279,6 +279,7 @@ var JuiceC;
                             // Create a BOOLOP token
                             var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLOP, "!=", this.currentLineNum, this.currentColNum);
                             this.tokens.push(token);
+                            this.endPtr++;
                         } // Check to see if the next character creates a match for a comment
                         else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
                             this.inComment = true;

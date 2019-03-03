@@ -158,8 +158,6 @@ var JuiceC;
             Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
         };
         Control.prototype.parserLog = function (parseResult, programIndex) {
-            console.log(parseResult);
-            console.log(parseResult.errors.length);
             if (document.getElementById("verboseCheck").checked) {
                 // Print valid tokens that were consumed
                 for (var j = 0; j < parseResult.valids.length; j++) {
@@ -167,7 +165,6 @@ var JuiceC;
                 }
                 // Print all errors with grammar details about how to fix the errors
                 for (var i = 0; i < parseResult.errors.length; i++) {
-                    console.log(parseResult.errors[i].errorType);
                     switch (parseResult.errors[i].errorType) {
                         // Block expected
                         case "Block Expected" /* E_BLOCK_EXPECTED */: {
@@ -188,6 +185,13 @@ var JuiceC;
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Assignment Statement Expected" /* E_ASSIGNMENT_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.AssignStatement
                                 + " ::== " + JuiceC.Production.Id + " <strong>=</strong> " + JuiceC.Production.Expr);
+                            break;
+                        }
+                        // Expr Expected
+                        case "Expression Expected" /* E_EXPR_EXPECTED */: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Expression Expected" /* E_EXPR_EXPECTED */ + " - found [ " + parseResult.errors[i].value
+                                + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Expr
+                                + " ::== " + JuiceC.Production.IntExpr + " or " + JuiceC.Production.StringExpr + " or " + JuiceC.Production.BooleanExpr + " or " + JuiceC.Production.Id);
                             break;
                         }
                         // VarDecl Expected

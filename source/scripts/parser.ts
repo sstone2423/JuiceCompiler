@@ -135,7 +135,6 @@ module JuiceC {
         }
 
         public parseIfStatement(production: Array<Production>): boolean {
-            // we let parseBoolExpr derive appropriate rewrite rules by passing empty production array
             if (this.matchAndConsumeToken(TokenType.T_IF, production, Production.IfStatement, false) && this.parseBoolExpr([], true) &&
                 this.parseBlock(null)) {
                     // Ascend the tree after IfStatement is derived
@@ -147,7 +146,7 @@ module JuiceC {
         }
 
         public parseExpr(production: Array<Production>): boolean {
-            if (this.parseIntExpr(production) || this.parseStringExpr(production, false) || this.parseBoolExpr(production, false) || 
+            if (this.parseIntExpr(production) || this.parseStringExpr(production) || this.parseBoolExpr(production, false) || 
                 this.parseId(production, false)) {
                     // Ascend the tree after Expression is derived
                     this.cst.ascendTree();
@@ -174,7 +173,7 @@ module JuiceC {
             }
         }
 
-        public parseStringExpr(production: Array<Production>, expected: boolean): boolean {
+        public parseStringExpr(production: Array<Production>): boolean {
             if (this.matchAndConsumeToken(TokenType.T_QUOTE, production, Production.StringExpr, false) && this.parseCharList([Production.CharList]) && this.matchAndConsumeToken(TokenType.T_QUOTE, null, null, true)) {
                 // Ascend the tree after StringExpr is derived
                 this.cst.ascendTree();

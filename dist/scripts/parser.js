@@ -122,7 +122,6 @@ var JuiceC;
             }
         };
         Parser.prototype.parseIfStatement = function (production) {
-            // we let parseBoolExpr derive appropriate rewrite rules by passing empty production array
             if (this.matchAndConsumeToken(JuiceC.TokenType.T_IF, production, JuiceC.Production.IfStatement, false) && this.parseBoolExpr([], true) &&
                 this.parseBlock(null)) {
                 // Ascend the tree after IfStatement is derived
@@ -134,7 +133,7 @@ var JuiceC;
             }
         };
         Parser.prototype.parseExpr = function (production) {
-            if (this.parseIntExpr(production) || this.parseStringExpr(production, false) || this.parseBoolExpr(production, false) ||
+            if (this.parseIntExpr(production) || this.parseStringExpr(production) || this.parseBoolExpr(production, false) ||
                 this.parseId(production, false)) {
                 // Ascend the tree after Expression is derived
                 this.cst.ascendTree();
@@ -162,7 +161,7 @@ var JuiceC;
                 return false;
             }
         };
-        Parser.prototype.parseStringExpr = function (production, expected) {
+        Parser.prototype.parseStringExpr = function (production) {
             if (this.matchAndConsumeToken(JuiceC.TokenType.T_QUOTE, production, JuiceC.Production.StringExpr, false) && this.parseCharList([JuiceC.Production.CharList]) && this.matchAndConsumeToken(JuiceC.TokenType.T_QUOTE, null, null, true)) {
                 // Ascend the tree after StringExpr is derived
                 this.cst.ascendTree();

@@ -182,8 +182,6 @@ module JuiceC {
         }
 
         public parserLog(parseResult, programIndex: number): void {
-            console.log(parseResult);
-            console.log(parseResult.errors.length);
             if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
                 // Print valid tokens that were consumed
                 for (let j = 0; j < parseResult.valids.length; j++) {
@@ -191,7 +189,6 @@ module JuiceC {
                 }
                 // Print all errors with grammar details about how to fix the errors
                 for (let i = 0; i < parseResult.errors.length; i++) {
-                    console.log(parseResult.errors[i].errorType);
                     switch (parseResult.errors[i].errorType) {
                         // Block expected
                         case ErrorType.E_BLOCK_EXPECTED: {
@@ -214,6 +211,14 @@ module JuiceC {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ASSIGNMENT_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.AssignStatement 
                                         + " ::== " + Production.Id + " <strong>=</strong> " + Production.Expr);
+                            break;
+                        }
+
+                        // Expr Expected
+                        case ErrorType.E_EXPR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Expr 
+                                        + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id);
                             break;
                         }
 
