@@ -112,11 +112,11 @@ module JuiceC {
             private DFSCST(node, level, tree, dash, treantTree, programCounter) {
                 let child = {};
                 if (node.value instanceof Token) {
-                    tree.push(dash + "[" + node.value.value + "]")
+                    tree.push(dash + "[ " + node.value.value + " ]")
                     // Add new node to children array passed
                     // Pass reference to new children array to next call
                     child = {
-                        text: { name: "[" + node.value.value + "]" },
+                        text: { name: "[ " + node.value.value + " ]" },
                         children: []
                     }
                     treantTree.push(child);
@@ -126,11 +126,11 @@ module JuiceC {
                     if (nodeValue == "Program") {
                         nodeValue = nodeValue + "" + programCounter;
                     }
-                    tree.push(dash + "<" + nodeValue + ">")
+                    tree.push(dash + "< " + nodeValue + " >")
                     // Add new node to children array passed
                     // Pass reference to new children array to next call
                     child = {
-                        text: { name: "<" + nodeValue + ">" },
+                        text: { name: "< " + nodeValue + " >" },
                         children: []
                     }
                     treantTree.push(child);
