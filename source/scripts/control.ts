@@ -347,7 +347,7 @@ module JuiceC {
             }
 
             // If there were no errors while parsing, display the CST
-            if (parseResult.errors.length > 0) {
+            if (parseResult.errors.length == 0) {
                 let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
 
                 // Display CST visually with Treant.js
