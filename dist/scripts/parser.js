@@ -10,28 +10,34 @@ var JuiceC;
 (function (JuiceC) {
     var Parser = /** @class */ (function () {
         function Parser() {
-            this.parseResult = {
-                "errors": []
-            };
         }
         Parser.prototype.init = function (tokens) {
             this.currentTokenIndex = 0;
             this.tokens = tokens;
             this.errors = [];
+            this.valids = [];
+            this.isComplete = false;
+            this.cst = new JuiceC.Tree();
         };
-        // Parse the completed lex programs
+        // Parse the isCompleted lex programs
         Parser.prototype.parse = function (tokens) {
             this.init(tokens);
-            this.parseProgram();
-            // Grab the next token.
-            //currentTokenIndex = this.getNextToken();
+            if (this.parseProgram()) {
+                this.isComplete = true;
+            }
             // Report the results.
-            return this.parseResult;
+            var results = {
+                "errors": this.errors,
+                "valids": this.valids,
+                "cst": this.cst,
+                "isComplete": this.isComplete
+            };
+            return results;
         };
         // First part of the grammar, Program
         Parser.prototype.parseProgram = function () {
             // Recursively call the 2nd step, Block, with the Program production and the expected terminal
-            if (this.parseBlock([JuiceC.Production.Program], true)) {
+            if (this.parseBlock([JuiceC.Production.Program], true) && this.matchAndConsumeToken(JuiceC.TokenType.T_EOP, null, null, true)) {
                 return true;
                 // If block was not successful, return false
             }
@@ -41,20 +47,21 @@ var JuiceC;
         };
         // 2nd part of the grammar, Block
         Parser.prototype.parseBlock = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_LBRACE, production, JuiceC.Production.Block, false) && this.parseStatementList(null, false) && this.consumeToken(JuiceC.TokenType.T_RBRACE, null, null, true)) {
-                // ascend the tree after we've derived a block
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_LBRACE, production, JuiceC.Production.Block, false) && this.parseStatementList(null, false) && this.matchAndConsumeToken(JuiceC.TokenType.T_RBRACE, null, null, true)) {
+                // Ascend the tree after a block is derived
+                this.cst.ascendTree();
                 return true;
             }
-            if (expected) {
+            else {
+                console.log("parseBlock fail");
                 this.errors.push(new JuiceC.Error("Block Expected" /* E_BLOCK_EXPECTED */, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                return false;
             }
-            return false;
         };
         Parser.prototype.parseStatementList = function (production, expected) {
             if (this.parseStatement([JuiceC.Production.StatementList], false) && this.parseStatementList([JuiceC.Production.StatementList], false)) {
-                // ascend the tree after we've derived a statemtlist
-                //this.cst.ascendTree();
+                // Ascend the tree after a StatementList is derived
+                this.cst.ascendTree();
                 return true;
             }
             // Empty string is acceptable
@@ -66,16 +73,17 @@ var JuiceC;
             if (this.parsePrintStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement], false) || this.parseAssignmentStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement], false) ||
                 this.parseWhileStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement], false) || this.parseVarDeclaration([JuiceC.Production.StatementList, JuiceC.Production.Statement], false) ||
                 this.parseIfStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement], false) || this.parseBlock([JuiceC.Production.StatementList, JuiceC.Production.Statement], false)) {
-                //this.cst.ascendTree();
+                // Ascend the tree after Statement is derived
+                this.cst.ascendTree();
                 return true;
             }
             return false;
         };
         Parser.prototype.parsePrintStatement = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_PRINT, production, JuiceC.Production.PrintStatement, false) && this.consumeToken(JuiceC.TokenType.T_LPAREN, null, null, true) &&
-                this.parseExpr([JuiceC.Production.Expr], true) && this.consumeToken(JuiceC.TokenType.T_RPAREN, null, null, true)) {
-                // ascend the tree after we've derived a printstmt
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_PRINT, production, JuiceC.Production.PrintStatement, false) && this.matchAndConsumeToken(JuiceC.TokenType.T_LPAREN, null, null, true) &&
+                this.parseExpr([JuiceC.Production.Expr], true) && this.matchAndConsumeToken(JuiceC.TokenType.T_RPAREN, null, null, true)) {
+                // Ascend the tree after PrintStatement is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -85,9 +93,9 @@ var JuiceC;
         };
         Parser.prototype.parseAssignmentStatement = function (production, expected) {
             if (this.parseId(production.concat([JuiceC.Production.AssignStatement]), false) &&
-                this.consumeToken(JuiceC.TokenType.T_ASSIGN, null, null, true) && this.parseExpr([JuiceC.Production.Expr], true)) {
-                // ascend the tree after we've derived a assignstmt
-                //this.cst.ascendTree();
+                this.matchAndConsumeToken(JuiceC.TokenType.T_ASSIGN, null, null, true) && this.parseExpr([JuiceC.Production.Expr], true)) {
+                // Ascend the tree after AssignmentStatement is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -97,8 +105,8 @@ var JuiceC;
         };
         Parser.prototype.parseVarDeclaration = function (production, expected) {
             if (this.parseType(production.concat([JuiceC.Production.VarDeclaration]), false) && this.parseId(null, true)) {
-                // ascend the tree after we've derived a vardecl
-                //this.cst.ascendTree();
+                // Ascend the tree after VarDeclaration is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -107,9 +115,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseWhileStatement = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_WHILE, production, JuiceC.Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
-                // ascend the tree after we've derived a whilestmt
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_WHILE, production, JuiceC.Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
+                // Ascend the tree after WhileStatement is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -119,10 +127,10 @@ var JuiceC;
         };
         Parser.prototype.parseIfStatement = function (production, expected) {
             // we let parseBoolExpr derive appropriate rewrite rules by passing empty production array
-            if (this.consumeToken(JuiceC.TokenType.T_IF, production, JuiceC.Production.IfStatement, false) && this.parseBoolExpr([], true) &&
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_IF, production, JuiceC.Production.IfStatement, false) && this.parseBoolExpr([], true) &&
                 this.parseBlock(null, true)) {
-                // ascend the tree after we've derived an ifstatement
-                //this.cst.ascendTree();
+                // Ascend the tree after IfStatement is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -133,8 +141,8 @@ var JuiceC;
         Parser.prototype.parseExpr = function (production, expected) {
             if (this.parseIntExpr(production, false) || this.parseStringExpr(production, false) || this.parseBoolExpr(production, false) ||
                 this.parseId(production, false)) {
-                // ascend the tree after we've derived an expr
-                //this.cst.ascendTree();
+                // Ascend the tree after Expression is derived
+                this.cst.ascendTree();
                 return true;
             }
             else {
@@ -144,13 +152,14 @@ var JuiceC;
         };
         Parser.prototype.parseIntExpr = function (production, expected) {
             if (this.parseDigit(production.concat([JuiceC.Production.IntExpr]), false)) {
-                // ascend the tree after we've derived an intexpr
+                // Ascend the tree after IntExpr is derived
                 if (this.parseIntOp(null, false) && this.parseExpr([JuiceC.Production.Expr], true)) {
-                    //this.cst.ascendTree();
+                    this.cst.ascendTree();
                     return true;
+                    // Ascend if nothing is derived, because empty string is allowed
                 }
                 else {
-                    //this.cst.ascendTree();
+                    this.cst.ascendTree();
                     return true;
                 }
             }
@@ -160,9 +169,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseStringExpr = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_QUOTE, production, JuiceC.Production.StringExpr, false) && this.parseCharList([JuiceC.Production.CharList], true) && this.consumeToken(JuiceC.TokenType.T_QUOTE, null, null, true)) {
-                // ascend the tree after we've derived a stringexpr
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_QUOTE, production, JuiceC.Production.StringExpr, false) && this.parseCharList([JuiceC.Production.CharList], true) && this.matchAndConsumeToken(JuiceC.TokenType.T_QUOTE, null, null, true)) {
+                // Ascend the tree after StringExpr is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -172,14 +181,13 @@ var JuiceC;
         };
         Parser.prototype.parseBoolExpr = function (production, expected) {
             if (this.parseBoolVal(production, false)) {
-                // ascend the tree after we've derived a booleanexpr
-                //this.cst.ascendTree();
+                // Ascend the tree after BooleanValue is derived
+                this.cst.ascendTree();
                 return true;
             }
-            else if (this.consumeToken(JuiceC.TokenType.T_LPAREN, production, JuiceC.Production.BooleanExpr, false) && this.parseExpr([JuiceC.Production.Expr], true) &&
-                this.parseBoolOp(null, true) && this.parseExpr([JuiceC.Production.Expr], true) && this.consumeToken(JuiceC.TokenType.T_RPAREN, null, null, true)) {
-                // ascend the tree after we've derived a print statement
-                //this.cst.ascendTree();
+            else if (this.matchAndConsumeToken(JuiceC.TokenType.T_LPAREN, production, JuiceC.Production.BooleanExpr, false) && this.parseExpr([JuiceC.Production.Expr], true) &&
+                this.parseBoolOp(null, true) && this.parseExpr([JuiceC.Production.Expr], true) && this.matchAndConsumeToken(JuiceC.TokenType.T_RPAREN, null, null, true)) {
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -188,10 +196,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseBoolVal = function (production, expected) {
-            // we add a BooleanExpr to the list of productions rewritten, as Expr is rewritten to BooleanExpr, which is then rewritten to Boolval
-            if (this.consumeToken(JuiceC.TokenType.T_BOOLVAL, production.concat([JuiceC.Production.BooleanExpr]), JuiceC.Production.BoolVal, false)) {
-                // ascend the tree after we've derived a boolval statement
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_BOOLVAL, production.concat([JuiceC.Production.BooleanExpr]), JuiceC.Production.BoolVal, false)) {
+                // Ascend the tree after BoolVal is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -200,9 +207,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseId = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_ID, production, JuiceC.Production.Id, false)) {
-                // ascend the tree after we've derived an id
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_ID, production, JuiceC.Production.Id, false)) {
+                // Ascend the tree after Id is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -211,9 +218,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseType = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_TYPE, production, JuiceC.Production.Type, false)) {
-                // ascend the tree after we've derived a type
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_TYPE, production, JuiceC.Production.Type, false)) {
+                // Ascend the tree after Type is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -222,9 +229,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseChar = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_CHAR, production, JuiceC.Production.Char, false)) {
-                // ascend tree after deriving char
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_CHAR, production, JuiceC.Production.Char, false)) {
+                // Ascend tree after Char is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -233,8 +240,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseDigit = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_DIGIT, production, JuiceC.Production.Digit, false)) {
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_DIGIT, production, JuiceC.Production.Digit, false)) {
+                // Ascend tree after Digit is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -243,8 +251,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseIntOp = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_INTOP, production, JuiceC.Production.IntOp, false)) {
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_INTOP, production, JuiceC.Production.IntOp, false)) {
+                // Ascend tree after IntOp is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -253,8 +262,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseBoolOp = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_BOOLOP, production, JuiceC.Production.BoolOp, false)) {
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_BOOLOP, production, JuiceC.Production.BoolOp, false)) {
+                // Ascend tree after BoolOp is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -263,9 +273,9 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseSpace = function (production, expected) {
-            if (this.consumeToken(JuiceC.TokenType.T_SPACE, production, JuiceC.Production.Space, false)) {
-                // ascend the tree if found space
-                //this.cst.ascendTree();
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_SPACE, production, JuiceC.Production.Space, false)) {
+                // Ascend tree after Space is derived
+                this.cst.ascendTree();
                 return true;
             }
             if (expected) {
@@ -274,45 +284,43 @@ var JuiceC;
             return false;
         };
         Parser.prototype.parseCharList = function (production, expected) {
-            // spaces are treated as chars for me
             if (this.parseChar(production, false) && this.parseCharList(production, false)) {
-                // ascend the tree after we've derived a charlist
-                //this.cst.ascendTree();
+                // Ascend the tree after CharList is derived
+                this.cst.ascendTree();
                 return true;
             }
             else if (this.parseSpace(production, false) && this.parseCharList(production, false)) {
-                // ascend the tree after we've derived a charlist
-                //this.cst.ascendTree();
+                // Ascend the tree after CharList is derived
+                this.cst.ascendTree();
                 return true;
-            }
+            } // Empty string is accepted
             else {
-                // Empty string is accepted
                 return true;
             }
         };
-        Parser.prototype.consumeToken = function (token, start, rewrite, expected) {
+        Parser.prototype.matchAndConsumeToken = function (token, start, rewrite, expected) {
             if (this.tokens[this.currentTokenIndex].type == token) {
                 // If rewriting from a non-terminal to a terminal, add to tree and log
                 if (start != null && start.length != 0) {
                     // Add all productions in start
                     for (var i = 0; i < start.length; i++) {
-                        //this.cst.addNTNode(start[i], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
+                        this.cst.addNTNode(start[i], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                         if (i != 0) {
-                            JuiceC.Control.putMessage("VALID - Expecting [" + start[i - 1] + "], found [" + start[i] + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                            this.valids.push("VALID - Expecting [ " + start[i - 1] + " ], found [ " + start[i] + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                         }
                     }
                     // Add final production that was rewritten.
-                    //this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    JuiceC.Control.putMessage("VALID - Expecting [" + start[start.length - 1] + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                    this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
+                    this.valids.push("VALID - Expecting [ " + start[start.length - 1] + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 } // If rewriting to some non-terminal only, display it in tree and log
                 else if (rewrite != null) {
-                    //this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    JuiceC.Control.putMessage("VALID - Expecting [" + rewrite + "], found [" + rewrite + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                    this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
+                    this.valids.push("VALID - Expecting [ " + rewrite + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 }
                 // Add terminal to log
-                JuiceC.Control.putMessage("VALID - Expecting [" + token + "], found [" + this.tokens[this.currentTokenIndex].value + "] on line " + this.tokens[this.currentTokenIndex].lineNum + " col " + this.tokens[this.currentTokenIndex].colNum);
+                this.valids.push("VALID - Expecting [ " + token + " ], found [ " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 // Add token to tree
-                //this.cst.addTNode(this.tokens[this.currentTokenIndex], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
+                this.cst.addTNode(this.tokens[this.currentTokenIndex], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                 // consume token
                 this.currentTokenIndex++;
                 return true;

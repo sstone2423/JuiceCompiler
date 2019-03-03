@@ -34,8 +34,10 @@ module JuiceC {
             }
 
             // Adds terminal node to tree AKA leaf node
-            public addTNode(token: Token) {
+            public addTNode(token: Token, lineNumber: number, colNumber: number) {
                 let node = new TerminalTreeNode(token);
+                node.lineNumber = lineNumber;
+                node.colNumber = colNumber;
                 if (this.root == null) {
                     this.root = node;
                     this.curr = node;
@@ -78,7 +80,7 @@ module JuiceC {
 
             // Prints the tree in depth-first search order for CST display
             public traverseTreeCST(treantTree, programCounter) {
-                let tree: Array<String> = [];
+                let tree: Array<string> = [];
                 let level: number = 0;
                 if (this.root != null) {
                     this.DFSCST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
@@ -166,6 +168,8 @@ module JuiceC {
         // A TreeNode that represents Terminals
         export class TerminalTreeNode extends TreeNode {
             value: Token;
+            lineNumber: number;
+            colNumber: number;
             super(value: Token) {
                 this.value = value;
             }

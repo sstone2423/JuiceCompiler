@@ -158,5 +158,10 @@ module JuiceC {
 { a = "unterminated string }$`;
         }
 
+        public static extraRightBrace(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
+{{{{{{}}} /* comments are ignored */ }}}}$`;
+        }
+
     }
 }

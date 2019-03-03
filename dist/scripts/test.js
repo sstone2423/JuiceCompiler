@@ -45,6 +45,9 @@ var JuiceC;
         Test.unterminatedString = function () {
             document.getElementById("sourceCode").value = "/*  Unterminated String */\n{ a = \"unterminated string }$";
         };
+        Test.extraRightBrace = function () {
+            document.getElementById("sourceCode").value = "/*  Extra Right Brace */\n{{{{{{}}} /* comments are ignored */ }}}}$";
+        };
         return Test;
     }());
     JuiceC.Test = Test;

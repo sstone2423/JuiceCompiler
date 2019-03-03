@@ -11,10 +11,10 @@ module JuiceC {
     export const enum ErrorType {
 
         // Lexer errors
-        E_NO_END_QUOTE = "No End Quote",
+        E_NO_END_QUOTE = "No End Quote in string literal",
         E_NO_END_COMMENT = "No End Comment",
         E_INVALID_T = "Invalid Token",
-        E_INVALID_T_STRING = "Invalid Token in String",
+        E_INVALID_T_STRING = "Invalid Token in string literal",
         E_INVALID_T_COMMENT = "Invalid Token in Comment",
         E_INVALID_NEW_LINE = "Invalid New Line",
 

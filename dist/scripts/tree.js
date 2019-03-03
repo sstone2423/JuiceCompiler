@@ -39,8 +39,10 @@ var JuiceC;
             this.descendTree();
         };
         // Adds terminal node to tree AKA leaf node
-        Tree.prototype.addTNode = function (token) {
+        Tree.prototype.addTNode = function (token, lineNumber, colNumber) {
             var node = new TerminalTreeNode(token);
+            node.lineNumber = lineNumber;
+            node.colNumber = colNumber;
             if (this.root == null) {
                 this.root = node;
                 this.curr = node;

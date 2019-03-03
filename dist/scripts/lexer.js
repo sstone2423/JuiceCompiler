@@ -234,7 +234,7 @@ var JuiceC;
                         this.foundEOP = true;
                         // If still looking for a end quote, throw an error
                         if (this.foundQuote) {
-                            this.errors.push(new JuiceC.Error("No End Quote" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
+                            this.errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
                         }
                         // Define an object to return values in
                         this.lexAnalysisResult = {
@@ -336,7 +336,7 @@ var JuiceC;
                         // If its not a character, its an invalid token so throw an error
                     }
                     else {
-                        this.errors.push(new JuiceC.Error("Invalid Token in String" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("Invalid Token in string literal" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
                 }
@@ -368,7 +368,7 @@ var JuiceC;
                         this.resultsArray[i].errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                     } // If we've reached the end of the source code, but no end quote has been found, throw an error
                     else if (this.resultsArray[i].foundQuote) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
                     } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
                     else if (!this.resultsArray[i].foundEOP) {
                         this.resultsArray[i].warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
