@@ -4,17 +4,12 @@
    <title>JuiceC - A browser-based Compiler in Typescript</title>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
+   <!-- Enable Treant -->
+   <link rel="stylesheet" href="dist/styles/Treant.css" type="text/css"/>
    <!-- Enable bootstrap -->
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+   <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
-   <script type="text/javascript" src="dist/scripts/globals.js"></script>
-   <script type="text/javascript" src="dist/scripts/control.js"></script>
-   <script type="text/javascript" src="dist/scripts/utils.js"></script>
-   <script type="text/javascript" src="dist/scripts/error.js"></script>
-   <script type="text/javascript" src="dist/scripts/warning.js"></script>
-   <script type="text/javascript" src="dist/scripts/token.js"></script>
-   <script type="text/javascript" src="dist/scripts/test.js"></script>
-   <script type="text/javascript" src="dist/scripts/lexer.js"></script>	
 </head>
 <body onload="JuiceC.Control.init();">
    <div class="container-fluid">
@@ -22,39 +17,44 @@
            class="mx-auto d-block" 
            alt="Juice Compiler Logo" />
       <hr>
-
-      <!--Lexer row-->
+      <!-- Input / Output row-->
       <div class="row">
          <div class="col-sm">
             <!--Source code and Output row-->
             <div class="row justify-content-md-center">
                <!--Source code column-->
-               <div class="col-sm-4">
+               <div class="col-sm-5">
                   <label for="sourceCode">Source Code</label>
                   <div class="dropdown float-right">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Sample tests
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#">Simple Test 1</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#">Simple Test 2</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#">Full Program</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#">Multiple Programs</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#">Crazy One Liner</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#">While Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#">If Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#">Missing EOP</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#">Alan's Test</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.invalidString()" href="#">Invalid String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.invalidPrint()" href="#">Invalid Print</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.missingEndComment()" href="#">Missing Comment End</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#">PASS - Simple Test 1</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#">PASS - Simple Test 2</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#">PASS - Full Program</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#">PASS - Multiple Programs</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#">PASS - Crazy One Liner</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#">PASS - While Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#">PASS - If Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#">PASS - Missing EOP</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#">PASS - Alan's Test</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.typeInsideString()" href="#">FAIL - Type Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#">FAIL - EOP Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#">FAIL - Unterminated Comment</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#">FAIL - Unterminated String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#">FAIL - Extra Right Brace</a>
                         </div>
-                      </div>
+                     </div>
                   <textarea class="form-control" id="sourceCode" rows="20"></textarea>
                </div>
                <!--Output column-->
-               <div class="col-sm-4">
-                  <label for="output">Output</label>
+               <div class="col-sm-5">
+                  <label for="verboseCheck" class="form-check-label">Verbose Mode</label>
+                  <input id="verboseCheck" data-toggle="toggle" data-size="sm" data-on="On" data-off="Off" data-onstyle="primary" data-offstyle="danger" type="checkbox" checked="checked">
+                  <div class="float-right">
+                     <label for="output">Output</label>
+                  </div>
                   <textarea class="form-control" id="output" rows="20"></textarea>
                </div>
             </div>
@@ -64,12 +64,54 @@
                      <button type="button" class="btn btn-primary" id="btnCompile" onclick="JuiceC.Control.btnCompile_click()">Compile</button>
                </div>
             </div>
+            <!--Tree row-->
+            <div class="row">
+               <div class="col-sm">
+                  <label>CST</label>
+                  <div id="tree-cst" style="width: 100%; height: 500px"></div>
+               </div>
+            </div>
          </div>
       </div>
    </div>
-   <!-- Enable bootstrap -->
+   <div id="chart-container"></div>
+   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">JuiceC</a>
+      <ul class="navbar-nav navbar-center">
+         <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sstone2423/JuiceCompiler">
+               <img src="dist/images/GitHub_Logo.png" alt="Stephen's Github" height="26px" width="60px" />
+            </a>
+         </li>
+         <li class="nav-item">
+            <a class="nav-link" href="https://www.linkedin.com/in/stephen-stone/">
+               <img id="linkedIn" src="dist/images/LinkedIn_Logo.svg.png" alt="Stephen's LinkedIn" height="23px" width="69px" />
+            </a>
+         </li>
+         <li class="nav-item">
+            <a class="nav-link" id="grammar" href="grammar.pdf">Grammar</a>
+         </li>
+      </ul>
+   </nav>
+   <!-- Enable Bootstrap -->
    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
+   <!-- Enable Treant -->
+   <script src="dist/vendor/raphael.js"></script>
+   <script src="dist/scripts/Treant.js"></script>
+   <!-- Enable Compiler -->
+   <script type="text/javascript" src="dist/scripts/globals.js"></script>
+   <script type="text/javascript" src="dist/scripts/control.js"></script>
+   <script type="text/javascript" src="dist/scripts/tree.js"></script>
+   <script type="text/javascript" src="dist/scripts/utils.js"></script>
+   <script type="text/javascript" src="dist/scripts/error.js"></script>
+   <script type="text/javascript" src="dist/scripts/warning.js"></script>
+   <script type="text/javascript" src="dist/scripts/token.js"></script>
+   <script type="text/javascript" src="dist/scripts/production.js"></script>
+   <script type="text/javascript" src="dist/scripts/lexer.js"></script>
+   <script type="text/javascript" src="dist/scripts/parser.js"></script>
+   <script type="text/javascript" src="dist/scripts/test.js"></script>
 </body>
 </html>

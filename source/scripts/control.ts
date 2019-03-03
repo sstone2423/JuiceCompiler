@@ -5,199 +5,363 @@
         should be here.
 */
 
+
+
 module JuiceC {
+    
+    // Javascript to Typescript library magic
+    declare var Treant: any;
     
     export class Control {
 
+        programDetected: boolean = false;
+        lexResults = [];
+        lexWarning: boolean = false;
+        lexError: boolean = false;
+        parseResults =[];
+        parseError: boolean = false;
+        cstVisual;
+        treantCST;
+        
+
+        constructor() { }
+
+        // Set the initial values for our globals
         public static init(): void {
-            // Set the initial values for our globals
             _Control = new Control();
             _Lexer = new Lexer();
-            _Utils = new Utils();  
-            tokens = "";
-            tokenIndex = 0;
-            currentToken = ' ';
-            errorCount = 0;
+            _Parser = new Parser();
+			_Control.cstVisual = {
+				chart: {
+					container: "#tree-cst"
+				},
+				nodeStructure: {}
+            };
+        }
+
+        // Output a message to the HTML output log
+        public static putMessage(msg): void {
+            (<HTMLInputElement>document.getElementById("output")).value += msg + "\n";
         }
 
         // This is executed as a result of the user pressing the "compile" button between the two text areas, above
         public static btnCompile_click(): void {
             // Reset the compiler each time the compiler is clicked
-            this.init();
-            this.putMessage(INFO + "\tCompilation started");
+            Control.init();
+            _Control.treantCST = {
+				chart: {
+					container: "#tree-cst"
+				},
+				
+				nodeStructure: {
+					text: { name: "Root" },
+					children: [
+					]
+				}
+            };
+            Control.putMessage(INFO + "\tCompilation started");
             // Grab the tokens, warnings, errors, and statuses from the lexer
-            lexResults = _Lexer.lex();
-            console.log(lexResults);
+            _Control.lexResults = _Lexer.lex();
+            console.log(_Control.lexResults);
             // Iterate through each program result
-            for (let i = 0; i < lexResults.length; i++) {
+            for (let i = 0; i < _Control.lexResults.length; i++) {
                 // Check if there were warnings
-                if (lexResults[i].warnings.length != 0) {
-                    lexWarning = true;
+                if (_Control.lexResults[i].warnings.length != 0) {
+                    _Control.lexWarning = true;
                 } else {
-                    lexWarning = false;
+                    _Control.lexWarning = false;
                 }
 
-                // Check if there were errors
-                if (lexResults[i].errors.length != 0) {
-                    this.beginLexLog(i);
-                    // Save the previous program error state
-                    prevProgramError = true;
-                    this.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
+                // Output the log if there are any errors
+                if (_Control.lexResults[i].errors.length != 0) {
+                    _Control.prepareLexLog(i);
+                    Control.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
                     // Save the lexer error state
-                    lexError = true;
+                    _Control.lexError = true;
                 } 
-                // If no tokens are found, save the lex complete state
-                else if (lexResults[i].tokens.length == 0) {
-                    isLexComplete = true;
-                }
-                // Otherwise continue to output the lex log
+                // If no tokens are found, output an error
+                else if (_Control.lexResults[i].tokens.length == 0) {
+                    Control.putMessage(INFO + "\tCompilation failed due to no tokens being found. Where's the code?");
+                } // Otherwise continue to output the lex log
                 else {
-                    this.beginLexLog(i);
-                    
-                    prevProgramError = false;
+                    _Control.prepareLexLog(i);
+                    // Only parse if there were no errors. No need to waste time and resources
+                    Control.putMessage(INFO + "\tParsing Program " + (i + 1));
+                    let parseResult = _Parser.parse(_Control.lexResults[i].tokens);
+                    _Control.parserLog(parseResult, i);
                 }
-                
-                if (lexResults[i].complete) { 
-                    isLexComplete = true;
-                }
-                // If the user tried to compile without typing any code besides comments, throw error
-                if (!programDetected) {
-                    this.putMessage(INFO + "\tCompilation failed due to no actual code. This isn't a text editor.");
-                }
-
-                // . . . and parse!
-                //this.parse();
             }
         }
 
-        // Helper function for duplicated code
-        public static beginLexLog(programIndex: number): void {
+        // Swaps programDetected boolean to true, outputs the program that is being compiled, and begins the lexerLog
+        public prepareLexLog(programIndex: number): void {
             // Errors mean there was typed code
-			programDetected = true;
-            this.putMessage(INFO + "\tCompiling Program " + programCount);
+			_Control.programDetected = true;
+            Control.putMessage(INFO + "\tCompiling Program " + (programIndex + 1));
             // Log/output the lexer analysis results
-            this.lexerLog(lexResults, programIndex);
-            // Increment the program count
-            programCount++;
+            _Control.lexerLog(_Control.lexResults, programIndex);
         }
 
-        public static putMessage(msg): void {
-            (<HTMLInputElement>document.getElementById("output")).value += msg + "\n";
-        }
+        // Logs the tokens, warnings, errors, and complete status of each program that was lexed
+        public lexerLog(lexResults, programIndex: number) {
+            if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
+                // Print all tokens
+                for (let i = 0; i < lexResults[programIndex].tokens.length; i++) {
+                    Control.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type + " [ " + lexResults[programIndex].tokens[i].value 
+                                    + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
+                }
+                // Print all warnings
+                if (_Control.lexWarning) {
+                    for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
+                        // Check for EOP warning
+                        if (lexResults[programIndex].warnings[programIndex].type == WarningType.W_NO_EOP) {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
+                            // Insert an EOP into the tokens array
+                            lexResults[programIndex].tokens.push(new Token(TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
+                        } else {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: Not really sure why I'm warning so oops?");
+                        }
+                    }
+                }
+                // Print all errors
+                for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
+                    switch (lexResults[programIndex].errors[i].errorType) {
+                        // Invalid Token check
+                        case ErrorType.E_INVALID_T: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T + " [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                            break;
+                        }
 
-        public static lexerLog(lexResults, programIndex: number) {
-            console.log("lex log began");
-            // Print all tokens
-            for (let i = 0; i < lexResults[programIndex].tokens.length; i++) {
-                console.log("token " + i + ": " + lexResults[programIndex].tokens[i]);
-                this.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type + " [ " + lexResults[programIndex].tokens[i].value 
-                                + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
-            }
-            // Print all warnings
-            if (lexWarning) {
-                console.log("entered lexerlog if lexWarning if statement");
-                for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
-                    // Check for EOP warning
-                    if (lexResults[programIndex].warnings[programIndex].type == JuiceC.WarningType.W_NO_EOP) {
-                        this.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
-                        // Insert an EOP into the tokens array
-                        lexResults[programIndex].tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
+                        // Missing end of comment
+                        case ErrorType.E_NO_END_COMMENT: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                            break;
+                        }
+
+                        // Missing end of string quote
+                        case ErrorType.E_NO_END_QUOTE: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_NO_END_QUOTE + " [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                            break;
+                        }
+
+                        // Invalid token in string
+                        case ErrorType.E_INVALID_T_STRING: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T_STRING + " [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
+                            break;
+                        }
+
+                        // Invalid token in comment
+                        case ErrorType.E_INVALID_T: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T_COMMENT + " [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
+                            break;
+                        }
+
+                        // Invalid new line
+                        case ErrorType.E_INVALID_NEW_LINE: {
+                            Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_NEW_LINE + " [ " + lexResults[programIndex].errors[i].value 
+                                    + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments");
+                            break;
+                        }
+
+                        // Unknown error
+                        default: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: Unknown error found [ " + lexResults[programIndex].errors[i].value 
+                                        + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Oops");
+                            break;
+                        }
                     }
                 }
             }
-            // Print all errors
-			for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
-                // Invalid token check
-				if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_INVALID_T){
-                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Unrecognized Token [ " + lexResults[programIndex].errors[i].value 
-                                    + " ] found at (" + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
+            
+			Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
+        }
+
+        public parserLog(parseResult, programIndex: number): void {
+            if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
+                // Print valid tokens that were consumed
+                for (let j = 0; j < parseResult.valids.length; j++) {
+                    Control.putMessage(parseResult.valids[j]);
                 }
-                // Missing end of comment
-				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_COMMENT) {
-                    this.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at (" 
-                                    + lexResults[programIndex].errors[i].lineNumber + " col " + lexResults[programIndex].errors[i].colNumber);
+                // Print all errors with grammar details about how to fix the errors
+                for (let i = 0; i < parseResult.errors.length; i++) {
+                    switch (parseResult.errors[i].errorType) {
+                        // Block expected
+                        case ErrorType.E_BLOCK_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BLOCK_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Block 
+                                        + " ::== <strong>{</strong> " + Production.StatementList + " <strong>}</strong>");
+                            break;
+                        }
+
+                        // PrintStatement expected
+                        case ErrorType.E_PRINT_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_PRINT_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.PrintStatement 
+                                        + " ::== <strong>print (</strong> " + Production.Expr + " <strong>)</strong>");
+                            break;
+                        }
+
+                        // AssignmentStatement Expected
+                        case ErrorType.E_ASSIGNMENT_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ASSIGNMENT_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.AssignStatement 
+                                        + " ::== " + Production.Id + " <strong>=</strong> " + Production.Expr);
+                            break;
+                        }
+
+                        // Expr Expected
+                        case ErrorType.E_EXPR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Expr 
+                                        + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id);
+                            break;
+                        }
+
+                        // VarDecl Expected
+                        case ErrorType.E_VAR_DECL_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_VAR_DECL_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                                + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " 
+                                                + Production.VarDeclaration + " ::== " + Production.Type + " " + Production.Id);
+                            break;
+                        }
+
+                        // WhileStatement Expected
+                        case ErrorType.E_WHILE_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_WHILE_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.WhileStatement 
+                                        + " ::== <strong>while</strong> " + Production.BooleanExpr + " " + Production.Block);
+                            break;
+                        }
+
+                        // IfStatement Expected
+                        case ErrorType.E_IF_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_IF_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IfStatement 
+                                        + " ::== <strong>if</strong> " + Production.BooleanExpr + " " + Production.Block);
+                            break;
+                        }
+
+                        // IntExpr Expected
+                        case ErrorType.E_INT_EXPR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_INT_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IntExpr 
+                                        + " ::==  " + Production.Digit + " " + Production.IntOp + " " + Production.Expr + " OR ::== " + Production.Digit);
+                            break;
+                        }
+
+                        // StringExpr Expected
+                        case ErrorType.E_STRING_EXPR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_STRING_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.StringExpr 
+                                        + " ::== <strong>\"</strong> " + Production.CharList + " " + " \"");
+                            break;
+                        }
+
+                        // BoolExpr Expected
+                        case ErrorType.E_BOOL_EXPR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BooleanExpr
+                                        + " ::== <strong>(</strong> " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " <strong>)</strong>");
+                            break;
+                        }
+
+                        // Id Expected
+                        case ErrorType.E_ID_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ID_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Id
+                                        + " ::== " + Production.Char);
+                            break;
+                        }
+
+                        // Type Expected
+                        case ErrorType.E_TYPE_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TYPE_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Type
+                                        + " ::== <strong>int</strong> | <strong>string</strong> | <strong>boolean</strong>");
+                            break;
+                        }
+
+                        // Char Expected
+                        case ErrorType.E_CHAR_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_CHAR_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Char
+                                        + " ::== <strong>a</strong> | <strong>b</strong> | <strong>c</strong> ... <strong>z</strong>");
+                            break;
+                        }
+
+                        // Space Expected
+                        case ErrorType.E_SPACE_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_SPACE_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Space
+                                        + " ::== the <strong>space</strong> character");
+                            break;
+                        }
+
+                        // Digit Expected
+                        case ErrorType.E_DIGIT_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_DIGIT_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Digit
+                                        + " ::== <strong>0</strong> | <strong>1</strong> | <strong>2</strong> ... <strong>9</strong>");
+                            break;
+                        }
+
+                        // BoolOp Expected
+                        case ErrorType.E_BOOL_OP_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolOp
+                                        + " ::== <strong>==</strong> | <strong>!=</strong>");
+                            break;
+                        }
+
+                        // BoolVal Expected
+                        case ErrorType.E_BOOL_VAL_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_VAL_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolVal
+                                        + " ::== <strong>false</strong> | <strong>true</strong>");
+                            break;
+                        }
+
+                        // IntOp Expected
+                        case ErrorType.E_INT_OP_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_INT_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IntOp
+                                        + " ::== <strong>+</strong>");
+                            break;
+                        }
+
+                        // Token Expected
+                        case ErrorType.E_TOKEN_EXPECTED: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - Unable to find token");
+                            break;
+                        }
+
+                        // Unknown error
+                        default: {
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: Unknown error - found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - Oops");
+                            break;
+                        }
+                    }
                 }
-                // Missing end of string quote
-				else if (lexResults[programIndex].errors[i].type == JuiceC.ErrorType.E_NO_END_QUOTE){
-                    this.putMessage("LEXER -> | ERROR: Missing ending quote for String literal starting on line  " 
-                                    + lexResults[programIndex].errors[i].lineNumber + ":" + lexResults[programIndex].errors[i].colNumber + ")");
-				}
-			}
-			this.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
-        }
+            }
 
-        public static parse(): void {
-            this.putMessage("Parsing [" + tokens + "]");
-            // Grab the next token.
-            currentToken = this.getNextToken();
-            // A valid parse derives the G(oal) production, so begin there.
-            this.parseG();
-            // Report the results.
-            this.putMessage("Parsing found " + errorCount + " error(s).");        
-        }
+            // If there were no errors while parsing, display the CST
+            if (parseResult.errors.length == 0) {
+                let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
 
-        public static parseG(): void {
-            // A G(oal) production can only be an E(xpression), so parse the E production.
-            this.parseE();
-        }
-
-        public static parseE(): void {
-            // All E productions begin with a digit, so make sure that we have one.
-            this.checkToken("digit");
-            // Look ahead 1 char (which is now in currentToken because checkToken 
-            // consumes another one) and see which E production to follow.
-            if (currentToken != EOF) {
-                // We're not done, we expect to have an op.
-                this.checkToken("op");
-                this.parseE();
+                // Display CST visually with Treant.js
+                Treant(cst.treant);
             } else {
-                // There is nothing else in the token stream, 
-                // and that's cool since E --> digit is valid.
-                this.putMessage("EOF reached");
+                Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
             }
-        }
-
-        public static checkToken(expectedKind): void {
-            // Validate that we have the expected token kind and get the next token.
-            switch(expectedKind) {
-                case "digit":  this.putMessage("Expecting a digit");
-                                if (currentToken == "0" || currentToken == "1" || currentToken == "2" || 
-                                    currentToken == "3" || currentToken == "4" || currentToken == "5" || 
-                                    currentToken == "6" || currentToken == "7" || currentToken == "8" || 
-                                    currentToken == "9") {
-                                        this.putMessage("Got a digit!");
-                                } else {
-                                    errorCount++;
-                                    this.putMessage("NOT a digit.  Error at position " + tokenIndex + ".");
-                                }
-                                break;
-                                
-                case "op":     this.putMessage("Expecting an operator");
-                                if (currentToken == "+" || currentToken == "-") {
-                                        this.putMessage("Got an operator!");
-                                } else {
-                                    errorCount++;
-                                    this.putMessage("NOT an operator.  Error at position " + tokenIndex + ".");
-                                }
-                                break;
-                                
-                default:       this.putMessage("Parse Error: Invalid Token Type at position " + tokenIndex + ".");
-                                    break;			
-            }
-            // Consume another token, having just checked this one, because that 
-            // will allow the code to see what's coming next... a sort of "look-ahead".
-            currentToken = this.getNextToken();
-        }
-
-        public static getNextToken(): string {
-            let thisToken = EOF;    // Let's assume that we're at the EOF.
-            if (tokenIndex < tokens.length) {
-                // If we're not at EOF, then return the next token in the stream and advance the index.
-                thisToken = tokens[tokenIndex];
-                this.putMessage("Current token:" + thisToken);
-                tokenIndex++;
-            }
-            return thisToken;
+            
+			Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors.length + " ERROR(S)");
         }
         
     }

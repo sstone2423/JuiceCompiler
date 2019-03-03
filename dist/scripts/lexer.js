@@ -1,6 +1,11 @@
 ///<reference path="globals.ts" />
 /*
     lexer.ts
+
+    Lexer checks the code given to ensure that all of the characters belong in the Language Grammar. If they belong, create tokens
+    for each and pass them on to the Parser. If there were errors in the Lexer, stop compiling the current program and report the
+    errors. The only warning currently is for a missing end of program $ character. The Lexer will add the character to the program
+    and report the warning back to the user.
 */
 var JuiceC;
 (function (JuiceC) {
@@ -13,7 +18,6 @@ var JuiceC;
             // Warning array
             this.warnings = [];
             // Program counter
-            this.programNum = 0;
             this.lexAnalysisResult = {};
             this.resultsArray = [];
             // Pointers that indicate which characters are being matched
@@ -23,7 +27,6 @@ var JuiceC;
             this.currentLineNum = 1;
             this.currentColNum = 0;
             // Initialize booleans to determine the status of the lex
-            this.isComplete = false;
             this.inComment = false;
             this.foundEOP = false;
             this.foundQuote = false;
@@ -42,8 +45,7 @@ var JuiceC;
             // TODO: remove all spaces in the middle; remove line breaks too.
             // Lex until we reach the end of the source code
             while (this.startPtr < sourceCode.length) {
-                console.log("startptr: " + this.startPtr);
-                if (!this.inComment) {
+                if (!this.inComment && !this.foundQuote) {
                     // Test for left brace
                     if (rLBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a LBRACE token
@@ -89,6 +91,7 @@ var JuiceC;
                             this.startQuoteCol = this.currentColNum;
                             this.startQuoteLine = this.currentLineNum;
                         }
+                        this.startPtr = this.endPtr;
                         /*
                             Keywords Start here
                         */
@@ -229,9 +232,9 @@ var JuiceC;
                         // Reset the pointer
                         this.startPtr = this.endPtr;
                         this.foundEOP = true;
-                        // If still looking for a end quote, reset the boolean. The parser will find this error.
+                        // If still looking for a end quote, throw an error
                         if (this.foundQuote) {
-                            this.foundQuote = false;
+                            this.errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
                         }
                         // Define an object to return values in
                         this.lexAnalysisResult = {
@@ -241,7 +244,6 @@ var JuiceC;
                             "tokens": this.tokens,
                             "errors": this.errors,
                             "warnings": this.warnings,
-                            "complete": this.isComplete,
                             "line": this.currentLineNum,
                             "col": this.currentColNum
                         };
@@ -264,11 +266,11 @@ var JuiceC;
                         if (this.endPtr == sourceCode.length) {
                             // If code ends with a trailing start comment, throw error
                             if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
-                                this.errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                                this.errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                                 // Otherwise, any other character besides EOP is invalid
                             }
                             else {
-                                this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                                this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                             }
                             break;
                         }
@@ -277,6 +279,7 @@ var JuiceC;
                             // Create a BOOLOP token
                             var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLOP, "!=", this.currentLineNum, this.currentColNum);
                             this.tokens.push(token);
+                            this.endPtr++;
                         } // Check to see if the next character creates a match for a comment
                         else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
                             this.inComment = true;
@@ -285,25 +288,65 @@ var JuiceC;
                             // If no other matches, this character is invalid
                         }
                         else {
-                            this.errors.push(new JuiceC.Error("INVALID TOKEN" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                     }
-                    // If still in comment, ignore all characters besides comment end
+                    // If still in comment, only allow characters and the end comment
                 }
-                else {
+                else if (this.inComment) {
+                    // Check for the end comment
                     if (rCOMMENTEND.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
                         // Reset inComment boolean and increment the endPtr by 1. It will increment again at the end of the iteration
                         this.inComment = false;
                         this.endPtr++;
+                        // EOP is invalid inside of a comment. Throw an invalid token error. The missing end comment error will be thrown at the end
                     }
+                    else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+                        this.errors.push(new JuiceC.Error("Invalid Token in Comment" /* E_INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                    }
+                    this.startPtr++;
+                    // If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
+                }
+                else {
+                    if (rCHAR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+                        // Create a EOP token
+                        var token = new JuiceC.Token(JuiceC.TokenType.T_CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        this.tokens.push(token);
+                        // Check for the end quote. If found, JuiceC is happy
+                    }
+                    else if (rQUOTE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+                        // Create a QUOTE token
+                        var token = new JuiceC.Token(JuiceC.TokenType.T_QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        // Push to tokens array
+                        this.tokens.push(token);
+                        // Reset the foundQuote boolean
+                        this.foundQuote = false;
+                        // Check to see if the next character creates a match for a comment
+                    }
+                    else if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
+                        this.inComment = true;
+                        this.startCommentCol = this.currentColNum;
+                        this.startCommentLine = this.currentLineNum;
+                        // Test for white space
+                    }
+                    else if (rWHITESPACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+                        // Throw error if there is a new line in a string
+                        if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
+                            this.errors.push(new JuiceC.Error("Invalid New Line" /* E_INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        }
+                        // If its not a character, its an invalid token so throw an error
+                    }
+                    else {
+                        this.errors.push(new JuiceC.Error("Invalid Token in string literal" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                    }
+                    this.startPtr++;
                 }
                 this.endPtr++;
                 this.currentColNum++;
             }
             // If the EOP wasn't found, we still need to push the lex results of the program
-            if (!this.foundEOP) {
-                // The 2nd quote error will be thrown in the parser
-                this.foundQuote = false;
+            // Only push the program if it isn't empty
+            if (!this.foundEOP && this.tokens.length > 0) {
                 // Define an object to return values in
                 this.lexAnalysisResult = {
                     "inComment": this.inComment,
@@ -312,7 +355,6 @@ var JuiceC;
                     "tokens": this.tokens,
                     "errors": this.errors,
                     "warnings": this.warnings,
-                    "complete": this.isComplete,
                     "line": this.currentLineNum,
                     "col": this.currentColNum
                 };
@@ -324,19 +366,16 @@ var JuiceC;
                 if (this.resultsArray[i].errors.length == 0) {
                     // If we've reached the end of the source code, but no end comment has been found, throw an error
                     if (this.resultsArray[i].inComment) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END COMMENT" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                     } // If we've reached the end of the source code, but no end quote has been found, throw an error
                     else if (this.resultsArray[i].foundQuote) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("NO END QUOTE" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
                     } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
                     else if (!this.resultsArray[i].foundEOP) {
                         this.resultsArray[i].warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
                     }
                 }
             }
-            // End of source code so swap the boolean
-            this.isComplete = true;
-            this.resultsArray[this.resultsArray.length - 1].isComplete = true;
             return this.resultsArray;
         };
         return Lexer;

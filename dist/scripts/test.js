@@ -33,6 +33,21 @@ var JuiceC;
         Test.alan = function () {
             document.getElementById("sourceCode").value = "/*  Provided By \n    - Compiler Tyrant\n    - Alan G Labouseur\n*/\n{}$\t\n{{{{{{}}}}}}$\t\n{{{{{{}}}}}}}$\t\n{int\t@}$";
         };
+        Test.typeInsideString = function () {
+            document.getElementById("sourceCode").value = "/*  Type inside of a String */\n{\t\n    boolean d\n    d = (\"string\") != \"string\")\t\n}$";
+        };
+        Test.EOPinsideString = function () {
+            document.getElementById("sourceCode").value = "/*  EOP inside of a String */\n{\"$\"} $";
+        };
+        Test.unterminatedComment = function () {
+            document.getElementById("sourceCode").value = "/*  Unterminated Comment */\n{ int a /* unterminated comment }$";
+        };
+        Test.unterminatedString = function () {
+            document.getElementById("sourceCode").value = "/*  Unterminated String */\n{ a = \"unterminated string }$";
+        };
+        Test.extraRightBrace = function () {
+            document.getElementById("sourceCode").value = "/*  Extra Right Brace */\n{{{{{{}}} /* comments are ignored */ }}}}$";
+        };
         return Test;
     }());
     JuiceC.Test = Test;

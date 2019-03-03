@@ -5,25 +5,14 @@
 
 // Global classes
 let _Lexer: JuiceC.Lexer;
+let _Parser: JuiceC.Parser;
 let _Control: JuiceC.Control;
-let _Utils: JuiceC.Utils;
 
 // String constants
 const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
 const LEXER: string = "Lexer";
-
-let tokens = "";
-let programCount: number = 0;
-let programDetected: boolean = false;
-let prevProgramError: boolean = false;
-let lexResults = [];
-let lexWarning: boolean = false;
-let lexError: boolean = false;
-let isLexComplete: boolean = false;
-let tokenIndex: number = 0;
-let currentToken: string = "";
-let errorCount: number = 0;
+const PARSER: string = "Parser";
 const EOF: string = "$";
 
 // Regex
@@ -55,5 +44,5 @@ const rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
 const rCOMMENTEND = new RegExp('\\*/$'); // End of comment
 
 let onDocumentLoad = () => {
-    JuiceC.Control.init();
+    (<HTMLInputElement>document.getElementById("verboseCheck")).checked = true;
 };

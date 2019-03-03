@@ -6,7 +6,8 @@ module JuiceC {
 
     export class Test {
         public static simpleTest1(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This is a simple program with no operations */\n{}$`;
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This is a simple program with no operations */
+{}$`;
         }
 
         public static simpleTest2(): void {
@@ -132,6 +133,34 @@ module JuiceC {
 {{{{{{}}}}}}$	
 {{{{{{}}}}}}}$	
 {int	@}$`;
+        }
+
+        public static typeInsideString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Type inside of a String */
+{	
+    boolean d
+    d = ("string") != "string")	
+}$`;
+        }
+        
+        public static EOPinsideString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  EOP inside of a String */
+{"$"} $`;
+        }
+
+        public static unterminatedComment(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated Comment */
+{ int a /* unterminated comment }$`;
+        }
+
+        public static unterminatedString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated String */
+{ a = "unterminated string }$`;
+        }
+
+        public static extraRightBrace(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
+{{{{{{}}} /* comments are ignored */ }}}}$`;
         }
 
     }
