@@ -115,7 +115,7 @@ module JuiceC {
                 if (_Control.lexWarning) {
                     for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
                         // Check for EOP warning
-                        if (lexResults[programIndex].warnings[programIndex].type == WarningType.W_NO_EOP) {
+                        if (lexResults[programIndex].warnings[i].warningType == WarningType.W_NO_EOP) {
                             Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                             // Insert an EOP into the tokens array
                             lexResults[programIndex].tokens.push(new Token(TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
