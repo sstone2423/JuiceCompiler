@@ -109,6 +109,7 @@ var JuiceC;
                         }
                     }
                 }
+
                 // Print all errors
                 for (var i = 0; i < lexResults[programIndex].errors.length; i++) {
                     switch (lexResults[programIndex].errors[i].errorType) {
@@ -155,6 +156,7 @@ var JuiceC;
                             break;
                         }
                     }
+
                 }
             }
             Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
