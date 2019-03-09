@@ -195,7 +195,7 @@ module JuiceC {
                         case ErrorType.E_BLOCK_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BLOCK_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Block 
-                                        + " ::== <strong>{</strong> " + Production.StatementList + " <strong>}</strong>");
+                                        + " ::== { " + Production.StatementList + " }");
                             break;
                         }
 
@@ -203,7 +203,7 @@ module JuiceC {
                         case ErrorType.E_PRINT_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_PRINT_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.PrintStatement 
-                                        + " ::== <strong>print (</strong> " + Production.Expr + " <strong>)</strong>");
+                                        + " ::== print ( " + Production.Expr + " )");
                             break;
                         }
 
@@ -211,7 +211,7 @@ module JuiceC {
                         case ErrorType.E_ASSIGNMENT_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ASSIGNMENT_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.AssignStatement 
-                                        + " ::== " + Production.Id + " <strong>=</strong> " + Production.Expr);
+                                        + " ::== " + Production.Id + " = " + Production.Expr);
                             break;
                         }
 
@@ -235,7 +235,7 @@ module JuiceC {
                         case ErrorType.E_WHILE_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_WHILE_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.WhileStatement 
-                                        + " ::== <strong>while</strong> " + Production.BooleanExpr + " " + Production.Block);
+                                        + " ::== while " + Production.BooleanExpr + " " + Production.Block);
                             break;
                         }
 
@@ -243,7 +243,7 @@ module JuiceC {
                         case ErrorType.E_IF_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_IF_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IfStatement 
-                                        + " ::== <strong>if</strong> " + Production.BooleanExpr + " " + Production.Block);
+                                        + " ::== if " + Production.BooleanExpr + " " + Production.Block);
                             break;
                         }
 
@@ -259,7 +259,7 @@ module JuiceC {
                         case ErrorType.E_STRING_EXPR_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_STRING_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.StringExpr 
-                                        + " ::== <strong>\"</strong> " + Production.CharList + " " + " \"");
+                                        + " ::== \" " + Production.CharList + " " + " \"");
                             break;
                         }
 
@@ -267,7 +267,7 @@ module JuiceC {
                         case ErrorType.E_BOOL_EXPR_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BooleanExpr
-                                        + " ::== <strong>(</strong> " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " <strong>)</strong>");
+                                        + " ::== ( " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " )");
                             break;
                         }
 
@@ -283,7 +283,7 @@ module JuiceC {
                         case ErrorType.E_TYPE_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TYPE_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Type
-                                        + " ::== <strong>int</strong> | <strong>string</strong> | <strong>boolean</strong>");
+                                        + " ::== int | string | boolean");
                             break;
                         }
 
@@ -291,7 +291,7 @@ module JuiceC {
                         case ErrorType.E_CHAR_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_CHAR_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Char
-                                        + " ::== <strong>a</strong> | <strong>b</strong> | <strong>c</strong> ... <strong>z</strong>");
+                                        + " ::== a | b | c ... z");
                             break;
                         }
 
@@ -299,7 +299,7 @@ module JuiceC {
                         case ErrorType.E_SPACE_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_SPACE_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Space
-                                        + " ::== the <strong>space</strong> character");
+                                        + " ::== the space character");
                             break;
                         }
 
@@ -307,7 +307,7 @@ module JuiceC {
                         case ErrorType.E_DIGIT_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_DIGIT_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Digit
-                                        + " ::== <strong>0</strong> | <strong>1</strong> | <strong>2</strong> ... <strong>9</strong>");
+                                        + " ::== 0 | 1 | 2 ... 9");
                             break;
                         }
 
@@ -315,7 +315,7 @@ module JuiceC {
                         case ErrorType.E_BOOL_OP_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolOp
-                                        + " ::== <strong>==</strong> | <strong>!=</strong>");
+                                        + " ::== == | !=");
                             break;
                         }
 
@@ -323,7 +323,7 @@ module JuiceC {
                         case ErrorType.E_BOOL_VAL_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_VAL_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolVal
-                                        + " ::== <strong>false</strong> | <strong>true</strong>");
+                                        + " ::== false | true");
                             break;
                         }
 
@@ -331,14 +331,14 @@ module JuiceC {
                         case ErrorType.E_INT_OP_EXPECTED: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_INT_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
                                         + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IntOp
-                                        + " ::== <strong>+</strong>");
+                                        + " ::== +");
                             break;
                         }
 
                         // Token Expected
                         case ErrorType.E_TOKEN_EXPECTED: {
-                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - Unable to find token");
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - Expected [ " + parseResult.errors[i].expectedToken + " ], found [ " + parseResult.errors[i].value 
+                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " )");
                             break;
                         }
 

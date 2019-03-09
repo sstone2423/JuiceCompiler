@@ -32,12 +32,13 @@ var JuiceC;
                 "cst": this.cst,
                 "isComplete": this.isComplete
             };
+            console.log(this.isComplete);
             return results;
         };
         // First part of the grammar, Program
         Parser.prototype.parseProgram = function () {
             // Recursively call the 2nd step, Block, with the Program production and the expected terminal
-            if (this.parseBlock([JuiceC.Production.Program]) && this.matchAndConsumeToken(JuiceC.TokenType.T_EOP, null, null, true)) {
+            if (this.parseBlock([JuiceC.Production.Program], true) && this.matchAndConsumeToken(JuiceC.TokenType.T_EOP, null, null, true)) {
                 return true;
                 // If block was not successful, return false
             }
@@ -46,13 +47,16 @@ var JuiceC;
             }
         };
         // 2nd part of the grammar, Block
-        Parser.prototype.parseBlock = function (production) {
+        Parser.prototype.parseBlock = function (production, expected) {
             if (this.matchAndConsumeToken(JuiceC.TokenType.T_LBRACE, production, JuiceC.Production.Block, false) && this.parseStatementList() && this.matchAndConsumeToken(JuiceC.TokenType.T_RBRACE, null, null, true)) {
                 // Ascend the tree after a block is derived
                 this.cst.ascendTree();
                 return true;
             }
             else {
+                if (expected) {
+                    this.errors.push(new JuiceC.Error("Block Expected" /* E_BLOCK_EXPECTED */, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                }
                 return false;
             }
         };
@@ -70,7 +74,7 @@ var JuiceC;
         Parser.prototype.parseStatement = function () {
             if (this.parsePrintStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement]) || this.parseAssignmentStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement]) ||
                 this.parseWhileStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement]) || this.parseVarDeclaration([JuiceC.Production.StatementList, JuiceC.Production.Statement]) ||
-                this.parseIfStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement]) || this.parseBlock([JuiceC.Production.StatementList, JuiceC.Production.Statement])) {
+                this.parseIfStatement([JuiceC.Production.StatementList, JuiceC.Production.Statement]) || this.parseBlock([JuiceC.Production.StatementList, JuiceC.Production.Statement], false)) {
                 // Ascend the tree after Statement is derived
                 this.cst.ascendTree();
                 return true;
@@ -112,7 +116,7 @@ var JuiceC;
             }
         };
         Parser.prototype.parseWhileStatement = function (production) {
-            if (this.matchAndConsumeToken(JuiceC.TokenType.T_WHILE, production, JuiceC.Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null)) {
+            if (this.matchAndConsumeToken(JuiceC.TokenType.T_WHILE, production, JuiceC.Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
                 // Ascend the tree after WhileStatement is derived
                 this.cst.ascendTree();
                 return true;
@@ -123,7 +127,7 @@ var JuiceC;
         };
         Parser.prototype.parseIfStatement = function (production) {
             if (this.matchAndConsumeToken(JuiceC.TokenType.T_IF, production, JuiceC.Production.IfStatement, false) && this.parseBoolExpr([], true) &&
-                this.parseBlock(null)) {
+                this.parseBlock(null, true)) {
                 // Ascend the tree after IfStatement is derived
                 this.cst.ascendTree();
                 return true;
@@ -311,9 +315,11 @@ var JuiceC;
                 this.currentTokenIndex++;
                 return true;
             }
-            // If token was expected and was not present, throw an error
-            if (expected) {
-                this.errors.push(new JuiceC.Error("Token Expected" /* E_TOKEN_EXPECTED */, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+            else {
+                // If token was expected and was not present, throw an error
+                if (expected) {
+                    this.errors.push(new JuiceC.Error("Token Expected" /* E_TOKEN_EXPECTED */, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum, token));
+                }
             }
             return false;
         };

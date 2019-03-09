@@ -172,21 +172,21 @@ var JuiceC;
                         case "Block Expected" /* E_BLOCK_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Block Expected" /* E_BLOCK_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Block
-                                + " ::== <strong>{</strong> " + JuiceC.Production.StatementList + " <strong>}</strong>");
+                                + " ::== { " + JuiceC.Production.StatementList + " }");
                             break;
                         }
                         // PrintStatement expected
                         case "Print Statement Expected" /* E_PRINT_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Print Statement Expected" /* E_PRINT_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.PrintStatement
-                                + " ::== <strong>print (</strong> " + JuiceC.Production.Expr + " <strong>)</strong>");
+                                + " ::== print ( " + JuiceC.Production.Expr + " )");
                             break;
                         }
                         // AssignmentStatement Expected
                         case "Assignment Statement Expected" /* E_ASSIGNMENT_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Assignment Statement Expected" /* E_ASSIGNMENT_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.AssignStatement
-                                + " ::== " + JuiceC.Production.Id + " <strong>=</strong> " + JuiceC.Production.Expr);
+                                + " ::== " + JuiceC.Production.Id + " = " + JuiceC.Production.Expr);
                             break;
                         }
                         // Expr Expected
@@ -207,14 +207,14 @@ var JuiceC;
                         case "While Statement Expected" /* E_WHILE_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "While Statement Expected" /* E_WHILE_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.WhileStatement
-                                + " ::== <strong>while</strong> " + JuiceC.Production.BooleanExpr + " " + JuiceC.Production.Block);
+                                + " ::== while " + JuiceC.Production.BooleanExpr + " " + JuiceC.Production.Block);
                             break;
                         }
                         // IfStatement Expected
                         case "If Statement Expected" /* E_IF_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "If Statement Expected" /* E_IF_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.IfStatement
-                                + " ::== <strong>if</strong> " + JuiceC.Production.BooleanExpr + " " + JuiceC.Production.Block);
+                                + " ::== if " + JuiceC.Production.BooleanExpr + " " + JuiceC.Production.Block);
                             break;
                         }
                         // IntExpr Expected
@@ -228,14 +228,14 @@ var JuiceC;
                         case "String Expression Expected" /* E_STRING_EXPR_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "String Expression Expected" /* E_STRING_EXPR_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.StringExpr
-                                + " ::== <strong>\"</strong> " + JuiceC.Production.CharList + " " + " \"");
+                                + " ::== \" " + JuiceC.Production.CharList + " " + " \"");
                             break;
                         }
                         // BoolExpr Expected
                         case "Boolean Expression Expected" /* E_BOOL_EXPR_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Boolean Expression Expected" /* E_BOOL_EXPR_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.BooleanExpr
-                                + " ::== <strong>(</strong> " + JuiceC.Production.Expr + " " + JuiceC.Production.BoolOp + " " + JuiceC.Production.Expr + " <strong>)</strong>");
+                                + " ::== ( " + JuiceC.Production.Expr + " " + JuiceC.Production.BoolOp + " " + JuiceC.Production.Expr + " )");
                             break;
                         }
                         // Id Expected
@@ -249,55 +249,55 @@ var JuiceC;
                         case "Type Expected" /* E_TYPE_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Type Expected" /* E_TYPE_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Type
-                                + " ::== <strong>int</strong> | <strong>string</strong> | <strong>boolean</strong>");
+                                + " ::== int | string | boolean");
                             break;
                         }
                         // Char Expected
                         case "Character Expected" /* E_CHAR_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Character Expected" /* E_CHAR_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Char
-                                + " ::== <strong>a</strong> | <strong>b</strong> | <strong>c</strong> ... <strong>z</strong>");
+                                + " ::== a | b | c ... z");
                             break;
                         }
                         // Space Expected
                         case "Space Expected" /* E_SPACE_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Space Expected" /* E_SPACE_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Space
-                                + " ::== the <strong>space</strong> character");
+                                + " ::== the space character");
                             break;
                         }
                         // Digit Expected
                         case "Digit Expected" /* E_DIGIT_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Digit Expected" /* E_DIGIT_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.Digit
-                                + " ::== <strong>0</strong> | <strong>1</strong> | <strong>2</strong> ... <strong>9</strong>");
+                                + " ::== 0 | 1 | 2 ... 9");
                             break;
                         }
                         // BoolOp Expected
                         case "Boolean Operation Expected" /* E_BOOL_OP_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Boolean Operation Expected" /* E_BOOL_OP_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.BoolOp
-                                + " ::== <strong>==</strong> | <strong>!=</strong>");
+                                + " ::== == | !=");
                             break;
                         }
                         // BoolVal Expected
                         case "Boolean Value Expected" /* E_BOOL_VAL_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Boolean Value Expected" /* E_BOOL_VAL_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.BoolVal
-                                + " ::== <strong>false</strong> | <strong>true</strong>");
+                                + " ::== false | true");
                             break;
                         }
                         // IntOp Expected
                         case "Integer Operation Expected" /* E_INT_OP_EXPECTED */: {
                             Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Integer Operation Expected" /* E_INT_OP_EXPECTED */ + " - found [ " + parseResult.errors[i].value
                                 + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + JuiceC.Production.IntOp
-                                + " ::== <strong>+</strong>");
+                                + " ::== +");
                             break;
                         }
                         // Token Expected
                         case "Token Expected" /* E_TOKEN_EXPECTED */: {
-                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Token Expected" /* E_TOKEN_EXPECTED */ + " - found [ " + parseResult.errors[i].value
-                                + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - Unable to find token");
+                            Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + "Token Expected" /* E_TOKEN_EXPECTED */ + " - Expected [ " + parseResult.errors[i].expectedToken + " ], found [ " + parseResult.errors[i].value
+                                + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " )");
                             break;
                         }
                         // Unknown error
