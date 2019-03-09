@@ -22,7 +22,6 @@ module JuiceC {
         parseError: boolean = false;
         cstVisual;
         treantCST;
-        
 
         constructor() { }
 
@@ -37,6 +36,8 @@ module JuiceC {
 				},
 				nodeStructure: {}
             };
+            (<HTMLInputElement>document.getElementById("output")).value = "";
+            (<HTMLInputElement>document.getElementById("CSTtext")).value = "";
         }
 
         // Output a message to the HTML output log
@@ -354,7 +355,10 @@ module JuiceC {
             // If there were no errors while parsing, display the CST
             if (parseResult.errors.length == 0) {
                 let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
-
+                for (let i = 0; i < cst.tree.length; i++) {
+                    (<HTMLInputElement>document.getElementById("CSTtext")).value += cst.tree[i] + "\n";
+                }
+                (<HTMLInputElement>document.getElementById("output")).scrollTop = (<HTMLInputElement>document.getElementById("output")).scrollHeight;
                 // Display CST visually with Treant.js
                 Treant(cst.treant);
             } else {

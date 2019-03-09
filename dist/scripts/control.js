@@ -26,6 +26,8 @@ var JuiceC;
                 },
                 nodeStructure: {}
             };
+            document.getElementById("output").value = "";
+            document.getElementById("CSTtext").value = "";
         };
         // Output a message to the HTML output log
         Control.putMessage = function (msg) {
@@ -310,6 +312,10 @@ var JuiceC;
             // If there were no errors while parsing, display the CST
             if (parseResult.errors.length == 0) {
                 var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
+                for (var i = 0; i < cst.tree.length; i++) {
+                    document.getElementById("CSTtext").value += cst.tree[i] + "\n";
+                }
+                document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
                 // Display CST visually with Treant.js
                 Treant(cst.treant);
             }
