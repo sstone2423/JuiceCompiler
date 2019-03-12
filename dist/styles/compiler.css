@@ -6,3 +6,9 @@ footer {
 #grammar {
     color:black;
 }
+
+.tree {
+    width: 100%; 
+    height: 500px;
+    font-size: 0.8em;
+}

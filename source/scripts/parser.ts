@@ -42,13 +42,14 @@ module JuiceC {
                 "cst": this.cst,
                 "isComplete": this.isComplete,
             }
+            console.log(this.isComplete);
             return results;      
         }
 
         // First part of the grammar, Program
         public parseProgram(): boolean {
             // Recursively call the 2nd step, Block, with the Program production and the expected terminal
-            if (this.parseBlock([Production.Program]) && this.matchAndConsumeToken(TokenType.T_EOP, null, null, true)) {
+            if (this.parseBlock([Production.Program], true) && this.matchAndConsumeToken(TokenType.T_EOP, null, null, true)) {
                 return true;
             // If block was not successful, return false
             } else {
@@ -58,12 +59,15 @@ module JuiceC {
         }
 
         // 2nd part of the grammar, Block
-        public parseBlock(production: Array<Production>): boolean {
+        public parseBlock(production: Array<Production>, expected: boolean): boolean {
             if (this.matchAndConsumeToken(TokenType.T_LBRACE, production, Production.Block, false) && this.parseStatementList() && this.matchAndConsumeToken(TokenType.T_RBRACE, null, null, true)) {
                 // Ascend the tree after a block is derived
                 this.cst.ascendTree();
                 return true;
             } else {
+                if (expected) {
+                    this.errors.push(new Error(ErrorType.E_BLOCK_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                }
                 return false;
             }
         }
@@ -83,7 +87,7 @@ module JuiceC {
         public parseStatement(): boolean {
             if (this.parsePrintStatement([Production.StatementList, Production.Statement]) || this.parseAssignmentStatement([Production.StatementList, Production.Statement]) || 
                 this.parseWhileStatement([Production.StatementList, Production.Statement]) || this.parseVarDeclaration([Production.StatementList, Production.Statement]) || 
-                this.parseIfStatement([Production.StatementList, Production.Statement]) || this.parseBlock([Production.StatementList, Production.Statement])) {
+                this.parseIfStatement([Production.StatementList, Production.Statement]) || this.parseBlock([Production.StatementList, Production.Statement], false)) {
                     // Ascend the tree after Statement is derived
                     this.cst.ascendTree();
                     return true;
@@ -125,7 +129,7 @@ module JuiceC {
         }
 
         public parseWhileStatement(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_WHILE, production, Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null)) {
+            if (this.matchAndConsumeToken(TokenType.T_WHILE, production, Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
                 // Ascend the tree after WhileStatement is derived
                 this.cst.ascendTree();
                 return true;
@@ -136,7 +140,7 @@ module JuiceC {
 
         public parseIfStatement(production: Array<Production>): boolean {
             if (this.matchAndConsumeToken(TokenType.T_IF, production, Production.IfStatement, false) && this.parseBoolExpr([], true) &&
-                this.parseBlock(null)) {
+                this.parseBlock(null, true)) {
                     // Ascend the tree after IfStatement is derived
                     this.cst.ascendTree();
                     return true;
@@ -323,11 +327,13 @@ module JuiceC {
                 // consume token
                 this.currentTokenIndex++;
                 return true;
+            } else {
+                // If token was expected and was not present, throw an error
+                if (expected) {
+                    this.errors.push(new Error(ErrorType.E_TOKEN_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum, token));
+                }
             }
-            // If token was expected and was not present, throw an error
-            if (expected) {
-                this.errors.push(new Error(ErrorType.E_TOKEN_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
-            }
+            
             return false;
         }
 		

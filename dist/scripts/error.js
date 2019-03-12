@@ -8,11 +8,12 @@
 var JuiceC;
 (function (JuiceC) {
     var Error = /** @class */ (function () {
-        function Error(errorType, value, lineNum, colNum) {
+        function Error(errorType, value, lineNum, colNum, expectedToken) {
             this.errorType = errorType;
             this.value = value;
             this.lineNum = lineNum;
             this.colNum = colNum;
+            this.expectedToken = expectedToken;
         }
         return Error;
     }());

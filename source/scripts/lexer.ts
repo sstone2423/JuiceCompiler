@@ -45,7 +45,6 @@ module JuiceC {
 			let sourceCode = (<HTMLInputElement>document.getElementById("sourceCode")).value;
 		    // Trim the leading and trailing spaces.
 			sourceCode = Utils.trim(sourceCode);
-			// TODO: remove all spaces in the middle; remove line breaks too.
 			// Lex until we reach the end of the source code
 			while (this.startPtr < sourceCode.length) {
 				if (!this.inComment && !this.foundQuote) {
@@ -249,7 +248,6 @@ module JuiceC {
 						this.resultsArray.push(this.lexAnalysisResult);
 						
 						// Reset lexer values so that we can begin to lex the next program
-						this.endPtr++;
 						this.currentColNum++;
 						this.tokens = [];
 						this.errors = [];

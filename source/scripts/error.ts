@@ -47,12 +47,14 @@ module JuiceC {
         value: any;
         lineNum: number;
         colNum: number;
+        expectedToken: TokenType;
 
-        constructor (errorType: string, value: any, lineNum: number, colNum: number) {
+        constructor (errorType: string, value: any, lineNum: number, colNum: number, expectedToken?: TokenType) {
             this.errorType = errorType;
             this.value = value;
             this.lineNum = lineNum;
             this.colNum = colNum;
+            this.expectedToken = expectedToken;
         }
     }
 
