@@ -92,8 +92,8 @@ module JuiceC {
                     _Control.parserLog(parseResult, i);
 
                     // Semantic analysis only if there were no parser errors
-                    if (parseResult.errors.length == 0) {
-                        _Control._Semantic.analyze(parseResult.cst);
+                    if (parseResult.error) {
+                        _Semantic.analyze(parseResult.cst);
                     }
                 }
             }
@@ -189,176 +189,13 @@ module JuiceC {
 
         public parserLog(parseResult, programIndex: number): void {
             if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
-                // Print valid tokens that were consumed
-                for (let j = 0; j < parseResult.valids.length; j++) {
-                    _Control.putMessage(parseResult.valids[j]);
-                }
-                // Print all errors with grammar details about how to fix the errors
-                for (let i = 0; i < parseResult.errors.length; i++) {
-                    switch (parseResult.errors[i].errorType) {
-                        // Block expected
-                        case ErrorType.E_BLOCK_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BLOCK_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Block 
-                                        + " ::== { " + Production.StatementList + " }");
-                            break;
-                        }
-
-                        // PrintStatement expected
-                        case ErrorType.E_PRINT_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_PRINT_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.PrintStatement 
-                                        + " ::== print ( " + Production.Expr + " )");
-                            break;
-                        }
-
-                        // AssignmentStatement Expected
-                        case ErrorType.E_ASSIGNMENT_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ASSIGNMENT_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.AssignStatement 
-                                        + " ::== " + Production.Id + " = " + Production.Expr);
-                            break;
-                        }
-
-                        // Expr Expected
-                        case ErrorType.E_EXPR_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Expr 
-                                        + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id);
-                            break;
-                        }
-
-                        // VarDecl Expected
-                        case ErrorType.E_VAR_DECL_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_VAR_DECL_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                                + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " 
-                                                + Production.VarDeclaration + " ::== " + Production.Type + " " + Production.Id);
-                            break;
-                        }
-
-                        // WhileStatement Expected
-                        case ErrorType.E_WHILE_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_WHILE_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.WhileStatement 
-                                        + " ::== while " + Production.BooleanExpr + " " + Production.Block);
-                            break;
-                        }
-
-                        // IfStatement Expected
-                        case ErrorType.E_IF_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_IF_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IfStatement 
-                                        + " ::== if " + Production.BooleanExpr + " " + Production.Block);
-                            break;
-                        }
-
-                        // IntExpr Expected
-                        case ErrorType.E_INT_EXPR_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_INT_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IntExpr 
-                                        + " ::==  " + Production.Digit + " " + Production.IntOp + " " + Production.Expr + " OR ::== " + Production.Digit);
-                            break;
-                        }
-
-                        // StringExpr Expected
-                        case ErrorType.E_STRING_EXPR_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_STRING_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.StringExpr 
-                                        + " ::== \" " + Production.CharList + " " + " \"");
-                            break;
-                        }
-
-                        // BoolExpr Expected
-                        case ErrorType.E_BOOL_EXPR_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_EXPR_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BooleanExpr
-                                        + " ::== ( " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " )");
-                            break;
-                        }
-
-                        // Id Expected
-                        case ErrorType.E_ID_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ID_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Id
-                                        + " ::== " + Production.Char);
-                            break;
-                        }
-
-                        // Type Expected
-                        case ErrorType.E_TYPE_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TYPE_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Type
-                                        + " ::== int | string | boolean");
-                            break;
-                        }
-
-                        // Char Expected
-                        case ErrorType.E_CHAR_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_CHAR_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Char
-                                        + " ::== a | b | c ... z");
-                            break;
-                        }
-
-                        // Space Expected
-                        case ErrorType.E_SPACE_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_SPACE_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Space
-                                        + " ::== the space character");
-                            break;
-                        }
-
-                        // Digit Expected
-                        case ErrorType.E_DIGIT_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_DIGIT_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.Digit
-                                        + " ::== 0 | 1 | 2 ... 9");
-                            break;
-                        }
-
-                        // BoolOp Expected
-                        case ErrorType.E_BOOL_OP_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolOp
-                                        + " ::== == | !=");
-                            break;
-                        }
-
-                        // BoolVal Expected
-                        case ErrorType.E_BOOL_VAL_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_VAL_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.BoolVal
-                                        + " ::== false | true");
-                            break;
-                        }
-
-                        // IntOp Expected
-                        case ErrorType.E_INT_OP_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_INT_OP_EXPECTED + " - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - " + Production.IntOp
-                                        + " ::== +");
-                            break;
-                        }
-
-                        // Token Expected
-                        case ErrorType.E_TOKEN_EXPECTED: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - Expected [ " + parseResult.errors[i].expectedToken + " ], found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " )");
-                            break;
-                        }
-
-                        // Unknown error
-                        default: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: Unknown error - found [ " + parseResult.errors[i].value 
-                                        + " ] at ( " + parseResult.errors[i].lineNum + ":" + parseResult.errors[i].colNum + " ) - Oops");
-                            break;
-                        }
-                    }
+                for (let i = 0; i < parseResult.log.length; i++) {
+                    _Control.putMessage(parseResult[i]);
                 }
             }
 
             // If there were no errors while parsing, display the CST
-            if (parseResult.errors.length == 0) {
+            if (parseResult.error) {
                 let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
                 for (let i = 0; i < cst.tree.length; i++) {
                     (<HTMLInputElement>document.getElementById("CSTtext")).value += cst.tree[i] + "\n";

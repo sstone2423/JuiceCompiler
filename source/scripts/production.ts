@@ -24,6 +24,7 @@ module JuiceC {
         BoolOp = "BoolOp",
         BoolVal = "BoolVal",
         IntOp = "IntOp",
+        Epsilon = "&epsilon;"
 
     }
 

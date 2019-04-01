@@ -24,5 +24,6 @@ var JuiceC;
         Production["BoolOp"] = "BoolOp";
         Production["BoolVal"] = "BoolVal";
         Production["IntOp"] = "IntOp";
+        Production["Epsilon"] = "&epsilon;";
     })(Production = JuiceC.Production || (JuiceC.Production = {}));
 })(JuiceC || (JuiceC = {}));

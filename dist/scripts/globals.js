@@ -6,6 +6,7 @@
 var _Lexer;
 var _Parser;
 var _Control;
+var _Semantic;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";

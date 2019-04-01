@@ -13,16 +13,15 @@ module JuiceC {
 
         currentTokenIndex: number;
         tokens: Array<Token>;
-        errors: Array<Error>;
-        valids: Array<string>;
+        error: boolean;
+        log: Array<string>;
         isComplete: boolean;
         cst: Tree;
 
         public init(tokens: Array<Token>): void {
             this.currentTokenIndex = 0;
             this.tokens = tokens;
-            this.errors = [];
-            this.valids = []
+            this.error = false;
             this.isComplete = false;
             this.cst = new Tree();
         }
@@ -37,12 +36,11 @@ module JuiceC {
             
             // Report the results.
             let results = {
-                "errors": this.errors,
-                "valids": this.valids,
+                "error": this.error,
+                "log": this.log,
                 "cst": this.cst,
                 "isComplete": this.isComplete,
             }
-            console.log(this.isComplete);
             return results;      
         }
 
@@ -66,7 +64,10 @@ module JuiceC {
                 return true;
             } else {
                 if (expected) {
-                    this.errors.push(new Error(ErrorType.E_BLOCK_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BLOCK_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                        + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Block 
+                        + " ::== { " + Production.StatementList + " }");
+                    this.error = true;
                 }
                 return false;
             }
@@ -80,6 +81,7 @@ module JuiceC {
             }
             // Empty string is acceptable
             else {
+                this.log.push(DEBUG + " - " + PARSER + " - VALID: " + Production.Epsilon + " found at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " )");
                 return true;
             }
         }
@@ -156,7 +158,10 @@ module JuiceC {
                     this.cst.ascendTree();
                     return true;
             } else {
-                this.errors.push(new Error(ErrorType.E_EXPR_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
+                    + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id + " )");
+                this.error = true;
                 return false;
             }
         }
@@ -169,6 +174,7 @@ module JuiceC {
                     return true;
                 // Ascend if nothing is derived, because empty string is allowed
                 } else {
+                    this.log.push(DEBUG + " - " + PARSER + " - VALID: " + Production.Epsilon + " found at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " )");
                     this.cst.ascendTree();
                     return true;
                 }
@@ -198,7 +204,10 @@ module JuiceC {
                             return true;
             }
             if (expected) {
-                this.errors.push(new Error(ErrorType.E_BOOL_EXPR_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
+                    + " ::== ( " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " )");
+                this.error = true;
             }
             return false;
         }
@@ -220,7 +229,10 @@ module JuiceC {
                 return true;
             }
             if (expected) {
-                this.errors.push(new Error(ErrorType.E_ID_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ID_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
+                    + " ::== ::== " + Production.Char);
+                this.error = true;
             }
             return false;
         }
@@ -271,7 +283,10 @@ module JuiceC {
                 this.cst.ascendTree();
                 return true;
             } else {
-                this.errors.push(new Error(ErrorType.E_BOOL_OP_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum));
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_OP_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
+                    + " ::== == | !=");
+                this.error = true;
                 return false;
             }
         }
@@ -297,6 +312,7 @@ module JuiceC {
                 return true;
             } // Empty string is accepted
             else {
+                this.log.push(DEBUG + " - " + PARSER + " - VALID: " + Production.Epsilon + " found at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " )");
                 return true;
             }
         }
@@ -309,19 +325,19 @@ module JuiceC {
                     for (let i = 0; i < start.length; i++) {
                         this.cst.addNTNode(start[i], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                         if (i != 0) {
-                            this.valids.push("VALID - Expecting [ " + start[i - 1] + " ], found [ " + start[i] + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
+                            this.log.push(DEBUG + " - " + PARSER + " - " + "VALID - Expecting [ " + start[i - 1] + " ], found [ " + start[i] + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                         }
                     }
                     // Add final production that was rewritten.
                     this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    this.valids.push("VALID - Expecting [ " + start[start.length - 1] + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
+                    this.log.push(DEBUG + " - " + PARSER + " - " + "VALID - Expecting [ " + start[start.length - 1] + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 } // If rewriting to some non-terminal only, display it in tree and log
                 else if (rewrite != null) {
                     this.cst.addNTNode(rewrite, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
-                    this.valids.push("VALID - Expecting [ " + rewrite + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
+                    this.log.push(DEBUG + " - " + PARSER + " - " + "VALID - Expecting [ " + rewrite + " ], found [ " + rewrite + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 }
                 // Add terminal to log
-                this.valids.push("VALID - Expecting [ " + token + " ], found [ " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
+                this.log.push(DEBUG + " - " + PARSER + " - " + "VALID - Expecting [ " + token + " ], found [ " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + " : " + this.tokens[this.currentTokenIndex].colNum + " )");
                 // Add token to tree
                 this.cst.addTNode(this.tokens[this.currentTokenIndex], this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum);
                 // consume token
@@ -330,7 +346,9 @@ module JuiceC {
             } else {
                 // If token was expected and was not present, throw an error
                 if (expected) {
-                    this.errors.push(new Error(ErrorType.E_TOKEN_EXPECTED, this.tokens[this.currentTokenIndex].type, this.tokens[this.currentTokenIndex].lineNum, this.tokens[this.currentTokenIndex].colNum, token));
+                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr);
+                    this.error = true;
                 }
             }
             
