@@ -104,9 +104,7 @@ var JuiceC;
                 this.DFSTree(node.children[i], tree);
             }
         };
-        /**
-         * Helper for traverseTreeCST
-         */
+        // Helper for traverseTreeCST
         Tree.prototype.DFSCST = function (node, level, tree, dash, treantTree, programCounter) {
             var child = {};
             if (node.value instanceof JuiceC.Token) {

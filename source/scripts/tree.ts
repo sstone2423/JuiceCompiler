@@ -106,9 +106,7 @@ module JuiceC {
                 }
             }
             
-            /**
-             * Helper for traverseTreeCST
-             */
+            // Helper for traverseTreeCST
             private DFSCST(node, level, tree, dash, treantTree, programCounter) {
                 let child = {};
                 if (node.value instanceof Token) {
@@ -181,6 +179,6 @@ module JuiceC {
             super(value: any){
                 this.value = value;
             }
-}
+        }
 
 }

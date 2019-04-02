@@ -20,7 +20,6 @@ var JuiceC;
             _Control = new Control();
             _Lexer = new JuiceC.Lexer();
             _Parser = new JuiceC.Parser();
-            _Control._Semantic = new JuiceC.Semantic();
             _Control.cstVisual = {
                 chart: {
                     container: "#tree-cst"
@@ -79,7 +78,7 @@ var JuiceC;
                     _Control.parserLog(parseResult, i);
                     // Semantic analysis only if there were no parser errors
                     if (parseResult.error) {
-                        _Semantic.analyze(parseResult.cst);
+                        var semanticResult = _Semantic.analyze(parseResult.cst);
                     }
                 }
             }
