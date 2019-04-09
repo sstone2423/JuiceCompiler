@@ -15,8 +15,10 @@ var JuiceC;
             this.currentTokenIndex = 0;
             this.tokens = tokens;
             this.error = false;
+            this.errors = 0;
             this.isComplete = false;
             this.cst = new JuiceC.Tree();
+            this.log = [];
         };
         // Parse the isCompleted lex programs
         Parser.prototype.parse = function (tokens) {
@@ -27,6 +29,7 @@ var JuiceC;
             // Report the results.
             var results = {
                 "error": this.error,
+                "errors": this.errors,
                 "log": this.log,
                 "cst": this.cst,
                 "isComplete": this.isComplete
@@ -57,6 +60,7 @@ var JuiceC;
                         + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Block
                         + " ::== { " + JuiceC.Production.StatementList + " }");
                     this.error = true;
+                    this.errors++;
                 }
                 return false;
             }
@@ -150,6 +154,7 @@ var JuiceC;
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr
                     + " ::== " + JuiceC.Production.IntExpr + " or " + JuiceC.Production.StringExpr + " or " + JuiceC.Production.BooleanExpr + " or " + JuiceC.Production.Id + " )");
                 this.error = true;
+                this.errors++;
                 return false;
             }
         };
@@ -197,6 +202,7 @@ var JuiceC;
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr
                     + " ::== ( " + JuiceC.Production.Expr + " " + JuiceC.Production.BoolOp + " " + JuiceC.Production.Expr + " )");
                 this.error = true;
+                this.errors++;
             }
             return false;
         };
@@ -221,6 +227,7 @@ var JuiceC;
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr
                     + " ::== ::== " + JuiceC.Production.Char);
                 this.error = true;
+                this.errors++;
             }
             return false;
         };
@@ -275,6 +282,7 @@ var JuiceC;
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr
                     + " ::== == | !=");
                 this.error = true;
+                this.errors++;
                 return false;
             }
         };
@@ -337,6 +345,7 @@ var JuiceC;
                     this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + "Token Expected" /* TOKEN_EXPECTED */ + " - found [ " + this.tokens[this.currentTokenIndex].type
                         + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr);
                     this.error = true;
+                    this.errors++;
                 }
             }
             return false;

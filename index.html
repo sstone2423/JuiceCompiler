@@ -23,7 +23,7 @@
             <!--Source code and Output row-->
             <div class="row justify-content-md-center">
                <!--Source code column-->
-               <div class="col-sm-5">
+               <div class="col-sm-4">
                   <label for="sourceCode">Source Code</label>
                   <div class="dropdown float-right">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,10 +46,10 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#">FAIL - Extra Right Brace</a>
                         </div>
                      </div>
-                  <textarea class="form-control" id="sourceCode" rows="20"></textarea>
+                  <textarea class="form-control" id="sourceCode" rows="15"></textarea>
                </div>
                <!--Output column-->
-               <div class="col-sm-5">
+               <div class="col-sm-7">
                   <label for="verboseCheck" class="form-check-label">Verbose Mode</label>
                   <input id="verboseCheck" data-toggle="toggle" data-size="sm" data-on="On" data-off="Off" data-onstyle="primary" data-offstyle="danger" type="checkbox" checked="checked">
                   <div class="float-right">
@@ -64,17 +64,56 @@
                      <button type="button" class="btn btn-primary" id="btnCompile" onclick="JuiceC.Control.btnCompile_click()">Compile</button>
                </div>
             </div>
+            <hr>
             <!--CST row-->
             <div class="row justify-content-md-center">
-               <div class="col-sm-5">
+               <div class="col-sm-3">
                   <label>CST</label>
                   <textarea class="form-control" id="CSTtext" rows="20" readonly></textarea>
                </div>
-               <div class="col-sm-7">
+               <div class="col-sm-9">
                      <label>CST</label>
                   <div id="tree-cst" class="tree"></div>
                </div>
             </div>
+            <hr>
+            <!--AST row-->
+            <div class="row justify-content-md-center">
+               <div class="col-sm-2">
+                  <label>AST</label>
+                  <textarea class="form-control" id="ASTtext" rows="20" readonly></textarea>
+               </div>
+               <div class="col-sm-5">
+                     <label>AST</label>
+                  <div id="tree-ast" class="tree"></div>
+               </div>
+               <div class="col-sm-5">
+                  <div class="card-panel log" style="overflow-y: scroll">
+						   <h5 class="light">Symbol Table</h5>
+						   <table id="symbolTable" class="striped">
+							   <thead>
+								   <tr>
+									   <th>Program</th>
+                              <th>Key</th>
+                              <th>Type</th>
+                              <th>Scope</th>
+                              <th>Scope Level</th>
+                              <th>Line Number</th>
+                              <th>Col Number</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                              <tr></tr>
+                        </tbody>
+						   </table>
+                  </div>
+                  <div id="scopeTree" class="card-panel log">
+                     <h5 class="light">Scope Tree</h5>
+                     <textarea id="taScope" readonly disabled></textarea>
+                  </div>
+               </div>
+            </div>
+            
          </div>
       </div>
    </div>
@@ -115,6 +154,8 @@
    <script type="text/javascript" src="dist/scripts/production.js"></script>
    <script type="text/javascript" src="dist/scripts/lexer.js"></script>
    <script type="text/javascript" src="dist/scripts/parser.js"></script>
+   <script type="text/javascript" src="dist/scripts/scope.js"></script>
+   <script type="text/javascript" src="dist/scripts/semantic.js"></script>
    <script type="text/javascript" src="dist/scripts/test.js"></script>
 </body>
 </html>

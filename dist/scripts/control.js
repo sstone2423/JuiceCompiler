@@ -26,20 +26,42 @@ var JuiceC;
                 },
                 nodeStructure: {}
             };
+            _Control.astVisual = {
+                chart: {
+                    container: "#tree-ast"
+                },
+                nodeStructure: {}
+            };
             document.getElementById("output").value = "";
             document.getElementById("CSTtext").value = "";
+            // Clear symbol table
+            var table = document.getElementById("symbolTable");
+            // Leave header in place
+            var rowCount = table.rows.length;
+            for (var i = rowCount - 1; i > 1; i--) {
+                table.deleteRow(i);
+            }
         };
         // Output a message to the HTML output log
         Control.prototype.putMessage = function (msg) {
             document.getElementById("output").value += msg + "\n";
         };
         // This is executed as a result of the user pressing the "compile" button between the two text areas, above
-        Control.prototype.btnCompile_click = function () {
+        Control.btnCompile_click = function () {
             // Reset the compiler each time the compiler is clicked
             Control.init();
             _Control.treantCST = {
                 chart: {
                     container: "#tree-cst"
+                },
+                nodeStructure: {
+                    text: { name: "Root" },
+                    children: []
+                }
+            };
+            _Control.treantAST = {
+                chart: {
+                    container: "#tree-ast"
                 },
                 nodeStructure: {
                     text: { name: "Root" },
@@ -77,8 +99,56 @@ var JuiceC;
                     var parseResult = _Parser.parse(_Control.lexResults[i].tokens);
                     _Control.parserLog(parseResult, i);
                     // Semantic analysis only if there were no parser errors
-                    if (parseResult.error) {
-                        var semanticResult = _Semantic.analyze(parseResult.cst);
+                    if (!parseResult.error) {
+                        var _Semantic = new JuiceC.Semantic(parseResult.cst);
+                        _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (i + 1));
+                        var semanticResult = _Semantic.analyze();
+                        if (!semanticResult.error) {
+                            if (document.getElementById("verboseCheck").checked) {
+                                for (var j = 0; j < semanticResult.log.length; j++) {
+                                    _Control.putMessage(semanticResult.log[j]);
+                                }
+                                var ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, i);
+                                for (var k = 0; k < ast.tree.length; k++) {
+                                    document.getElementById("ASTtext").value += ast.tree[k] + "\n";
+                                }
+                                document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
+                                // Display AST visually with Treant.js
+                                Treant(ast.treant);
+                                // Display symbols in Symbol Table
+                                var symbols = semanticResult.symbols;
+                                for (var l = 0; l < symbols.length; l++) {
+                                    var table = document.getElementById("symbolTable");
+                                    var row = table.insertRow(-1);
+                                    var program = row.insertCell(0);
+                                    program.innerHTML = i.toString();
+                                    var key = row.insertCell(1);
+                                    key.innerHTML = symbols[l].key;
+                                    var type = row.insertCell(2);
+                                    type.innerHTML = symbols[l].type;
+                                    var scope = row.insertCell(3);
+                                    scope.innerHTML = symbols[l].scope;
+                                    var scopeLevel = row.insertCell(4);
+                                    scopeLevel.innerHTML = symbols[l].scopeLevel;
+                                    var lineNum = row.insertCell(5);
+                                    lineNum.innerHTML = symbols[l].line;
+                                    var colNum = row.insertCell(6);
+                                    colNum.innerHTML = symbols[l].col;
+                                }
+                                // Fill out scope tree
+                                var scopeTreeArr = _Semantic.printScopeTree(semanticResult.scopeTree.root);
+                                var scopeInput = document.getElementById("taScope");
+                                scopeInput.value += "Program " + i + "\n";
+                                // Display scope tree in scope tree field
+                                for (var m = 0; m < scopeTreeArr.length; m++) {
+                                    scopeInput.value += scopeTreeArr[i] + "\n";
+                                }
+                            }
+                            else {
+                                _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
+                            }
+                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors.length + " ERROR(S)");
+                        }
                     }
                 }
             }
@@ -166,11 +236,11 @@ var JuiceC;
         Control.prototype.parserLog = function (parseResult, programIndex) {
             if (document.getElementById("verboseCheck").checked) {
                 for (var i = 0; i < parseResult.log.length; i++) {
-                    _Control.putMessage(parseResult[i]);
+                    _Control.putMessage(parseResult.log[i]);
                 }
             }
             // If there were no errors while parsing, display the CST
-            if (parseResult.error) {
+            if (!parseResult.error) {
                 var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
                 for (var i = 0; i < cst.tree.length; i++) {
                     document.getElementById("CSTtext").value += cst.tree[i] + "\n";
@@ -182,7 +252,7 @@ var JuiceC;
             else {
                 _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
             }
-            _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors.length + " ERROR(S)");
+            _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
         };
         return Control;
     }());

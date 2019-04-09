@@ -14,6 +14,7 @@ module JuiceC {
         currentTokenIndex: number;
         tokens: Array<Token>;
         error: boolean;
+        errors: number;
         log: Array<string>;
         isComplete: boolean;
         cst: Tree;
@@ -22,8 +23,10 @@ module JuiceC {
             this.currentTokenIndex = 0;
             this.tokens = tokens;
             this.error = false;
+            this.errors = 0;
             this.isComplete = false;
             this.cst = new Tree();
+            this.log = [];
         }
 
 		// Parse the isCompleted lex programs
@@ -37,6 +40,7 @@ module JuiceC {
             // Report the results.
             let results = {
                 "error": this.error,
+                "errors": this.errors,
                 "log": this.log,
                 "cst": this.cst,
                 "isComplete": this.isComplete,
@@ -68,6 +72,7 @@ module JuiceC {
                         + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Block 
                         + " ::== { " + Production.StatementList + " }");
                     this.error = true;
+                    this.errors++;
                 }
                 return false;
             }
@@ -162,6 +167,7 @@ module JuiceC {
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id + " )");
                 this.error = true;
+                this.errors++;
                 return false;
             }
         }
@@ -208,6 +214,7 @@ module JuiceC {
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== ( " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " )");
                 this.error = true;
+                this.errors++;
             }
             return false;
         }
@@ -233,6 +240,7 @@ module JuiceC {
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== ::== " + Production.Char);
                 this.error = true;
+                this.errors++;
             }
             return false;
         }
@@ -287,6 +295,7 @@ module JuiceC {
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== == | !=");
                 this.error = true;
+                this.errors++;
                 return false;
             }
         }
@@ -349,6 +358,7 @@ module JuiceC {
                     this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.TOKEN_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr);
                     this.error = true;
+                    this.errors++;
                 }
             }
             

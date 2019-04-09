@@ -6,13 +6,15 @@
 var _Lexer;
 var _Parser;
 var _Control;
-var _Semantic;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";
 var LEXER = "Lexer";
 var PARSER = "Parser";
+var SEMANTIC = "Semantic";
+var VALID = "VALID";
 var EOF = "$";
+var SCOPE = "SCOPE";
 // Regex
 var rLBRACE = new RegExp('{$'); // Left Brace
 var rRBRACE = new RegExp('}$'); // Right brace

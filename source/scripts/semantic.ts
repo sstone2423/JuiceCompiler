@@ -16,8 +16,7 @@
         totalScopes: number;
         currentScope: number;
         log: Array<string>;
-        symbol: Object = {}; // object to hold symbol data
-        symbols: Array<Object>; // keeps array of symbols found
+        symbols: Array<any>; // keeps array of symbols found
         
 
         constructor(cst: Tree) {
@@ -100,23 +99,24 @@
 
                     // Add variable declaration to current scope
                     // Check if already declared in current scope
-                    if (!this.scopeTree.curr.value.table.hasOwnProperty(id.value)){ 
+                    if (!this.scopeTree.curr.value.buckets.hasOwnProperty(id.value)){ 
                         this.scopeTree.curr.value.buckets[id.value] = new ScopeVariable(id.value);
                         this.scopeTree.curr.value.buckets[id.value].value = token;
+                        let symbol = {
+                            "type": token.value,
+                            "key": id.value,
+                            "line": node.children[1].children[0].lineNum,
+                            "col": node.children[1].children[0].colNum,
+                            "scope": this.scopeTree.curr.value.id,
+                            "scopeLevel": this.currentScope
+                        };
                         // Add to symbol table
-                        this.symbol["type"] = token.value;
-                        this.symbol["key"] = id.value;
-                        this.symbol["line"] = node.children[1].children[0].lineNumber;
-                        this.symbol["col"] = node.children[1].children[0].colNumber;
-                        this.symbol["scope"] = this.scopeTree.curr.value.id;
-                        this.symbol["scopeLevel"] = this.scopeLevel;
-                        this.symbols.push(this.symbol);
-                        this.symbol = {};
+                        this.symbols.push(symbol);
                     }
                     // Throw error if variable already declared in scope
                     else {
                         this.error = true;
-                        let err = new ScopeError(ErrorType.DUPLICATE_VARIABLE, id, node.children[1].children[0].lineNumber, node.children[1].children[0].colNumber, this.scopeTree.curr.value.table[id.value].value.lineNumber, this.scopeTree.curr.value.table[id.value].value.colNumber);
+                        let err = new ScopeError(ErrorType.DUPLICATE_VARIABLE, id, node.children[1].children[0].lineNum, node.children[1].children[0].colNum, this.scopeTree.curr.value.buckets[id.value].value.lineNum, this.scopeTree.curr.value.buckets[id.value].value.colNum);
                         this.errors.push(err);
                     }
 
@@ -150,7 +150,7 @@
                     if (expressionType != null && expressionType.value != null) {
                         expressionType = expressionType.value;
                     }
-                    this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[0].children[0].lineNumber, node.children[0].children[0].colNumber, node.children[2].lineNumber, node.children[2].colNumber);
+                    this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[0].children[0].lineNum, node.children[0].children[0].colNum, node.children[2].lineNum, node.children[2].colNum);
                     // Update scope tree node object initialized flag. variable has been initialized.
                     this.markAsInitialized(node.children[0].children[0]);
                     
@@ -207,7 +207,7 @@
 
                         if (exprType != VariableType.Int) {
                             this.error = true;
-                            this.errors.push(new TypeError(ErrorType.INCORRECT_INT_EXPR, node.children[2].value, node.children[2].lineNumber, node.children[2].colNumber, VariableType.Int, exprType));
+                            this.errors.push(new TypeError(ErrorType.INCORRECT_INT_EXPR, node.children[2].value, node.children[2].lineNum, node.children[2].colNum, VariableType.Int, exprType));
                         }
                         this.ast.ascendTree();
                     }
@@ -242,7 +242,7 @@
                         }
                         if (firstExprType != secondExprType) {
                             this.error = true;
-                            this.errors.push(new TypeError(ErrorType.INCORRECT_TYPE_COMPAR, node.children[1].value, node.children[1].lineNumber, node.children[1].colNumber, firstExprType, secondExprType));
+                            this.errors.push(new TypeError(ErrorType.INCORRECT_TYPE_COMPAR, node.children[1].value, node.children[1].lineNum, node.children[1].colNum, firstExprType, secondExprType));
                         }
                         this.ast.ascendTree();
                     }
@@ -280,7 +280,7 @@
                     let err = new TypeError(ErrorType.TYPE_MISMATCH, id, idLine, idCol, idType, targetType);
                     this.errors.push(err);
                 } else {
-                    this.log.push("VALID - Variable [ " + id.value + " ] of type " + idType.value + " matches its assignment type of " + targetType + " at line " + targetLine + " col " + targetCol);
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + id.value + " ] of type " + idType.value + " matches its assignment type of " + targetType + " at ( " + targetLine + " : " + targetCol + " )");
                 }
             }
         }
@@ -289,10 +289,10 @@
             // pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
-            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+            if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
-                ptr.value.table[node.value.value].initialized = true;
-                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been initialized.");
+                ptr.value.buckets[node.value.value].initialized = true;
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been initialized at ( " + node.lineNum + " : " + node.colNum + " )");
                 
                 return;
             }
@@ -301,11 +301,10 @@
                 while (ptr.parent != null) {
                     ptr = ptr.parent;
                     // Check if id in scope
-                    if (ptr.value.table.hasOwnProperty(node.value.value)) { 
+                    if (ptr.value.buckets.hasOwnProperty(node.value.value)) { 
                         // Mark as initialized
-                        ptr.value.table[node.value.value].initialized = true;
-                        // report our gucciness to the log
-                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been initialized.");
+                        ptr.value.buckets[node.value.value].initialized = true;
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been initialized at ( " + node.lineNum + " : " + node.colNum + " )");
                         
                         return;
                     }
@@ -317,10 +316,10 @@
             // pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
-            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+            if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
-                ptr.value.table[node.value.value].used = true;
-                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been used.");
+                ptr.value.buckets[node.value.value].used = true;
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been used at ( " + node.lineNum + " : " + node.colNum + " )");
                 
                 return;
             }
@@ -329,10 +328,10 @@
                 while (ptr.parent != null){ 
                     ptr = ptr.parent;
                     // Check if id in scope
-                    if (ptr.value.table.hasOwnProperty(node.value.value)){ 
+                    if (ptr.value.buckets.hasOwnProperty(node.value.value)){ 
                         // Mark as initialized
-                        ptr.value.table[node.value.value].used = true;
-                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been used.");
+                        ptr.value.buckets[node.value.value].used = true;
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been used at ( " + node.lineNum + " : " + node.colNum + " )");
                         
                         return;
                     }
@@ -344,9 +343,9 @@
             // pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
-            if (ptr.value.table.hasOwnProperty(node.value.value)) {
-                if (ptr.value.table[node.value.value].initialized == false) {
-                    this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNumber, node.value.colNumber, node.value));
+            if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
+                if (ptr.value.buckets[node.value.value].initialized == false) {
+                    this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNum, node.value.colNum, node.value));
                 }
                 
                 return;
@@ -356,9 +355,9 @@
                 while (ptr.parent != null) {
                     ptr = ptr.parent;
                     // Check if id in scope
-                    if (ptr.value.table.hasOwnProperty(node.value.value)) {
-                        if (ptr.value.table[node.value.value].initialized == false) {
-                            this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNumber, node.value.colNumber, node.value));
+                    if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
+                        if (ptr.value.buckets[node.value.value].initialized == false) {
+                            this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNum, node.value.colNum, node.value));
                         }
                         
                         return;
@@ -371,25 +370,25 @@
             // pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
-            if (ptr.value.table.hasOwnProperty(node.value.value)) {
-                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been declared.");
+            if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
                 
-                return ptr.value.table[node.value.value].value;
+                return ptr.value.buckets[node.value.value].value;
             }
             // Check parent scopes
             else {
                 while (ptr.parent != null) {
                     ptr = ptr.parent;
                     // Check if id in scope
-                    if (ptr.value.table.hasOwnProperty(node.value.value)) {
-                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been declared.");
+                    if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
                         
-                        return ptr.value.table[node.value.value].value;
+                        return ptr.value.buckets[node.value.value].value;
                     }
                 }
                 // Didn't find id in scope, push error and return false
                 this.error = true;
-                let err = new ScopeError(ErrorType.UNDECLARED_VARIABLE, node.value, node.lineNumber, node.colNumber, null, null);
+                let err = new ScopeError(ErrorType.UNDECLARED_VARIABLE, node.value, node.lineNum, node.colNum, null, null);
                 this.errors.push(err);
             }
         }
@@ -400,22 +399,49 @@
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
                     // variable is uninitialized
-                    this.warnings.push(new ScopeWarning(WarningType.UNINIT_VAR, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                    this.warnings.push(new ScopeWarning(WarningType.UNINIT_VAR, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                     // if variable is uninitialized, but used, issue warning
-                    if (node.value.table[key].used == true) {
-                         this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                    if (node.value.buckets[key].used == true) {
+                         this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                     }
                 }
                 // Look for unused variables
-                if (node.value.table[key].used == false && node.value.table[key].initialized == true) {
+                if (node.value.buckets[key].used == false && node.value.buckets[key].initialized == true) {
                     // variable is unused
-                    this.warnings.push(new ScopeWarning(WarningType.UNUSED_VAR, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                    this.warnings.push(new ScopeWarning(WarningType.UNUSED_VAR, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                 }
             }
             // Continue traversing in preorder fashion
-            for (let i=0; i < node.children.length; i++) {
+            for (let i = 0; i < node.children.length; i++) {
                 this.findWarnings(node.children[i]);
             }
         }
+
+        /**
+         * Traverses the scope tree and returns a string representation
+         * @param node the node whose value we're adding to string rep
+         * @param arr array of arrays that represent tree
+         * @param level level of the tree we're currently at
+         */
+        public printScopeTree(node){
+            let tree: Array<String> = [];
+            let level: number = 0;
+            if(node != null){
+                this.printScopeTreeHelper(node, level, tree, "");
+            }
+            return tree;
+        }
+
+        private printScopeTreeHelper(node, level, tree, dash){
+            // generate string with all vars
+            var varsString = "";
+            for(var key in node.value.table){
+                varsString += node.value.table[key].value.value + " " + key + " | ";
+            }
+            tree.push(dash + " | [Scope " + node.value.id + "]: " + varsString);
+            for(var i=0; i<node.children.length; i++){
+                this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
+            }
+}
     }
 }
