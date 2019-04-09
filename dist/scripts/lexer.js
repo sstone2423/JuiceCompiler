@@ -48,7 +48,7 @@ var JuiceC;
                     // Test for left brace
                     if (rLBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a LBRACE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_LBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.LBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         this.startPtr = this.endPtr;
@@ -56,7 +56,7 @@ var JuiceC;
                     }
                     else if (rRBRACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a RBRACE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_RBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.RBRACE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         this.startPtr = this.endPtr;
@@ -64,7 +64,7 @@ var JuiceC;
                     }
                     else if (rLPAREN.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a LPAREN token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_LPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.LPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         this.startPtr = this.endPtr;
@@ -72,7 +72,7 @@ var JuiceC;
                     }
                     else if (rRPAREN.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a RPAREN token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_RPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.RPAREN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         this.startPtr = this.endPtr;
@@ -80,7 +80,7 @@ var JuiceC;
                     }
                     else if (rQUOTE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a QUOTE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // If this is the first quote, set foundquote to true so that we can treat the next characters as a string
@@ -98,7 +98,7 @@ var JuiceC;
                     }
                     else if (rBOOLVALTRUE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a BOOLVAL token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLVAL, "true", this.currentLineNum, this.currentColNum - ("true").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.BOOLVAL, "true", this.currentLineNum, this.currentColNum - ("true").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("true".length - 1));
                         // Push new token to tokens array
@@ -107,7 +107,7 @@ var JuiceC;
                     }
                     else if (rBOOLVALFALSE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a BOOLVAL token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLVAL, "false", this.currentLineNum, this.currentColNum - ("false").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.BOOLVAL, "false", this.currentLineNum, this.currentColNum - ("false").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("false".length - 1));
                         // Push new token to tokens array
@@ -116,7 +116,7 @@ var JuiceC;
                     }
                     else if (rWHILE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a WHILE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_WHILE, "while", this.currentLineNum, this.currentColNum - ("while").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.WHILE, "while", this.currentLineNum, this.currentColNum - ("while").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("while".length - 1));
                         // Push new token to tokens array
@@ -125,7 +125,7 @@ var JuiceC;
                     }
                     else if (rIF.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a IF token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_IF, "if", this.currentLineNum, this.currentColNum - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.IF, "if", this.currentLineNum, this.currentColNum - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - 1);
                         // Push new token to tokens array
@@ -134,7 +134,7 @@ var JuiceC;
                     }
                     else if (rPRINT.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a PRINT token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_PRINT, "print", this.currentLineNum, this.currentColNum - ("print").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.PRINT, "print", this.currentLineNum, this.currentColNum - ("print").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("print".length - 1));
                         // Push new token to tokens array
@@ -143,7 +143,7 @@ var JuiceC;
                     }
                     else if (rTYPEINT.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a TYPE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_TYPE, "int", this.currentLineNum, this.currentColNum - ("int").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.TYPE, "int", this.currentLineNum, this.currentColNum - ("int").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("int".length - 1));
                         // Push new token to tokens array
@@ -152,7 +152,7 @@ var JuiceC;
                     }
                     else if (rTYPEBOOL.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a TYPE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_TYPE, "boolean", this.currentLineNum, this.currentColNum - ("boolean").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.TYPE, "boolean", this.currentLineNum, this.currentColNum - ("boolean").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("boolean".length - 1));
                         // Push new token to tokens array
@@ -161,7 +161,7 @@ var JuiceC;
                     }
                     else if (rTYPESTR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a TYPE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_TYPE, "string", this.currentLineNum, this.currentColNum - ("string").length - 1);
+                        var token = new JuiceC.Token(JuiceC.TokenType.TYPE, "string", this.currentLineNum, this.currentColNum - ("string").length - 1);
                         // Remove the previous ID tokens that were added to the tokens array
                         this.tokens = this.tokens.slice(0, this.tokens.length - ("string".length - 1));
                         // Push new token to tokens array
@@ -173,43 +173,43 @@ var JuiceC;
                     // Test for digit
                     else if (rDIGIT.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a DIGIT token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_DIGIT, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.DIGIT, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // Test for integer operator
                     }
                     else if (rINTOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a INTOP token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_INTOP, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.INTOP, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // Test for boolean operator equals
                     }
                     else if (rBOOLOPEQUALS.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // If the previous token was ASSIGN, pop the token, and push the new BOOLOP token instead
-                        if (this.tokens[this.tokens.length - 1].type == JuiceC.TokenType.T_ASSIGN) {
+                        if (this.tokens[this.tokens.length - 1].type == JuiceC.TokenType.ASSIGN) {
                             // Create a BOOLOP token
-                            var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLOP, "==", this.currentLineNum, this.currentColNum - 1);
+                            var token = new JuiceC.Token(JuiceC.TokenType.BOOLOP, "==", this.currentLineNum, this.currentColNum - 1);
                             this.tokens.pop();
                             this.tokens.push(token);
                             // Otherwise, give the ASSIGN token
                         }
                         else {
-                            var token = new JuiceC.Token(JuiceC.TokenType.T_ASSIGN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                            var token = new JuiceC.Token(JuiceC.TokenType.ASSIGN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                             this.tokens.push(token);
                         }
                         // Test for assignment
                     }
                     else if (rASSIGN.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a ASSIGN token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_ASSIGN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.ASSIGN, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // Test for ID
                     }
                     else if (rID.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a ID token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_ID, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.ID, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // Test for white space
@@ -226,14 +226,14 @@ var JuiceC;
                     }
                     else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a EOP token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_EOP, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.EOP, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         this.tokens.push(token);
                         // Reset the pointer
                         this.startPtr = this.endPtr;
                         this.foundEOP = true;
                         // If still looking for a end quote, throw an error
                         if (this.foundQuote) {
-                            this.errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
+                            this.errors.push(new JuiceC.Error("No End Quote in string literal" /* NO_END_QUOTE */, sourceCode.charAt(this.endPtr - 1), this.startCommentLine, this.startCommentCol));
                         }
                         // Define an object to return values in
                         this.lexAnalysisResult = {
@@ -264,18 +264,18 @@ var JuiceC;
                         if (this.endPtr == sourceCode.length) {
                             // If code ends with a trailing start comment, throw error
                             if (rCOMMENTSTART.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
-                                this.errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                                this.errors.push(new JuiceC.Error("No End Comment" /* NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                                 // Otherwise, any other character besides EOP is invalid
                             }
                             else {
-                                this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                                this.errors.push(new JuiceC.Error("Invalid Token" /* INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                             }
                             break;
                         }
                         // Check to see if the next character creates a match for a Boolean NotEquals
                         if (rBOOLOPNOTEQUALS.test(sourceCode.substring(this.startPtr, this.endPtr + 1))) {
                             // Create a BOOLOP token
-                            var token = new JuiceC.Token(JuiceC.TokenType.T_BOOLOP, "!=", this.currentLineNum, this.currentColNum);
+                            var token = new JuiceC.Token(JuiceC.TokenType.BOOLOP, "!=", this.currentLineNum, this.currentColNum);
                             this.tokens.push(token);
                             this.endPtr++;
                         } // Check to see if the next character creates a match for a comment
@@ -286,7 +286,7 @@ var JuiceC;
                             // If no other matches, this character is invalid
                         }
                         else {
-                            this.errors.push(new JuiceC.Error("Invalid Token" /* E_INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("Invalid Token" /* INVALID_T */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                     }
                     // If still in comment, only allow characters and the end comment
@@ -300,7 +300,7 @@ var JuiceC;
                         // EOP is invalid inside of a comment. Throw an invalid token error. The missing end comment error will be thrown at the end
                     }
                     else if (rEOP.test(sourceCode.substring(this.startPtr, this.endPtr))) {
-                        this.errors.push(new JuiceC.Error("Invalid Token in Comment" /* E_INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("Invalid Token in Comment" /* INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
                     // If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
@@ -308,13 +308,13 @@ var JuiceC;
                 else {
                     if (rCHAR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a EOP token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         this.tokens.push(token);
                         // Check for the end quote. If found, JuiceC is happy
                     }
                     else if (rQUOTE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Create a QUOTE token
-                        var token = new JuiceC.Token(JuiceC.TokenType.T_QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        var token = new JuiceC.Token(JuiceC.TokenType.QUOTE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
                         // Push to tokens array
                         this.tokens.push(token);
                         // Reset the foundQuote boolean
@@ -330,12 +330,12 @@ var JuiceC;
                     else if (rWHITESPACE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                         // Throw error if there is a new line in a string
                         if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
-                            this.errors.push(new JuiceC.Error("Invalid New Line" /* E_INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                            this.errors.push(new JuiceC.Error("Invalid New Line" /* INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
                         // If its not a character, its an invalid token so throw an error
                     }
                     else {
-                        this.errors.push(new JuiceC.Error("Invalid Token in string literal" /* E_INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
+                        this.errors.push(new JuiceC.Error("Invalid Token in string literal" /* INVALID_T_STRING */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
                 }
@@ -364,13 +364,13 @@ var JuiceC;
                 if (this.resultsArray[i].errors.length == 0) {
                     // If we've reached the end of the source code, but no end comment has been found, throw an error
                     if (this.resultsArray[i].inComment) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Comment" /* E_NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Comment" /* NO_END_COMMENT */, "*/", this.startCommentLine, this.startCommentCol));
                     } // If we've reached the end of the source code, but no end quote has been found, throw an error
                     else if (this.resultsArray[i].foundQuote) {
-                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote in string literal" /* E_NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
+                        this.resultsArray[i].errors.push(new JuiceC.Error("No End Quote in string literal" /* NO_END_QUOTE */, "\"", this.startQuoteLine, this.startQuoteCol));
                     } // If we've reached the end of the source and no EOP was detected, along with no errors, throw a warning
                     else if (!this.resultsArray[i].foundEOP) {
-                        this.resultsArray[i].warnings.push(new JuiceC.Warning("NO EOP" /* W_NO_EOP */, "$", this.currentLineNum, this.currentColNum));
+                        this.resultsArray[i].warnings.push(new JuiceC.Warning("No EOP" /* NO_EOP */, "$", this.currentLineNum, this.currentColNum));
                     }
                 }
             }

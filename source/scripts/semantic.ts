@@ -126,7 +126,7 @@
                     // figure out which intexpr this is
                     // more than just a digit
                     if (node.children.length > 1) {
-                        this.ast.addNode(new Token(TokenType.T_ADDITION, "Addition", null, null));
+                        this.ast.addNode(new Token(TokenType.ADDITION, "Addition", null, null));
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
                         // figure out expression. make sure return type is int
@@ -151,10 +151,10 @@
                     // more than just a boolval
                     if (node.children.length > 1) {
                         if (node.children[2].children[0].value.value == "==") {
-                            this.ast.addNode(new Token(TokenType.T_EQUALS, "Equals", null, null));
+                            this.ast.addNode(new Token(TokenType.EQUALS, "Equals", null, null));
                         }
                         else {
-                            this.ast.addNode(new Token(TokenType.T_NOTEQUALS, "NotEquals", null, null));
+                            this.ast.addNode(new Token(TokenType.NOTEQUALS, "NotEquals", null, null));
                         }
                         // Get types returned by the two Expr children and make sure they're the same
                         var firstExprType = this.traverse(node.children[1]);

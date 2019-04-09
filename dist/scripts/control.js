@@ -103,10 +103,10 @@ var JuiceC;
                 if (_Control.lexWarning) {
                     for (var i = 0; i < lexResults[programIndex].warnings.length; i++) {
                         // Check for EOP warning
-                        if (lexResults[programIndex].warnings[i].warningType == "NO EOP" /* W_NO_EOP */) {
+                        if (lexResults[programIndex].warnings[i].warningType == "No EOP" /* NO_EOP */) {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                             // Insert an EOP into the tokens array
-                            lexResults[programIndex].tokens.push(new JuiceC.Token(JuiceC.TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
+                            lexResults[programIndex].tokens.push(new JuiceC.Token(JuiceC.TokenType.EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                         }
                         else {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: Not really sure why I'm warning so oops?");
@@ -117,38 +117,38 @@ var JuiceC;
                 for (var i = 0; i < lexResults[programIndex].errors.length; i++) {
                     switch (lexResults[programIndex].errors[i].errorType) {
                         // Invalid Token check
-                        case "Invalid Token" /* E_INVALID_T */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token" /* E_INVALID_T */ + " [ " + lexResults[programIndex].errors[i].value
+                        case "Invalid Token" /* INVALID_T */: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token" /* INVALID_T */ + " [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
                         // Missing end of comment
-                        case "No End Comment" /* E_NO_END_COMMENT */: {
+                        case "No End Comment" /* NO_END_COMMENT */: {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
                         // Missing end of string quote
-                        case "No End Quote in string literal" /* E_NO_END_QUOTE */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "No End Quote in string literal" /* E_NO_END_QUOTE */ + " [ " + lexResults[programIndex].errors[i].value
+                        case "No End Quote in string literal" /* NO_END_QUOTE */: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "No End Quote in string literal" /* NO_END_QUOTE */ + " [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
                         // Invalid token in string
-                        case "Invalid Token in string literal" /* E_INVALID_T_STRING */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token in string literal" /* E_INVALID_T_STRING */ + " [ " + lexResults[programIndex].errors[i].value
+                        case "Invalid Token in string literal" /* INVALID_T_STRING */: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token in string literal" /* INVALID_T_STRING */ + " [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
                             break;
                         }
                         // Invalid token in comment
-                        case "Invalid Token" /* E_INVALID_T */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token in Comment" /* E_INVALID_T_COMMENT */ + " [ " + lexResults[programIndex].errors[i].value
+                        case "Invalid Token" /* INVALID_T */: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid Token in Comment" /* INVALID_T_COMMENT */ + " [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
                             break;
                         }
                         // Invalid new line
-                        case "Invalid New Line" /* E_INVALID_NEW_LINE */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid New Line" /* E_INVALID_NEW_LINE */ + " [ " + lexResults[programIndex].errors[i].value
+                        case "Invalid New Line" /* INVALID_NEW_LINE */: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + "Invalid New Line" /* INVALID_NEW_LINE */ + " [ " + lexResults[programIndex].errors[i].value
                                 + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments");
                             break;
                         }
