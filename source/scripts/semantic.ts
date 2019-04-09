@@ -11,27 +11,59 @@
         ast: Tree;
         scopeTree: Tree;
         error: boolean;
+        errors: Array<Error>;
+        warnings: Array<Warning>;
+        totalScopes: number;
+        currentScope: number;
+        log: Array<string>;
+        symbol: Object = {}; // object to hold symbol data
+        symbols: Array<Object>; // keeps array of symbols found
+        
 
         constructor(cst: Tree) {
-           this.cst = cst;
-           this.ast = new Tree();
-           this.error = false;
-        }
-
-        public analyze(cst: Tree) {
             this.cst = cst;
             this.ast = new Tree();
+            this.error = false;
+            this.errors = [];
+            this.warnings = [];
+            this.scopeTree = new Tree();
+            this.totalScopes = 0;
+            // Scopes always increase by 1, so currentScope will increase to 0 on the first block production
+            this.currentScope = 0;
+            this.log = [];
+            this.symbols = [];
+        }
+
+        public analyze() {
             // Traverse the CST looking for the "good stuff"
-            this.traverse(cst.root);
+            this.traverse(this.cst.root);
+            // Traverse scope tree to generate warnings
+            this.findWarnings(this.scopeTree.root);
+            return {
+                "ast": this.ast,
+                "scopeTree": this.scopeTree,
+                "errors": this.errors,
+                "error": this.error,
+                "warnings": this.warnings,
+                "symbols": this.symbols,
+                "log": this.log,
+            }
         }
 
         // Recursive function that traverses the CST in up-to-down, left-most descent looking for the key parts of the language.
         // When found, construct and add them to the AST
-        public traverse(node: TreeNode) {
+        public traverse(node) {
             switch (node.value) {
-                case Production.Block:  
+                case Production.Block:
+                // Scope tree: add a scope to the tree whenever we encounter a Block
+                    // Increase the number of scopes that have been declared
+                    // Increase the scope level as we are on a new one
+                    let newScope = new ScopeHashMap(node.lineNum, node.colNum, this.currentScope);
+                    this.scopeTree.addNode(newScope);
                     // Add the Block node and increase the scope by 1
                     this.ast.addNode(Production.Block);
+                    this.currentScope++;
+                    this.totalScopes++;
                     // Recursively traverse each child node
                     for (let i = 0; i < node.children.length; i++) {
                         this.traverse(node.children[i]);
@@ -41,7 +73,13 @@
                     if (this.ast.curr != null) {
                         this.ast.ascendTree();
                     }
-                                        
+
+                    // Decrease the currentScope as we have completed this scope level
+                    if (this.scopeTree.curr != null) {
+                        this.scopeTree.ascendTree();
+                        this.currentScope--;
+                    }     
+                    
                     break;
 
                 case Production.VarDeclaration: 
@@ -54,9 +92,33 @@
                     this.ast.ascendTree();
                     // Get the id
                     var id = node.children[1].children[0].value;
+                    // Set the scope on the id
+                    id.scopeId = this.scopeTree.curr.value.id;
                     this.ast.addNode(id);
                     this.ast.ascendTree();
                     this.ast.ascendTree();
+
+                    // Add variable declaration to current scope
+                    // Check if already declared in current scope
+                    if (!this.scopeTree.curr.value.table.hasOwnProperty(id.value)){ 
+                        this.scopeTree.curr.value.buckets[id.value] = new ScopeVariable(id.value);
+                        this.scopeTree.curr.value.buckets[id.value].value = token;
+                        // Add to symbol table
+                        this.symbol["type"] = token.value;
+                        this.symbol["key"] = id.value;
+                        this.symbol["line"] = node.children[1].children[0].lineNumber;
+                        this.symbol["col"] = node.children[1].children[0].colNumber;
+                        this.symbol["scope"] = this.scopeTree.curr.value.id;
+                        this.symbol["scopeLevel"] = this.scopeLevel;
+                        this.symbols.push(this.symbol);
+                        this.symbol = {};
+                    }
+                    // Throw error if variable already declared in scope
+                    else {
+                        this.error = true;
+                        let err = new ScopeError(ErrorType.DUPLICATE_VARIABLE, id, node.children[1].children[0].lineNumber, node.children[1].children[0].colNumber, this.scopeTree.curr.value.table[id.value].value.lineNumber, this.scopeTree.curr.value.table[id.value].value.colNumber);
+                        this.errors.push(err);
+                    }
 
                     break;
 
@@ -74,7 +136,11 @@
                     this.ast.addNode(Production.AssignStatement);
                     // Get the id
                     var id = node.children[0].children[0].value;
+                    // Set the scope on the id
+                    id.scopeId = this.scopeTree.curr.value.id;
                     this.ast.addNode(node.children[0].children[0].value);
+                    // Check if id is in scope and get its type
+                    var idType = this.checkScopes(node.children[0].children[0]);
                     this.ast.ascendTree();
                     // Find the expression and get the type returned by the expression
                     let expressionType = this.traverse(node.children[2]);
@@ -84,6 +150,9 @@
                     if (expressionType != null && expressionType.value != null) {
                         expressionType = expressionType.value;
                     }
+                    this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[0].children[0].lineNumber, node.children[0].children[0].colNumber, node.children[2].lineNumber, node.children[2].colNumber);
+                    // Update scope tree node object initialized flag. variable has been initialized.
+                    this.markAsInitialized(node.children[0].children[0]);
                     
                     break;
 
@@ -112,13 +181,13 @@
                     this.ast.ascendTree();
                     // Check if variable declared in current or parent scopes
                     // If we find it in scope, return the type of the variable
-                    //let foundType = this.checkScopes(node.children[0]);
+                    let foundType = this.checkScopes(node.children[0]);
                     // Mark id as used
-                    //this.markAsUsed(node.children[0]);
+                    this.markAsUsed(node.children[0]);
                     // Look for used but uninitialized variables
-                    //this.checkUsedUninit(node.children[0]);
+                    this.checkUsedButUninit(node.children[0]);
                     // return the id's type
-                    //return foundType;
+                    return foundType;
                     
                     break;
 
@@ -135,6 +204,11 @@
                         if (exprType.value != null) {
                             exprType = exprType.value;
                         }
+
+                        if (exprType != VariableType.Int) {
+                            this.error = true;
+                            this.errors.push(new TypeError(ErrorType.INCORRECT_INT_EXPR, node.children[2].value, node.children[2].lineNumber, node.children[2].colNumber, VariableType.Int, exprType));
+                        }
                         this.ast.ascendTree();
                     }
                     // just a digit
@@ -144,7 +218,7 @@
                     }
 
                     // return the type returned by intexpr
-                    return "int";
+                    return VariableType.Int;
 
                 case Production.BooleanExpr:
                     // figure out which boolexpr this is.
@@ -168,7 +242,7 @@
                         }
                         if (firstExprType != secondExprType) {
                             this.error = true;
-                            //this.errors.push(new TypeError(ErrorType.IncorrectTypeComparison, node.children[1].value, node.children[1].lineNumber, node.children[1].colNumber, firstExprType, secondExprType));
+                            this.errors.push(new TypeError(ErrorType.INCORRECT_TYPE_COMPAR, node.children[1].value, node.children[1].lineNumber, node.children[1].colNumber, firstExprType, secondExprType));
                         }
                         this.ast.ascendTree();
                     }
@@ -179,9 +253,10 @@
                     }
 
                     // return the type returned by boolexpr
-                    return "boolean";
+                    return VariableType.Boolean;
 
                 case Production.StringExpr:
+
                     break;
 
                 default:
@@ -191,11 +266,155 @@
                         if (node.value == Production.Expr) {
                             return this.traverse(node.children[i]);
                         }
-
                         this.traverse(node.children[i]);
                     }
                     
                     break;
+            }
+        }
+        
+        public checkTypeMatch(id, idType, targetType, idLine, idCol, targetLine, targetCol) {
+            if (targetType != null && idType != null) {
+                if (idType.value != targetType) {
+                    this.error = true;
+                    let err = new TypeError(ErrorType.TYPE_MISMATCH, id, idLine, idCol, idType, targetType);
+                    this.errors.push(err);
+                } else {
+                    this.log.push("VALID - Variable [ " + id.value + " ] of type " + idType.value + " matches its assignment type of " + targetType + " at line " + targetLine + " col " + targetCol);
+                }
+            }
+        }
+
+        public markAsInitialized(node) {
+            // pointer to current position in scope tree
+            let ptr = this.scopeTree.curr;
+            // Check current scope
+            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                // Mark as initialized
+                ptr.value.table[node.value.value].initialized = true;
+                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been initialized.");
+                
+                return;
+            }
+            // Check parent scopes
+            else {
+                while (ptr.parent != null) {
+                    ptr = ptr.parent;
+                    // Check if id in scope
+                    if (ptr.value.table.hasOwnProperty(node.value.value)) { 
+                        // Mark as initialized
+                        ptr.value.table[node.value.value].initialized = true;
+                        // report our gucciness to the log
+                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been initialized.");
+                        
+                        return;
+                    }
+                }
+            }
+        }
+
+        public markAsUsed(node) {
+            // pointer to current position in scope tree
+            let ptr = this.scopeTree.curr;
+            // Check current scope
+            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                // Mark as initialized
+                ptr.value.table[node.value.value].used = true;
+                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been used.");
+                
+                return;
+            }
+            // Check parent scopes
+            else {
+                while (ptr.parent != null){ 
+                    ptr = ptr.parent;
+                    // Check if id in scope
+                    if (ptr.value.table.hasOwnProperty(node.value.value)){ 
+                        // Mark as initialized
+                        ptr.value.table[node.value.value].used = true;
+                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been used.");
+                        
+                        return;
+                    }
+                }
+            }
+        }
+
+        public checkUsedButUninit(node) {
+            // pointer to current position in scope tree
+            let ptr = this.scopeTree.curr;
+            // Check current scope
+            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                if (ptr.value.table[node.value.value].initialized == false) {
+                    this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNumber, node.value.colNumber, node.value));
+                }
+                
+                return;
+            }
+            // Check parent scopes
+            else {
+                while (ptr.parent != null) {
+                    ptr = ptr.parent;
+                    // Check if id in scope
+                    if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                        if (ptr.value.table[node.value.value].initialized == false) {
+                            this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, node.value.value, node.value.lineNumber, node.value.colNumber, node.value));
+                        }
+                        
+                        return;
+                    }
+                }
+            }
+        }
+
+        public checkScopes(node) {
+            // pointer to current position in scope tree
+            let ptr = this.scopeTree.curr;
+            // Check current scope
+            if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been declared.");
+                
+                return ptr.value.table[node.value.value].value;
+            }
+            // Check parent scopes
+            else {
+                while (ptr.parent != null) {
+                    ptr = ptr.parent;
+                    // Check if id in scope
+                    if (ptr.value.table.hasOwnProperty(node.value.value)) {
+                        this.log.push("VALID - Variable [ " + node.value.value + " ] on line " + node.lineNumber + " col " + node.colNumber + " has been declared.");
+                        
+                        return ptr.value.table[node.value.value].value;
+                    }
+                }
+                // Didn't find id in scope, push error and return false
+                this.error = true;
+                let err = new ScopeError(ErrorType.UNDECLARED_VARIABLE, node.value, node.lineNumber, node.colNumber, null, null);
+                this.errors.push(err);
+            }
+        }
+
+        public findWarnings(node) {
+            // Iterate through object 
+            for (let key in node.value.buckets) {
+                // Look for declared but uninitialized variables
+                if (node.value.buckets[key].initialized == false) {
+                    // variable is uninitialized
+                    this.warnings.push(new ScopeWarning(WarningType.UNINIT_VAR, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                    // if variable is uninitialized, but used, issue warning
+                    if (node.value.table[key].used == true) {
+                         this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                    }
+                }
+                // Look for unused variables
+                if (node.value.table[key].used == false && node.value.table[key].initialized == true) {
+                    // variable is unused
+                    this.warnings.push(new ScopeWarning(WarningType.UNUSED_VAR, key, node.value.table[key].value.lineNumber, node.value.table[key].value.colNumber, node.value));
+                }
+            }
+            // Continue traversing in preorder fashion
+            for (let i=0; i < node.children.length; i++) {
+                this.findWarnings(node.children[i]);
             }
         }
     }

@@ -37,7 +37,14 @@ module JuiceC {
         INT_OP_EXPECTED = "Integer Operation Expected",
         BOOL_OP_EXPECTED = "Boolean Operation Expected",
         SPACE_EXPECTED = "Space Expected",
-        TOKEN_EXPECTED = "Token Expected"
+        TOKEN_EXPECTED = "Token Expected",
+
+        // Semantic Errors
+        DUPLICATE_VARIABLE = "Duplicate Variable",
+        TYPE_MISMATCH = "Type Mismatch",
+        UNDECLARED_VARIABLE = "Undeclared Variable",
+        INCORRECT_INT_EXPR = "Incorrect Integer Expression",
+        INCORRECT_TYPE_COMPAR = "Incorrect Type Comparison"
 
     }
 
@@ -55,6 +62,29 @@ module JuiceC {
             this.lineNum = lineNum;
             this.colNum = colNum;
             this.expectedToken = expectedToken;
+        }
+    }
+
+    // For Duplicate Variable and Undeclared Variable
+    export class ScopeError extends Error {
+        firstDeclareLine: number;
+        firstDeclareCol: number;
+
+        constructor (tokenType: ErrorType, value: String, lineNumber: number, colNumber: number, firstDeclareLine: number, firstDeclareCol: number) {
+            super(tokenType, value, lineNumber, colNumber);
+            this.firstDeclareLine = firstDeclareLine;
+            this.firstDeclareCol = firstDeclareCol;
+        }
+    }
+
+    // For Type Mismatch
+    export class TypeError extends Error {
+        targetType: VariableType;
+        idType: VariableType;
+        constructor(tokenType: ErrorType, value: String, lineNumber: number, colNumber: number, idType: VariableType, targetType: VariableType) {
+            super(tokenType, value, lineNumber, colNumber);
+            this.targetType = targetType;
+            this.idType = idType;
         }
     }
 

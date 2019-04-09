@@ -92,6 +92,7 @@ module JuiceC {
 
                     // Semantic analysis only if there were no parser errors
                     if (parseResult.error) {
+                        let _Semantic = new Semantic(parseResult.cst);
                         let semanticResult = _Semantic.analyze(parseResult.cst);
                     }
                 }

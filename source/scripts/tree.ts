@@ -17,10 +17,10 @@ module JuiceC {
             }
 
             // Adds non-terminal node to tree
-            public addNTNode(production: Production, lineNumber: number, colNumber: number) {
+            public addNTNode(production: Production, lineNum: number, colNum: number) {
                 let node = new NonTerminalTreeNode(production);
-                node.lineNumber = lineNumber;
-                node.colNumber = colNumber;
+                node.lineNum = lineNum;
+                node.colNum = colNum;
                 if (this.root == null) {
                     this.root = node;
                     this.curr = node;
@@ -34,10 +34,10 @@ module JuiceC {
             }
 
             // Adds terminal node to tree AKA leaf node
-            public addTNode(token: Token, lineNumber: number, colNumber: number) {
+            public addTNode(token: Token, lineNum: number, colNum: number) {
                 let node = new TerminalTreeNode(token);
-                node.lineNumber = lineNumber;
-                node.colNumber = colNumber;
+                node.lineNum = lineNum;
+                node.colNum = colNum;
                 if (this.root == null) {
                     this.root = node;
                     this.curr = node;
@@ -156,8 +156,8 @@ module JuiceC {
         // A TreeNode that represents NonTerminals
         export class NonTerminalTreeNode extends TreeNode {
             value: Production;
-            lineNumber: number;
-            colNumber: number;
+            lineNum: number;
+            colNum: number;
             super(value: Production) {
                 this.value = value;
             }
@@ -166,8 +166,8 @@ module JuiceC {
         // A TreeNode that represents Terminals
         export class TerminalTreeNode extends TreeNode {
             value: Token;
-            lineNumber: number;
-            colNumber: number;
+            lineNum: number;
+            colNum: number;
             super(value: Token) {
                 this.value = value;
             }
