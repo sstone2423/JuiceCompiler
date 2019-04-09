@@ -7,7 +7,7 @@ module JuiceC {
 
     export const enum WarningType {
 
-        W_NO_EOP = "NO EOP",
+        NO_EOP = "No EOP",
     
     }
 

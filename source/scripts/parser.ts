@@ -47,7 +47,7 @@ module JuiceC {
         // First part of the grammar, Program
         public parseProgram(): boolean {
             // Recursively call the 2nd step, Block, with the Program production and the expected terminal
-            if (this.parseBlock([Production.Program], true) && this.matchAndConsumeToken(TokenType.T_EOP, null, null, true)) {
+            if (this.parseBlock([Production.Program], true) && this.matchAndConsumeToken(TokenType.EOP, null, null, true)) {
                 return true;
             // If block was not successful, return false
             } else {
@@ -58,13 +58,13 @@ module JuiceC {
 
         // 2nd part of the grammar, Block
         public parseBlock(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_LBRACE, production, Production.Block, false) && this.parseStatementList() && this.matchAndConsumeToken(TokenType.T_RBRACE, null, null, true)) {
+            if (this.matchAndConsumeToken(TokenType.LBRACE, production, Production.Block, false) && this.parseStatementList() && this.matchAndConsumeToken(TokenType.RBRACE, null, null, true)) {
                 // Ascend the tree after a block is derived
                 this.cst.ascendTree();
                 return true;
             } else {
                 if (expected) {
-                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BLOCK_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.BLOCK_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                         + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Block 
                         + " ::== { " + Production.StatementList + " }");
                     this.error = true;
@@ -99,8 +99,8 @@ module JuiceC {
         }
 
         public parsePrintStatement(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_PRINT, production, Production.PrintStatement, false) && this.matchAndConsumeToken(TokenType.T_LPAREN, null, null, true) &&
-                this.parseExpr([Production.Expr]) && this.matchAndConsumeToken(TokenType.T_RPAREN, null, null, true)) {
+            if (this.matchAndConsumeToken(TokenType.PRINT, production, Production.PrintStatement, false) && this.matchAndConsumeToken(TokenType.LPAREN, null, null, true) &&
+                this.parseExpr([Production.Expr]) && this.matchAndConsumeToken(TokenType.RPAREN, null, null, true)) {
                     // Ascend the tree after PrintStatement is derived
                     this.cst.ascendTree();
                     return true;
@@ -111,7 +111,7 @@ module JuiceC {
 
         public parseAssignmentStatement(production: Array<Production>): boolean {
             if (this.parseId(production.concat([Production.AssignStatement]), false) && 
-                this.matchAndConsumeToken(TokenType.T_ASSIGN, null, null, true) && this.parseExpr([Production.Expr])) {
+                this.matchAndConsumeToken(TokenType.ASSIGN, null, null, true) && this.parseExpr([Production.Expr])) {
                     // Ascend the tree after AssignmentStatement is derived
                     this.cst.ascendTree();
                     return true;
@@ -131,7 +131,7 @@ module JuiceC {
         }
 
         public parseWhileStatement(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_WHILE, production, Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
+            if (this.matchAndConsumeToken(TokenType.WHILE, production, Production.WhileStatement, false) && this.parseBoolExpr([], true) && this.parseBlock(null, true)) {
                 // Ascend the tree after WhileStatement is derived
                 this.cst.ascendTree();
                 return true;
@@ -141,7 +141,7 @@ module JuiceC {
         }
 
         public parseIfStatement(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_IF, production, Production.IfStatement, false) && this.parseBoolExpr([], true) &&
+            if (this.matchAndConsumeToken(TokenType.IF, production, Production.IfStatement, false) && this.parseBoolExpr([], true) &&
                 this.parseBlock(null, true)) {
                     // Ascend the tree after IfStatement is derived
                     this.cst.ascendTree();
@@ -158,7 +158,7 @@ module JuiceC {
                     this.cst.ascendTree();
                     return true;
             } else {
-                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== " + Production.IntExpr + " or " + Production.StringExpr + " or " + Production.BooleanExpr + " or " + Production.Id + " )");
                 this.error = true;
@@ -184,7 +184,7 @@ module JuiceC {
         }
 
         public parseStringExpr(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_QUOTE, production, Production.StringExpr, false) && this.parseCharList([Production.CharList]) && this.matchAndConsumeToken(TokenType.T_QUOTE, null, null, true)) {
+            if (this.matchAndConsumeToken(TokenType.QUOTE, production, Production.StringExpr, false) && this.parseCharList([Production.CharList]) && this.matchAndConsumeToken(TokenType.QUOTE, null, null, true)) {
                 // Ascend the tree after StringExpr is derived
                 this.cst.ascendTree();
                 return true;
@@ -198,13 +198,13 @@ module JuiceC {
                 // Ascend the tree after BooleanValue is derived
                 this.cst.ascendTree();
                 return true;
-            } else if (this.matchAndConsumeToken(TokenType.T_LPAREN, production, Production.BooleanExpr, false) && this.parseExpr([Production.Expr]) &&
-                       this.parseBoolOp(null, true) && this.parseExpr([Production.Expr]) && this.matchAndConsumeToken(TokenType.T_RPAREN, null, null, true)) {
+            } else if (this.matchAndConsumeToken(TokenType.LPAREN, production, Production.BooleanExpr, false) && this.parseExpr([Production.Expr]) &&
+                       this.parseBoolOp(null, true) && this.parseExpr([Production.Expr]) && this.matchAndConsumeToken(TokenType.RPAREN, null, null, true)) {
                             this.cst.ascendTree();
                             return true;
             }
             if (expected) {
-                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.BOOL_EXPR_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== ( " + Production.Expr + " " + Production.BoolOp + " " + Production.Expr + " )");
                 this.error = true;
@@ -213,7 +213,7 @@ module JuiceC {
         }
 
         public parseBoolVal(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_BOOLVAL, production.concat([Production.BooleanExpr]), Production.BoolVal, false)) {
+            if (this.matchAndConsumeToken(TokenType.BOOLVAL, production.concat([Production.BooleanExpr]), Production.BoolVal, false)) {
                 // Ascend the tree after BoolVal is derived
                 this.cst.ascendTree();
                 return true;
@@ -223,13 +223,13 @@ module JuiceC {
         }
 
         public parseId(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_ID, production, Production.Id, false)) {
+            if (this.matchAndConsumeToken(TokenType.ID, production, Production.Id, false)) {
                 // Ascend the tree after Id is derived
                 this.cst.ascendTree();
                 return true;
             }
             if (expected) {
-                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_ID_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.ID_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== ::== " + Production.Char);
                 this.error = true;
@@ -238,7 +238,7 @@ module JuiceC {
         }
 
         public parseType(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_TYPE, production, Production.Type, false)) {
+            if (this.matchAndConsumeToken(TokenType.TYPE, production, Production.Type, false)) {
                 // Ascend the tree after Type is derived
                 this.cst.ascendTree();
                 return true;
@@ -248,7 +248,7 @@ module JuiceC {
         }
 
         public parseChar(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_CHAR, production, Production.Char, false)){ 
+            if (this.matchAndConsumeToken(TokenType.CHAR, production, Production.Char, false)){ 
                 // Ascend tree after Char is derived
                 this.cst.ascendTree();
                 return true;
@@ -258,7 +258,7 @@ module JuiceC {
         }
 
         public parseDigit(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_DIGIT, production, Production.Digit, false)) {
+            if (this.matchAndConsumeToken(TokenType.DIGIT, production, Production.Digit, false)) {
                 // Ascend tree after Digit is derived
                 this.cst.ascendTree();
                 return true;
@@ -268,7 +268,7 @@ module JuiceC {
         }
 
         public parseIntOp(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_INTOP, production, Production.IntOp, false)) {
+            if (this.matchAndConsumeToken(TokenType.INTOP, production, Production.IntOp, false)) {
                 // Ascend tree after IntOp is derived
                 this.cst.ascendTree();
                 return true;
@@ -278,12 +278,12 @@ module JuiceC {
         }
 
         public parseBoolOp(production: Array<Production>, expected: boolean): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_BOOLOP, production, Production.BoolOp, false)) {
+            if (this.matchAndConsumeToken(TokenType.BOOLOP, production, Production.BoolOp, false)) {
                 // Ascend tree after BoolOp is derived
                 this.cst.ascendTree();
                 return true;
             } else {
-                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_BOOL_OP_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.BOOL_OP_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== == | !=");
                 this.error = true;
@@ -292,7 +292,7 @@ module JuiceC {
         }
 
         public parseSpace(production: Array<Production>): boolean {
-            if (this.matchAndConsumeToken(TokenType.T_SPACE, production, Production.Space, false)) {
+            if (this.matchAndConsumeToken(TokenType.SPACE, production, Production.Space, false)) {
                 // Ascend tree after Space is derived
                 this.cst.ascendTree();
                 return true;
@@ -346,7 +346,7 @@ module JuiceC {
             } else {
                 // If token was expected and was not present, throw an error
                 if (expected) {
-                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.E_TOKEN_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                    this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.TOKEN_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr);
                     this.error = true;
                 }

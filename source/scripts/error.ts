@@ -11,33 +11,33 @@ module JuiceC {
     export const enum ErrorType {
 
         // Lexer errors
-        E_NO_END_QUOTE = "No End Quote in string literal",
-        E_NO_END_COMMENT = "No End Comment",
-        E_INVALID_T = "Invalid Token",
-        E_INVALID_T_STRING = "Invalid Token in string literal",
-        E_INVALID_T_COMMENT = "Invalid Token in Comment",
-        E_INVALID_NEW_LINE = "Invalid New Line",
+        NO_END_QUOTE = "No End Quote in string literal",
+        NO_END_COMMENT = "No End Comment",
+        INVALID_T = "Invalid Token",
+        INVALID_T_STRING = "Invalid Token in string literal",
+        INVALID_T_COMMENT = "Invalid Token in Comment",
+        INVALID_NEW_LINE = "Invalid New Line",
 
         // Parser errors
-        E_BLOCK_EXPECTED = "Block Expected",
-        E_PRINT_EXPECTED = "Print Statement Expected",
-        E_ASSIGNMENT_EXPECTED = "Assignment Statement Expected",
-        E_VAR_DECL_EXPECTED = "Variable Declaration Expected",
-        E_IF_EXPECTED = "If Statement Expected",
-        E_WHILE_EXPECTED = "While Statement Expected",
-        E_EXPR_EXPECTED = "Expression Expected",
-        E_INT_EXPR_EXPECTED = "Integer Expression Expected",
-        E_STRING_EXPR_EXPECTED = "String Expression Expected",
-        E_BOOL_EXPR_EXPECTED = "Boolean Expression Expected",
-        E_BOOL_VAL_EXPECTED = "Boolean Value Expected",
-        E_ID_EXPECTED = "ID Expected",
-        E_TYPE_EXPECTED = "Type Expected",
-        E_CHAR_EXPECTED = "Character Expected",
-        E_DIGIT_EXPECTED = "Digit Expected",
-        E_INT_OP_EXPECTED = "Integer Operation Expected",
-        E_BOOL_OP_EXPECTED = "Boolean Operation Expected",
-        E_SPACE_EXPECTED = "Space Expected",
-        E_TOKEN_EXPECTED = "Token Expected"
+        BLOCK_EXPECTED = "Block Expected",
+        PRINT_EXPECTED = "Print Statement Expected",
+        ASSIGNMENT_EXPECTED = "Assignment Statement Expected",
+        VAR_DECL_EXPECTED = "Variable Declaration Expected",
+        IF_EXPECTED = "If Statement Expected",
+        WHILE_EXPECTED = "While Statement Expected",
+        EXPR_EXPECTED = "Expression Expected",
+        INT_EXPR_EXPECTED = "Integer Expression Expected",
+        STRING_EXPR_EXPECTED = "String Expression Expected",
+        BOOL_EXPR_EXPECTED = "Boolean Expression Expected",
+        BOOL_VAL_EXPECTED = "Boolean Value Expected",
+        ID_EXPECTED = "ID Expected",
+        TYPE_EXPECTED = "Type Expected",
+        CHAR_EXPECTED = "Character Expected",
+        DIGIT_EXPECTED = "Digit Expected",
+        INT_OP_EXPECTED = "Integer Operation Expected",
+        BOOL_OP_EXPECTED = "Boolean Operation Expected",
+        SPACE_EXPECTED = "Space Expected",
+        TOKEN_EXPECTED = "Token Expected"
 
     }
 

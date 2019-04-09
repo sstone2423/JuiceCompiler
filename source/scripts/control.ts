@@ -119,10 +119,10 @@ module JuiceC {
                 if (_Control.lexWarning) {
                     for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
                         // Check for EOP warning
-                        if (lexResults[programIndex].warnings[i].warningType == WarningType.W_NO_EOP) {
+                        if (lexResults[programIndex].warnings[i].warningType == WarningType.NO_EOP) {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                             // Insert an EOP into the tokens array
-                            lexResults[programIndex].tokens.push(new Token(TokenType.T_EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
+                            lexResults[programIndex].tokens.push(new Token(TokenType.EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                         } else {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: Not really sure why I'm warning so oops?");
                         }
@@ -132,43 +132,43 @@ module JuiceC {
                 for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
                     switch (lexResults[programIndex].errors[i].errorType) {
                         // Invalid Token check
-                        case ErrorType.E_INVALID_T: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.INVALID_T: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Missing end of comment
-                        case ErrorType.E_NO_END_COMMENT: {
+                        case ErrorType.NO_END_COMMENT: {
                             _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Missing end of string quote
-                        case ErrorType.E_NO_END_QUOTE: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_NO_END_QUOTE + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.NO_END_QUOTE: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.NO_END_QUOTE + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Invalid token in string
-                        case ErrorType.E_INVALID_T_STRING: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T_STRING + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.INVALID_T_STRING: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T_STRING + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
                             break;
                         }
 
                         // Invalid token in comment
-                        case ErrorType.E_INVALID_T: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_T_COMMENT + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.INVALID_T: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T_COMMENT + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
                             break;
                         }
 
                         // Invalid new line
-                        case ErrorType.E_INVALID_NEW_LINE: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.E_INVALID_NEW_LINE + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.INVALID_NEW_LINE: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_NEW_LINE + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments");
                             break;
                         }
