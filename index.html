@@ -83,33 +83,30 @@
                   <label>AST</label>
                   <textarea class="form-control" id="ASTtext" rows="20" readonly></textarea>
                </div>
-               <div class="col-sm-5">
+               <div class="col-sm-7">
                      <label>AST</label>
                   <div id="tree-ast" class="tree"></div>
                </div>
-               <div class="col-sm-5">
-                  <div class="card-panel log" style="overflow-y: scroll">
-						   <h5 class="light">Symbol Table</h5>
-						   <table id="symbolTable" class="striped">
-							   <thead>
-								   <tr>
-									   <th>Program</th>
-                              <th>Key</th>
-                              <th>Type</th>
-                              <th>Scope</th>
-                              <th>Scope Level</th>
-                              <th>Line Number</th>
-                              <th>Col Number</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                              <tr></tr>
-                        </tbody>
-						   </table>
-                  </div>
-                  <div id="scopeTree" class="card-panel log">
-                     <h5 class="light">Scope Tree</h5>
-                     <textarea id="taScope" readonly disabled></textarea>
+               <div class="col-sm-3">
+						<h5>Symbol Table</h5>
+					   <table id="symbolTable" class="table table-bordered table-striped table-sm">
+						   <thead>
+							   <tr>
+								   <th>Program</th>
+                           <th>Key</th>
+                           <th>Type</th>
+                           <th>Scope</th>
+                           <th>Line</th>
+                           <th>Col</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                           <tr></tr>
+                     </tbody>
+					   </table>
+                  <div id="scopeTree" class="justify-content-md-center">
+                     <h5>Scope Tree</h5>
+                     <textarea id="taScope" rows="14" readonly disabled></textarea>
                   </div>
                </div>
             </div>

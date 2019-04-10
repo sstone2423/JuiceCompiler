@@ -108,7 +108,6 @@
                             "line": node.children[1].children[0].lineNum,
                             "col": node.children[1].children[0].colNum,
                             "scope": this.scopeTree.curr.value.id,
-                            "scopeLevel": this.currentScope
                         };
                         // Add to symbol table
                         this.symbols.push(symbol);
@@ -423,23 +422,23 @@
          * @param arr array of arrays that represent tree
          * @param level level of the tree we're currently at
          */
-        public printScopeTree(node){
-            let tree: Array<String> = [];
+        public printScopeTree(node) {
+            let tree: Array<string> = [];
             let level: number = 0;
-            if(node != null){
+            if (node != null) {
                 this.printScopeTreeHelper(node, level, tree, "");
             }
             return tree;
         }
 
-        private printScopeTreeHelper(node, level, tree, dash){
+        private printScopeTreeHelper(node, level, tree, dash) {
             // generate string with all vars
-            var varsString = "";
-            for(var key in node.value.table){
-                varsString += node.value.table[key].value.value + " " + key + " | ";
+            let varsString = "";
+            for (let key in node.value.buckets) { 
+                varsString += node.value.buckets[key].value.value + " " + key;
             }
-            tree.push(dash + " | [Scope " + node.value.id + "]: " + varsString);
-            for(var i=0; i<node.children.length; i++){
+            tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
+            for (let i = 0; i < node.children.length; i++) {
                 this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
             }
 }

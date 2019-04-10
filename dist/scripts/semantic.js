@@ -86,8 +86,7 @@ var JuiceC;
                             "key": id.value,
                             "line": node.children[1].children[0].lineNum,
                             "col": node.children[1].children[0].colNum,
-                            "scope": this.scopeTree.curr.value.id,
-                            "scopeLevel": this.currentScope
+                            "scope": this.scopeTree.curr.value.id
                         };
                         // Add to symbol table
                         this.symbols.push(symbol);
@@ -379,10 +378,10 @@ var JuiceC;
         Semantic.prototype.printScopeTreeHelper = function (node, level, tree, dash) {
             // generate string with all vars
             var varsString = "";
-            for (var key in node.value.table) {
-                varsString += node.value.table[key].value.value + " " + key + " | ";
+            for (var key in node.value.buckets) {
+                varsString += node.value.buckets[key].value.value + " " + key;
             }
-            tree.push(dash + " | [Scope " + node.value.id + "]: " + varsString);
+            tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
             for (var i = 0; i < node.children.length; i++) {
                 this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
             }

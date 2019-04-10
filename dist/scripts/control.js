@@ -128,11 +128,9 @@ var JuiceC;
                                     type.innerHTML = symbols[l].type;
                                     var scope = row.insertCell(3);
                                     scope.innerHTML = symbols[l].scope;
-                                    var scopeLevel = row.insertCell(4);
-                                    scopeLevel.innerHTML = symbols[l].scopeLevel;
-                                    var lineNum = row.insertCell(5);
+                                    var lineNum = row.insertCell(4);
                                     lineNum.innerHTML = symbols[l].line;
-                                    var colNum = row.insertCell(6);
+                                    var colNum = row.insertCell(5);
                                     colNum.innerHTML = symbols[l].col;
                                 }
                                 // Fill out scope tree
@@ -141,7 +139,7 @@ var JuiceC;
                                 scopeInput.value += "Program " + i + "\n";
                                 // Display scope tree in scope tree field
                                 for (var m = 0; m < scopeTreeArr.length; m++) {
-                                    scopeInput.value += scopeTreeArr[i] + "\n";
+                                    scopeInput.value += scopeTreeArr[m] + "\n";
                                 }
                             }
                             else {

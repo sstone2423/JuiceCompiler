@@ -148,11 +148,9 @@ module JuiceC {
                                     type.innerHTML = symbols[l].type;
                                     let scope = row.insertCell(3);
                                     scope.innerHTML = symbols[l].scope;
-                                    let scopeLevel = row.insertCell(4);
-                                    scopeLevel.innerHTML = symbols[l].scopeLevel;
-                                    let lineNum = row.insertCell(5);
+                                    let lineNum = row.insertCell(4);
                                     lineNum.innerHTML = symbols[l].line;
-                                    let colNum = row.insertCell(6);
+                                    let colNum = row.insertCell(5);
                                     colNum.innerHTML = symbols[l].col;
                                 }
                                 // Fill out scope tree
@@ -161,7 +159,7 @@ module JuiceC {
                                 scopeInput.value += "Program " + i + "\n";
                                 // Display scope tree in scope tree field
                                 for (let m = 0; m < scopeTreeArr.length; m++) {
-                                    scopeInput.value += scopeTreeArr[i] + "\n";
+                                    scopeInput.value += scopeTreeArr[m] + "\n";
                                 }
                             } else {
                                 _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
