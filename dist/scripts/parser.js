@@ -224,8 +224,8 @@ var JuiceC;
             }
             if (expected) {
                 this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + "ID Expected" /* ID_EXPECTED */ + " - found [ " + this.tokens[this.currentTokenIndex].type
-                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Expr
-                    + " ::== ::== " + JuiceC.Production.Char);
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + JuiceC.Production.Id
+                    + " ::== " + JuiceC.Production.Char);
                 this.error = true;
                 this.errors++;
             }

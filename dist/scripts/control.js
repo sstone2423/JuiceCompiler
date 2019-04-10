@@ -71,7 +71,6 @@ var JuiceC;
             _Control.putMessage(INFO + "\tCompilation started");
             // Grab the tokens, warnings, errors, and statuses from the lexer
             _Control.lexResults = _Lexer.lex();
-            console.log(_Control.lexResults);
             // Iterate through each program result
             for (var programIndex = 0; programIndex < _Control.lexResults.length; programIndex++) {
                 // Check if there were warnings
@@ -154,21 +153,21 @@ var JuiceC;
                                         // Uninitialized Variable
                                         case "Uninitialized Variable" /* UNINIT_VAR */: {
                                             _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value
-                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum
+                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum
                                                 + " ), but never initialized");
                                             break;
                                         }
                                         // Unused Variable
                                         case "Unused Variable" /* UNUSED_VAR */: {
                                             _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value
-                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum
+                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum
                                                 + " ), but never used");
                                             break;
                                         }
                                         // Used before initialized Variable
                                         case "Variable Used Before Being Initialized" /* USED_BEFORE_INIT */: {
                                             _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value
-                                                + " ] was used before being initialized at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum
+                                                + " ] was used before being initialized at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum
                                                 + " )");
                                             break;
                                         }
@@ -177,48 +176,49 @@ var JuiceC;
                                         }
                                     }
                                 }
-                                // Print errors
-                                if (semanticResult.errors.length > 0) {
-                                    for (var j = 0; j < semanticResult.errors.length; j++) {
-                                        switch (semanticResult.errors[j].errorType) {
-                                            // Duplicate Variable in scope
-                                            case "Duplicate Variable" /* DUPLICATE_VARIABLE */: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value
-                                                    + " ] was declared at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum
-                                                    + " ), but the variable was already declared at ( " + semanticResult.errors[j].firstDeclareLine + ":" + semanticResult.errors[j].firstDeclareCol + " )");
-                                                break;
-                                            }
-                                            // Type mismatch
-                                            case "Type Mismatch" /* TYPE_MISMATCH */: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value
-                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType
-                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
-                                                break;
-                                            }
-                                            // Undeclared variable being assigned
-                                            case "Undeclared Variable" /* UNDECLARED_VARIABLE */: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value
-                                                    + " ] was assigned at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum
-                                                    + " ), but was not declared beforehand");
-                                                break;
-                                            }
-                                            // Incorrect Int expression
-                                            case "Incorrect Integer Expression" /* INCORRECT_INT_EXPR */: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value
-                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType
-                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
-                                                break;
-                                            }
-                                            // Incorrect type comparison
-                                            case "Incorrect Type Comparison" /* INCORRECT_TYPE_COMPAR */: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value
-                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was compared to type [ " + semanticResult.errors[j].idType
-                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
-                                                break;
-                                            }
-                                            default: {
-                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
-                                            }
+                            }
+                            // Print errors
+                            if (semanticResult.errors.length > 0) {
+                                for (var j = 0; j < semanticResult.errors.length; j++) {
+                                    switch (semanticResult.errors[j].errorType) {
+                                        // Duplicate Variable in scope
+                                        case "Duplicate Variable" /* DUPLICATE_VARIABLE */: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ " + semanticResult.errors[j].value.value
+                                                + " ] was declared at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum
+                                                + " ), but the variable was already declared within the same scope at ( " + semanticResult.errors[j].firstDeclareLine
+                                                + " : " + semanticResult.errors[j].firstDeclareCol + " )");
+                                            break;
+                                        }
+                                        // Type mismatch
+                                        case "Type Mismatch" /* TYPE_MISMATCH */: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Type Mismatch - Variable [ " + semanticResult.errors[j].value.value
+                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType.value
+                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
+                                            break;
+                                        }
+                                        // Undeclared variable being assigned
+                                        case "Undeclared Variable" /* UNDECLARED_VARIABLE */: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Undeclared Variable - [ " + semanticResult.errors[j].value.value
+                                                + " ] was assigned at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum
+                                                + " ), but was not declared beforehand");
+                                            break;
+                                        }
+                                        // Incorrect Int expression
+                                        case "Incorrect Integer Expression" /* INCORRECT_INT_EXPR */: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Int Expression - [ " + semanticResult.errors[j].value
+                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType
+                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
+                                            break;
+                                        }
+                                        // Incorrect type comparison
+                                        case "Incorrect Type Comparison" /* INCORRECT_TYPE_COMPAR */: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Type Comparison - [ " + semanticResult.errors[j].value
+                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was compared to type [ " + semanticResult.errors[j].idType
+                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
+                                            break;
+                                        }
+                                        default: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
                                         }
                                     }
                                 }
@@ -300,8 +300,8 @@ var JuiceC;
                         }
                         // Unknown error
                         default: {
-                            _Control.putMessage(DEBUG + " - " + PARSER + " - ERROR: Unknown error found [ " + lexResults[programIndex].errors[i].value
-                                + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Oops");
+                            _Control.putMessage(DEBUG + " - " + JuiceC.Lexer + " - ERROR: Unknown error found [ " + lexResults[programIndex].errors[i].value
+                                + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
                     }

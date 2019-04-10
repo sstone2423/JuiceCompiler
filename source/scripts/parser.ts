@@ -237,8 +237,8 @@ module JuiceC {
             }
             if (expected) {
                 this.log.push(DEBUG + " - " + PARSER + " - ERROR: " + ErrorType.ID_EXPECTED + " - found [ " + this.tokens[this.currentTokenIndex].type 
-                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
-                    + " ::== ::== " + Production.Char);
+                    + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Id 
+                    + " ::== " + Production.Char);
                 this.error = true;
                 this.errors++;
             }

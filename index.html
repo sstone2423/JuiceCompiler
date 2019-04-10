@@ -30,20 +30,36 @@
                           Sample tests
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#">PASS Lex/Parse - Simple Test 1</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#">PASS Lex/Parse - Simple Test 2</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#">PASS Lex/Parse - Full Program</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#">PASS Lex/Parse - Multiple Programs</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#">PASS Lex FAIL Parse- Crazy One Liner</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#">PASS Lex/Parse - While Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#">PASS Lex/Parse - If Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#">PASS Lex/Parse - Missing EOP</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#">PASS Lex/Parse - Alan's Test</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.typeInsideString()" href="#">FAIL - Type Inside of String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#">FAIL - EOP Inside of String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#">FAIL - Unterminated Comment</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#">FAIL - Unterminated String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#">FAIL - Extra Right Brace</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Simple Test 1</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Print Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse - Full Program</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse - Multiple Programs</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse - While Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse - If Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse - Missing EOP</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#"><span class="badge badge-pill badge-success">P</span><span class="badge badge-pill badge-danger">F</span> - Alan's Test</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - EOP Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Unterminated Comment</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Unterminated String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidPrint()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Invalid Print</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Crazy One Liner</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.typeInsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Type Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Extra Right Brace</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidStatementList()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid StatementList</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidVarDecl()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid Variable Declaration</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incompleteBoolExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Incomplete Bool Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incompleteIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Incomplete Int Expression</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.undeclaredVar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Undeclared Variable</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.duplicateVar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Duplicate Variable</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.typeMismatch()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Type Mismatch</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incorrectTypeCompar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Type Comparison</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incorrectIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Int Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.tienTest()" href="#">Derp - tienTest</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.tienBooleanHell()" href="#">Derp - tienBooleanHell</a>                        
                         </div>
                      </div>
                   <textarea class="form-control" id="sourceCode" rows="15"></textarea>
