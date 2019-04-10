@@ -16,7 +16,7 @@
         totalScopes: number;
         currentScope: number;
         log: Array<string>;
-        symbols: Array<any>; // keeps array of symbols found
+        symbols: Array<any>;
         
 
         constructor(cst: Tree) {
@@ -54,7 +54,7 @@
         public traverse(node) {
             switch (node.value) {
                 case Production.Block:
-                // Scope tree: add a scope to the tree whenever we encounter a Block
+                    // Scope tree: add a scope to the tree whenever we encounter a Block
                     // Increase the number of scopes that have been declared
                     // Increase the scope level as we are on a new one
                     let newScope = new ScopeHashMap(node.lineNum, node.colNum, this.currentScope);
@@ -72,7 +72,6 @@
                     if (this.ast.curr != null) {
                         this.ast.ascendTree();
                     }
-
                     // Decrease the currentScope as we have completed this scope level
                     if (this.scopeTree.curr != null) {
                         this.scopeTree.ascendTree();
@@ -145,7 +144,6 @@
                     let expressionType = this.traverse(node.children[2]);
                     this.ast.ascendTree();
                     // Check for type match
-                    // handles case if traverse() returns a token
                     if (expressionType != null && expressionType.value != null) {
                         expressionType = expressionType.value;
                     }
@@ -185,32 +183,28 @@
                     this.markAsUsed(node.children[0]);
                     // Look for used but uninitialized variables
                     this.checkUsedButUninit(node.children[0]);
-                    // return the id's type
+
                     return foundType;
-                    
-                    break;
 
                 case Production.IntExpr:
-                    // figure out which intexpr this is
-                    // more than just a digit
+                    // Check if it is not a digit
                     if (node.children.length > 1) {
                         this.ast.addNode(new Token(TokenType.ADDITION, "Addition", null, null));
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
-                        // figure out expression. make sure return type is int
+
+                        // Ensure return type is int
                         var exprType = this.traverse(node.children[2]);
-                        // handles case if traverse() returns a token
                         if (exprType.value != null) {
                             exprType = exprType.value;
                         }
-
                         if (exprType != VariableType.Int) {
                             this.error = true;
                             this.errors.push(new TypeError(ErrorType.INCORRECT_INT_EXPR, node.children[2].value, node.children[2].lineNum, node.children[2].colNum, VariableType.Int, exprType));
                         }
                         this.ast.ascendTree();
                     }
-                    // just a digit
+                    // If it is a digit
                     else {
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
@@ -220,8 +214,7 @@
                     return VariableType.Int;
 
                 case Production.BooleanExpr:
-                    // figure out which boolexpr this is.
-                    // more than just a boolval
+                    // Check if it is not a boolval
                     if (node.children.length > 1) {
                         if (node.children[2].children[0].value.value == "==") {
                             this.ast.addNode(new Token(TokenType.EQUALS, "Equals", null, null));
@@ -229,10 +222,10 @@
                         else {
                             this.ast.addNode(new Token(TokenType.NOTEQUALS, "NotEquals", null, null));
                         }
+
                         // Get types returned by the two Expr children and make sure they're the same
                         var firstExprType = this.traverse(node.children[1]);
                         var secondExprType = this.traverse(node.children[3]);
-                        // handles case if traverse() returns a token
                         if (firstExprType != null && firstExprType.value != null) {
                             firstExprType = firstExprType.value;
                         }
@@ -245,7 +238,7 @@
                         }
                         this.ast.ascendTree();
                     }
-                    // just a boolval
+                    // If it is a boolval
                     else {
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
@@ -255,8 +248,29 @@
                     return VariableType.Boolean;
 
                 case Production.StringExpr:
+                    // Generate the string until end of the charlist
+                    // Surround string in quotes
+                    let stringBuilder = ["\""];
+                    let currCharList = node.children[1];
+                    let lastCharList = false;
+                    // Check for empty string
+                    if (node.children.length == 2) {
+                        lastCharList = true;
+                    }
+                    while (!lastCharList) {
+                        stringBuilder.push(currCharList.children[0].children[0].value.value);
+                        if (currCharList.children.length == 1) {
+                            lastCharList = true;
+                            continue;
+                        }
+                        currCharList = currCharList.children[1];
+                    }
+                    stringBuilder.push("\"");
+                    let resString = stringBuilder.join("");
+                    this.ast.addNode(new Token(TokenType.STRING, resString, null, null));
+                    this.ast.ascendTree();
 
-                    break;
+                    return VariableType.String;
 
                 default:
                     // Traverse node's children
@@ -285,7 +299,7 @@
         }
 
         public markAsInitialized(node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -312,7 +326,7 @@
         }
 
         public markAsUsed(node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -339,7 +353,7 @@
         }
 
         public checkUsedButUninit(node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -366,7 +380,7 @@
         }
 
         public checkScopes(node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             let ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -397,16 +411,13 @@
             for (let key in node.value.buckets) {
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
-                    // variable is uninitialized
                     this.warnings.push(new ScopeWarning(WarningType.UNINIT_VAR, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
-                    // if variable is uninitialized, but used, issue warning
                     if (node.value.buckets[key].used == true) {
                          this.warnings.push(new ScopeWarning(WarningType.USED_BEFORE_INIT, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                     }
                 }
                 // Look for unused variables
                 if (node.value.buckets[key].used == false && node.value.buckets[key].initialized == true) {
-                    // variable is unused
                     this.warnings.push(new ScopeWarning(WarningType.UNUSED_VAR, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                 }
             }
@@ -416,12 +427,7 @@
             }
         }
 
-        /**
-         * Traverses the scope tree and returns a string representation
-         * @param node the node whose value we're adding to string rep
-         * @param arr array of arrays that represent tree
-         * @param level level of the tree we're currently at
-         */
+        // Traverses the scope tree and returns a string representation
         public printScopeTree(node) {
             let tree: Array<string> = [];
             let level: number = 0;
@@ -432,10 +438,9 @@
         }
 
         private printScopeTreeHelper(node, level, tree, dash) {
-            // generate string with all vars
             let varsString = "";
             for (let key in node.value.buckets) { 
-                varsString += node.value.buckets[key].value.value + " " + key;
+                varsString += node.value.buckets[key].value.value + " " + key + ", ";
             }
             tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
             for (let i = 0; i < node.children.length; i++) {

@@ -120,7 +120,6 @@ var JuiceC;
                     var expressionType = this.traverse(node.children[2]);
                     this.ast.ascendTree();
                     // Check for type match
-                    // handles case if traverse() returns a token
                     if (expressionType != null && expressionType.value != null) {
                         expressionType = expressionType.value;
                     }
@@ -154,19 +153,15 @@ var JuiceC;
                     this.markAsUsed(node.children[0]);
                     // Look for used but uninitialized variables
                     this.checkUsedButUninit(node.children[0]);
-                    // return the id's type
                     return foundType;
-                    break;
                 case JuiceC.Production.IntExpr:
-                    // figure out which intexpr this is
-                    // more than just a digit
+                    // Check if it is not a digit
                     if (node.children.length > 1) {
                         this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.ADDITION, "Addition", null, null));
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
-                        // figure out expression. make sure return type is int
+                        // Ensure return type is int
                         var exprType = this.traverse(node.children[2]);
-                        // handles case if traverse() returns a token
                         if (exprType.value != null) {
                             exprType = exprType.value;
                         }
@@ -176,7 +171,7 @@ var JuiceC;
                         }
                         this.ast.ascendTree();
                     }
-                    // just a digit
+                    // If it is a digit
                     else {
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
@@ -184,8 +179,7 @@ var JuiceC;
                     // return the type returned by intexpr
                     return JuiceC.VariableType.Int;
                 case JuiceC.Production.BooleanExpr:
-                    // figure out which boolexpr this is.
-                    // more than just a boolval
+                    // Check if it is not a boolval
                     if (node.children.length > 1) {
                         if (node.children[2].children[0].value.value == "==") {
                             this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.EQUALS, "Equals", null, null));
@@ -196,7 +190,6 @@ var JuiceC;
                         // Get types returned by the two Expr children and make sure they're the same
                         var firstExprType = this.traverse(node.children[1]);
                         var secondExprType = this.traverse(node.children[3]);
-                        // handles case if traverse() returns a token
                         if (firstExprType != null && firstExprType.value != null) {
                             firstExprType = firstExprType.value;
                         }
@@ -209,7 +202,7 @@ var JuiceC;
                         }
                         this.ast.ascendTree();
                     }
-                    // just a boolval
+                    // If it is a boolval
                     else {
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
@@ -217,7 +210,28 @@ var JuiceC;
                     // return the type returned by boolexpr
                     return JuiceC.VariableType.Boolean;
                 case JuiceC.Production.StringExpr:
-                    break;
+                    // Generate the string until end of the charlist
+                    // Surround string in quotes
+                    var stringBuilder = ["\""];
+                    var currCharList = node.children[1];
+                    var lastCharList = false;
+                    // Check for empty string
+                    if (node.children.length == 2) {
+                        lastCharList = true;
+                    }
+                    while (!lastCharList) {
+                        stringBuilder.push(currCharList.children[0].children[0].value.value);
+                        if (currCharList.children.length == 1) {
+                            lastCharList = true;
+                            continue;
+                        }
+                        currCharList = currCharList.children[1];
+                    }
+                    stringBuilder.push("\"");
+                    var resString = stringBuilder.join("");
+                    this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.STRING, resString, null, null));
+                    this.ast.ascendTree();
+                    return JuiceC.VariableType.String;
                 default:
                     // Traverse node's children
                     for (var i = 0; i < node.children.length; i++) {
@@ -243,7 +257,7 @@ var JuiceC;
             }
         };
         Semantic.prototype.markAsInitialized = function (node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -267,7 +281,7 @@ var JuiceC;
             }
         };
         Semantic.prototype.markAsUsed = function (node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -291,7 +305,7 @@ var JuiceC;
             }
         };
         Semantic.prototype.checkUsedButUninit = function (node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -315,7 +329,7 @@ var JuiceC;
             }
         };
         Semantic.prototype.checkScopes = function (node) {
-            // pointer to current position in scope tree
+            // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
@@ -343,16 +357,13 @@ var JuiceC;
             for (var key in node.value.buckets) {
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
-                    // variable is uninitialized
                     this.warnings.push(new JuiceC.ScopeWarning("Uninitialized Variable" /* UNINIT_VAR */, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
-                    // if variable is uninitialized, but used, issue warning
                     if (node.value.buckets[key].used == true) {
                         this.warnings.push(new JuiceC.ScopeWarning("Variable Used Before Being Initialized" /* USED_BEFORE_INIT */, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                     }
                 }
                 // Look for unused variables
                 if (node.value.buckets[key].used == false && node.value.buckets[key].initialized == true) {
-                    // variable is unused
                     this.warnings.push(new JuiceC.ScopeWarning("Unused Variable" /* UNUSED_VAR */, key, node.value.buckets[key].value.lineNum, node.value.buckets[key].value.colNum, node.value));
                 }
             }
@@ -361,12 +372,7 @@ var JuiceC;
                 this.findWarnings(node.children[i]);
             }
         };
-        /**
-         * Traverses the scope tree and returns a string representation
-         * @param node the node whose value we're adding to string rep
-         * @param arr array of arrays that represent tree
-         * @param level level of the tree we're currently at
-         */
+        // Traverses the scope tree and returns a string representation
         Semantic.prototype.printScopeTree = function (node) {
             var tree = [];
             var level = 0;
@@ -376,10 +382,9 @@ var JuiceC;
             return tree;
         };
         Semantic.prototype.printScopeTreeHelper = function (node, level, tree, dash) {
-            // generate string with all vars
             var varsString = "";
             for (var key in node.value.buckets) {
-                varsString += node.value.buckets[key].value.value + " " + key;
+                varsString += node.value.buckets[key].value.value + " " + key + ", ";
             }
             tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
             for (var i = 0; i < node.children.length; i++) {
