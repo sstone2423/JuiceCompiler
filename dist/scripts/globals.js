@@ -11,7 +11,12 @@ var INFO = "INFO";
 var DEBUG = "DEBUG";
 var LEXER = "Lexer";
 var PARSER = "Parser";
+var SEMANTIC = "Semantic";
+var VALID = "VALID";
 var EOF = "$";
+var SCOPE = "SCOPE";
+var WARNING = "WARNING";
+var ERROR = "ERROR";
 // Regex
 var rLBRACE = new RegExp('{$'); // Left Brace
 var rRBRACE = new RegExp('}$'); // Right brace

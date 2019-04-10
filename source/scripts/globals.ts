@@ -13,7 +13,12 @@ const INFO: string = "INFO";
 const DEBUG: string = "DEBUG";
 const LEXER: string = "Lexer";
 const PARSER: string = "Parser";
+const SEMANTIC: string = "Semantic";
+const VALID: string = "VALID";
 const EOF: string = "$";
+const SCOPE: string = "SCOPE";
+const WARNING: string = "WARNING";
+const ERROR: string = "ERROR";
 
 // Regex
 const rLBRACE = new RegExp('{$'); // Left Brace

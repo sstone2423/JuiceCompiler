@@ -23,33 +23,49 @@
             <!--Source code and Output row-->
             <div class="row justify-content-md-center">
                <!--Source code column-->
-               <div class="col-sm-5">
+               <div class="col-sm-4">
                   <label for="sourceCode">Source Code</label>
                   <div class="dropdown float-right">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Sample tests
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#">PASS Lex/Parse - Simple Test 1</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#">PASS Lex/Parse - Simple Test 2</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#">PASS Lex/Parse - Full Program</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#">PASS Lex/Parse - Multiple Programs</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#">PASS Lex FAIL Parse- Crazy One Liner</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#">PASS Lex/Parse - While Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#">PASS Lex/Parse - If Statement</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#">PASS Lex/Parse - Missing EOP</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#">PASS Lex/Parse - Alan's Test</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.typeInsideString()" href="#">FAIL - Type Inside of String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#">FAIL - EOP Inside of String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#">FAIL - Unterminated Comment</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#">FAIL - Unterminated String</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#">FAIL - Extra Right Brace</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest1()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Simple Test 1</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.simpleTest2()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Print Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.fullProgram()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Full Program</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.multiplePrograms()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Multiple Programs</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - While Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - If Statement</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Missing EOP</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#"><span class="badge badge-pill badge-success">P</span><span class="badge badge-pill badge-danger">F</span> - Alan's Test</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - EOP Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedComment()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Unterminated Comment</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.unterminatedString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Unterminated String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidPrint()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - Invalid Print</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.crazyOneLiner()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Crazy One Liner</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.typeInsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Type Inside of String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.extraRightBrace()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Extra Right Brace</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidStatementList()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid StatementList</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.invalidVarDecl()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Invalid Variable Declaration</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incompleteBoolExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Incomplete Bool Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incompleteIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Parse - Incomplete Int Expression</a>
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.undeclaredVar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Undeclared Variable</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.duplicateVar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Duplicate Variable</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.typeMismatch()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Type Mismatch</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incorrectTypeCompar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Type Comparison</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.incorrectIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Int Expression</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.tienTest()" href="#">Derp - tienTest</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.tienBooleanHell()" href="#">Derp - tienBooleanHell</a>                        
                         </div>
                      </div>
-                  <textarea class="form-control" id="sourceCode" rows="20"></textarea>
+                  <textarea class="form-control" id="sourceCode" rows="15"></textarea>
                </div>
                <!--Output column-->
-               <div class="col-sm-5">
+               <div class="col-sm-7">
                   <label for="verboseCheck" class="form-check-label">Verbose Mode</label>
                   <input id="verboseCheck" data-toggle="toggle" data-size="sm" data-on="On" data-off="Off" data-onstyle="primary" data-offstyle="danger" type="checkbox" checked="checked">
                   <div class="float-right">
@@ -64,17 +80,53 @@
                      <button type="button" class="btn btn-primary" id="btnCompile" onclick="JuiceC.Control.btnCompile_click()">Compile</button>
                </div>
             </div>
+            <hr>
             <!--CST row-->
             <div class="row justify-content-md-center">
-               <div class="col-sm-5">
+               <div class="col-sm-3">
                   <label>CST</label>
                   <textarea class="form-control" id="CSTtext" rows="20" readonly></textarea>
                </div>
-               <div class="col-sm-7">
+               <div class="col-sm-9">
                      <label>CST</label>
                   <div id="tree-cst" class="tree"></div>
                </div>
             </div>
+            <hr>
+            <!--AST row-->
+            <div class="row justify-content-md-center">
+               <div class="col-sm-2">
+                  <label>AST</label>
+                  <textarea class="form-control" id="ASTtext" rows="20" readonly></textarea>
+               </div>
+               <div class="col-sm-7">
+                     <label>AST</label>
+                  <div id="tree-ast" class="tree"></div>
+               </div>
+               <div class="col-sm-3">
+						<h5>Symbol Table</h5>
+					   <table id="symbolTable" class="table table-bordered table-striped table-sm">
+						   <thead>
+							   <tr>
+								   <th>Program</th>
+                           <th>Key</th>
+                           <th>Type</th>
+                           <th>Scope</th>
+                           <th>Line</th>
+                           <th>Col</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                           <tr></tr>
+                     </tbody>
+					   </table>
+                  <div id="scopeTree" class="justify-content-md-center">
+                     <h5>Scope Tree</h5>
+                     <textarea id="taScope" rows="14" readonly disabled></textarea>
+                  </div>
+               </div>
+            </div>
+            
          </div>
       </div>
    </div>
@@ -115,6 +167,8 @@
    <script type="text/javascript" src="dist/scripts/production.js"></script>
    <script type="text/javascript" src="dist/scripts/lexer.js"></script>
    <script type="text/javascript" src="dist/scripts/parser.js"></script>
+   <script type="text/javascript" src="dist/scripts/scope.js"></script>
+   <script type="text/javascript" src="dist/scripts/semantic.js"></script>
    <script type="text/javascript" src="dist/scripts/test.js"></script>
 </body>
 </html>

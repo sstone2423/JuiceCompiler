@@ -17,10 +17,10 @@ module JuiceC {
             }
 
             // Adds non-terminal node to tree
-            public addNTNode(production: Production, lineNumber: number, colNumber: number) {
+            public addNTNode(production: Production, lineNum: number, colNum: number) {
                 let node = new NonTerminalTreeNode(production);
-                node.lineNumber = lineNumber;
-                node.colNumber = colNumber;
+                node.lineNum = lineNum;
+                node.colNum = colNum;
                 if (this.root == null) {
                     this.root = node;
                     this.curr = node;
@@ -34,10 +34,10 @@ module JuiceC {
             }
 
             // Adds terminal node to tree AKA leaf node
-            public addTNode(token: Token, lineNumber: number, colNumber: number) {
+            public addTNode(token: Token, lineNum: number, colNum: number) {
                 let node = new TerminalTreeNode(token);
-                node.lineNumber = lineNumber;
-                node.colNumber = colNumber;
+                node.lineNum = lineNum;
+                node.colNum = colNum;
                 if (this.root == null) {
                     this.root = node;
                     this.curr = node;
@@ -89,6 +89,19 @@ module JuiceC {
                 return {"tree": tree, "treant": treantTree};
             }
 
+            /**
+             * Prints the tree in dfs for AST display
+             */
+            public traverseTreeAST(treantTree, programCounter) {
+                let tree: Array<string> = [];
+                let level: number = 0;
+                if (this.root != null) {
+                    this.DFSAST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
+                }
+                // Return array of nodes and tree config
+                return {"tree": tree, "treant": treantTree};
+            }
+
             // Returns an array representation of depth-first search of tree
             public traverseTree() {
                 let tree: Array<TreeNode> = [];
@@ -106,9 +119,7 @@ module JuiceC {
                 }
             }
             
-            /**
-             * Helper for traverseTreeCST
-             */
+            // Helper for traverseTreeCST
             private DFSCST(node, level, tree, dash, treantTree, programCounter) {
                 let child = {};
                 if (node.value instanceof Token) {
@@ -141,6 +152,45 @@ module JuiceC {
                     this.DFSCST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
                 }
             }
+
+            /**
+             * Helper for traverseTreeAST
+             */
+            private DFSAST(node, level, tree, dash, treantTree, programCounter) {
+                let child = {};
+                // Check if null to find appropriate value to place in tree
+                // Add new node to children array passed
+                // Pass reference to new children array to next call
+                if (node.value.value != null) {
+                    var nodeValue = node.value.value;
+                    // if node value is Block, put what program number it is
+                    if (nodeValue == "Block" && level == 0) {
+                        nodeValue = "Block" + "(Program" + programCounter + ")";
+                    }
+                    tree.push(dash + nodeValue);
+                    child = {
+                        text: { name: nodeValue + " " },
+                        children: []
+                    }
+                } else {
+                    var nodeValue = node.value;
+                    // if node value is Block, put what program number it is
+                    if(nodeValue == "Block" && level == 0){
+                        nodeValue = "Block" + "(Program" + programCounter + ")";
+                    }
+                    tree.push(dash + nodeValue);
+                    child = {
+                        text: { name: nodeValue + " " },
+                        children: []
+                    }
+                }
+                treantTree.push(child);
+                for (let i = 0; i < node.children.length; i++) {
+                    // to next call of DFS, increase level, pass the tree array, increase the dash by one dash, and pass
+                    // the reference to the next children array
+                    this.DFSAST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
+                }
+            }
         }
     
         // Implementation of a TreeNode that makes up a Tree
@@ -158,8 +208,8 @@ module JuiceC {
         // A TreeNode that represents NonTerminals
         export class NonTerminalTreeNode extends TreeNode {
             value: Production;
-            lineNumber: number;
-            colNumber: number;
+            lineNum: number;
+            colNum: number;
             super(value: Production) {
                 this.value = value;
             }
@@ -168,8 +218,8 @@ module JuiceC {
         // A TreeNode that represents Terminals
         export class TerminalTreeNode extends TreeNode {
             value: Token;
-            lineNumber: number;
-            colNumber: number;
+            lineNum: number;
+            colNum: number;
             super(value: Token) {
                 this.value = value;
             }
@@ -181,6 +231,6 @@ module JuiceC {
             super(value: any){
                 this.value = value;
             }
-}
+        }
 
 }
