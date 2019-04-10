@@ -90,36 +90,36 @@ module JuiceC {
             _Control.lexResults = _Lexer.lex();
             console.log(_Control.lexResults);
             // Iterate through each program result
-            for (let i = 0; i < _Control.lexResults.length; i++) {
+            for (let programIndex = 0; programIndex < _Control.lexResults.length; programIndex++) {
                 // Check if there were warnings
-                if (_Control.lexResults[i].warnings.length != 0) {
+                if (_Control.lexResults[programIndex].warnings.length != 0) {
                     _Control.lexWarning = true;
                 } else {
                     _Control.lexWarning = false;
                 }
 
                 // Output the log if there are any errors
-                if (_Control.lexResults[i].errors.length != 0) {
-                    _Control.prepareLexLog(i);
+                if (_Control.lexResults[programIndex].errors.length != 0) {
+                    _Control.prepareLexLog(programIndex);
                     _Control.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
                     // Save the lexer error state
                     _Control.lexError = true;
                 } 
                 // If no tokens are found, output an error
-                else if (_Control.lexResults[i].tokens.length == 0) {
+                else if (_Control.lexResults[programIndex].tokens.length == 0) {
                     _Control.putMessage(INFO + "\tCompilation failed due to no tokens being found. Where's the code?");
                 } // Otherwise continue to output the lex log
                 else {
-                    _Control.prepareLexLog(i);
+                    _Control.prepareLexLog(programIndex);
                     // Only parse if there were no errors. No need to waste time and resources
-                    _Control.putMessage(INFO + "\tParsing Program " + (i + 1));
-                    let parseResult = _Parser.parse(_Control.lexResults[i].tokens);
-                    _Control.parserLog(parseResult, i);
+                    _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
+                    let parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
+                    _Control.parserLog(parseResult, programIndex);
 
                     // Semantic analysis only if there were no parser errors
                     if (!parseResult.error) {
                         let _Semantic = new Semantic(parseResult.cst);
-                        _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (i + 1));
+                        _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
                         let semanticResult = _Semantic.analyze();
 
                         if (!semanticResult.error) {
@@ -128,7 +128,7 @@ module JuiceC {
                                     _Control.putMessage(semanticResult.log[j]);
                                 }
                             
-                                let ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, i);
+                                let ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 for (let k = 0; k < ast.tree.length; k++) {
                                     (<HTMLInputElement>document.getElementById("ASTtext")).value += ast.tree[k] + "\n";
                                 }
@@ -141,7 +141,7 @@ module JuiceC {
                                     let table = (<HTMLTableElement>document.getElementById("symbolTable"));
                                     let row = table.insertRow(-1);
                                     let program = row.insertCell(0);
-                                    program.innerHTML = i.toString();
+                                    program.innerHTML = (programIndex + 1).toString();
                                     let key = row.insertCell(1);
                                     key.innerHTML = symbols[l].key;
                                     let type = row.insertCell(2);
@@ -156,17 +156,103 @@ module JuiceC {
                                 // Fill out scope tree
                                 let scopeTreeArr = _Semantic.printScopeTree(semanticResult.scopeTree.root);
                                 let scopeInput = (<HTMLInputElement>document.getElementById("taScope"));
-                                scopeInput.value += "Program " + i + "\n";
+                                scopeInput.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
                                 for (let m = 0; m < scopeTreeArr.length; m++) {
                                     scopeInput.value += scopeTreeArr[m] + "\n";
                                 }
-                            } else {
-                                _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
                             }
-                            
-                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors.length + " ERROR(S)");
+                        } else {
+                            _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
                         }
+                        if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
+                            // Print warnings
+                            if (semanticResult.warnings.length > 0) {
+                                for (let j = 0; j < semanticResult.warnings.length; j++) {
+                                    switch (semanticResult.warnings[j].warningType) {
+                                        // Uninitialized Variable
+                                        case WarningType.UNINIT_VAR: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
+                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum 
+                                                + " ), but never initialized");
+                                            break;
+                                        }
+
+                                        // Unused Variable
+                                        case WarningType.UNUSED_VAR: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
+                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum 
+                                                + " ), but never used");
+                                            break;
+                                        }
+
+                                        // Used before initialized Variable
+                                        case WarningType.USED_BEFORE_INIT: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
+                                                + " ] was used before being initialized at ( " + semanticResult.warnings[j].lineNum + ":" + semanticResult.warnings[j].colNum 
+                                                + " )");
+                                            break;
+                                        }
+
+                                        default: {
+                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
+                                        }
+                                    }
+                                }
+                                // Print errors
+                                if (semanticResult.errors.length > 0) {
+                                    for (let j = 0; j < semanticResult.errors.length; j++) {
+                                        switch (semanticResult.errors[j].errorType) {
+                                            // Duplicate Variable in scope
+                                            case ErrorType.DUPLICATE_VARIABLE: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value 
+                                                    + " ] was declared at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum 
+                                                    + " ), but the variable was already declared at ( " + semanticResult.errors[j].firstDeclareLine + ":" + semanticResult.errors[j].firstDeclareCol + " )");
+                                                break;
+                                            }
+    
+                                            // Type mismatch
+                                            case ErrorType.TYPE_MISMATCH: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value 
+                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType 
+                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
+                                                break;
+                                            }
+    
+                                            // Undeclared variable being assigned
+                                            case ErrorType.UNDECLARED_VARIABLE: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value 
+                                                    + " ] was assigned at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum 
+                                                    + " ), but was not declared beforehand");
+                                                break;
+                                            }
+
+                                            // Incorrect Int expression
+                                            case ErrorType.INCORRECT_INT_EXPR: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value 
+                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType 
+                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
+                                                break;
+                                            }
+
+                                            // Incorrect type comparison
+                                            case ErrorType.INCORRECT_TYPE_COMPAR: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Variable [ " + semanticResult.errors[j].value 
+                                                    + " ] of type [ " + semanticResult.errors[j].targetType + " ] was compared to type [ " + semanticResult.errors[j].idType 
+                                                    + " ] at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum + " )");
+                                                break;
+                                            }
+    
+                                            default: {
+                                                _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors.length + " ERROR(S) and " + semanticResult.warnings.length + " WARNING(S)");
                     }
                 }
             }
@@ -269,7 +355,7 @@ module JuiceC {
 
             // If there were no errors while parsing, display the CST
             if (!parseResult.error) {
-                let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, programIndex);
+                let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
                 for (let i = 0; i < cst.tree.length; i++) {
                     (<HTMLInputElement>document.getElementById("CSTtext")).value += cst.tree[i] + "\n";
                 }

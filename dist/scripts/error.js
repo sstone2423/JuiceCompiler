@@ -34,8 +34,8 @@ var JuiceC;
     // For Duplicate Variable and Undeclared Variable
     var ScopeError = /** @class */ (function (_super) {
         __extends(ScopeError, _super);
-        function ScopeError(tokenType, value, lineNumber, colNumber, firstDeclareLine, firstDeclareCol) {
-            var _this = _super.call(this, tokenType, value, lineNumber, colNumber) || this;
+        function ScopeError(tokenType, value, lineNum, colNum, firstDeclareLine, firstDeclareCol) {
+            var _this = _super.call(this, tokenType, value, lineNum, colNum) || this;
             _this.firstDeclareLine = firstDeclareLine;
             _this.firstDeclareCol = firstDeclareCol;
             return _this;
@@ -46,8 +46,8 @@ var JuiceC;
     // For Type Mismatch
     var TypeError = /** @class */ (function (_super) {
         __extends(TypeError, _super);
-        function TypeError(tokenType, value, lineNumber, colNumber, idType, targetType) {
-            var _this = _super.call(this, tokenType, value, lineNumber, colNumber) || this;
+        function TypeError(tokenType, value, lineNum, colNum, idType, targetType) {
+            var _this = _super.call(this, tokenType, value, lineNum, colNum) || this;
             _this.targetType = targetType;
             _this.idType = idType;
             return _this;

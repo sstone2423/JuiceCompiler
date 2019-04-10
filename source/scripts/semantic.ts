@@ -11,8 +11,8 @@
         ast: Tree;
         scopeTree: Tree;
         error: boolean;
-        errors: Array<Error>;
-        warnings: Array<Warning>;
+        errors: Array<any>;
+        warnings: Array<any>;
         totalScopes: number;
         currentScope: number;
         log: Array<string>;

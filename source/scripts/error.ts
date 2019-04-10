@@ -70,8 +70,8 @@ module JuiceC {
         firstDeclareLine: number;
         firstDeclareCol: number;
 
-        constructor (tokenType: ErrorType, value: String, lineNumber: number, colNumber: number, firstDeclareLine: number, firstDeclareCol: number) {
-            super(tokenType, value, lineNumber, colNumber);
+        constructor (tokenType: ErrorType, value: string, lineNum: number, colNum: number, firstDeclareLine: number, firstDeclareCol: number) {
+            super(tokenType, value, lineNum, colNum);
             this.firstDeclareLine = firstDeclareLine;
             this.firstDeclareCol = firstDeclareCol;
         }
@@ -81,8 +81,8 @@ module JuiceC {
     export class TypeError extends Error {
         targetType: VariableType;
         idType: VariableType;
-        constructor(tokenType: ErrorType, value: String, lineNumber: number, colNumber: number, idType: VariableType, targetType: VariableType) {
-            super(tokenType, value, lineNumber, colNumber);
+        constructor(tokenType: ErrorType, value: string, lineNum: number, colNum: number, idType: VariableType, targetType: VariableType) {
+            super(tokenType, value, lineNum, colNum);
             this.targetType = targetType;
             this.idType = idType;
         }
