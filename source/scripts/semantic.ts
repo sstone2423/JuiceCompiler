@@ -57,7 +57,7 @@
                     // Scope tree: add a scope to the tree whenever we encounter a Block
                     // Increase the number of scopes that have been declared
                     // Increase the scope level as we are on a new one
-                    let newScope = new ScopeHashMap(node.lineNum, node.colNum, this.currentScope);
+                    let newScope: ScopeHashMap = new ScopeHashMap(node.lineNum, node.colNum, this.currentScope);
                     this.scopeTree.addNode(newScope);
                     // Add the Block node and increase the scope by 1
                     this.ast.addNode(Production.Block);
@@ -250,9 +250,9 @@
                 case Production.StringExpr:
                     // Generate the string until end of the charlist
                     // Surround string in quotes
-                    let stringBuilder = ["\""];
+                    let stringBuilder: Array<string> = ["\""];
                     let currCharList = node.children[1];
-                    let lastCharList = false;
+                    let lastCharList: boolean = false;
                     // Check for empty string
                     if (node.children.length == 2) {
                         lastCharList = true;
@@ -266,7 +266,7 @@
                         currCharList = currCharList.children[1];
                     }
                     stringBuilder.push("\"");
-                    let resString = stringBuilder.join("");
+                    let resString: string = stringBuilder.join("");
                     this.ast.addNode(new Token(TokenType.STRING, resString, null, null));
                     this.ast.ascendTree();
 
@@ -286,11 +286,11 @@
             }
         }
         
-        public checkTypeMatch(id, idType, targetType, idLine, idCol, targetLine, targetCol) {
+        public checkTypeMatch(id, idType, targetType, idLine, idCol, targetLine, targetCol): void {
             if (targetType != null && idType != null) {
                 if (idType.value != targetType) {
                     this.error = true;
-                    let err = new TypeError(ErrorType.TYPE_MISMATCH, id, idLine, idCol, idType, targetType);
+                    let err: TypeError = new TypeError(ErrorType.TYPE_MISMATCH, id, idLine, idCol, idType, targetType);
                     this.errors.push(err);
                 } else {
                     this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + id.value + " ] of type " + idType.value + " matches its assignment type of " + targetType + " at ( " + targetLine + " : " + targetCol + " )");
@@ -298,9 +298,9 @@
             }
         }
 
-        public markAsInitialized(node) {
+        public markAsInitialized(node): void {
             // Pointer to current position in scope tree
-            let ptr = this.scopeTree.curr;
+            let ptr: TreeNode = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
@@ -325,9 +325,9 @@
             }
         }
 
-        public markAsUsed(node) {
+        public markAsUsed(node): void {
             // Pointer to current position in scope tree
-            let ptr = this.scopeTree.curr;
+            let ptr: TreeNode = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
@@ -352,9 +352,9 @@
             }
         }
 
-        public checkUsedButUninit(node) {
+        public checkUsedButUninit(node): void {
             // Pointer to current position in scope tree
-            let ptr = this.scopeTree.curr;
+            let ptr: TreeNode = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 if (ptr.value.buckets[node.value.value].initialized == false) {
@@ -381,7 +381,7 @@
 
         public checkScopes(node) {
             // Pointer to current position in scope tree
-            let ptr = this.scopeTree.curr;
+            let ptr: TreeNode = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
@@ -399,14 +399,14 @@
                         return ptr.value.buckets[node.value.value].value;
                     }
                 }
-                // Didn't find id in scope, push error and return false
+                // Didn't find id in scope, push error
                 this.error = true;
-                let err = new ScopeError(ErrorType.UNDECLARED_VARIABLE, node.value, node.lineNum, node.colNum, null, null);
+                let err: ScopeError = new ScopeError(ErrorType.UNDECLARED_VARIABLE, node.value, node.lineNum, node.colNum, null, null);
                 this.errors.push(err);
             }
         }
 
-        public findWarnings(node) {
+        public findWarnings(node): void {
             // Iterate through object 
             for (let key in node.value.buckets) {
                 // Look for declared but uninitialized variables
@@ -428,7 +428,7 @@
         }
 
         // Traverses the scope tree and returns a string representation
-        public printScopeTree(node) {
+        public printScopeTree(node): Array<string> {
             let tree: Array<string> = [];
             let level: number = 0;
             if (node != null) {
@@ -437,8 +437,9 @@
             return tree;
         }
 
-        private printScopeTreeHelper(node, level, tree, dash) {
-            let varsString = "";
+        // Recursive helper function for printScopeTree(node)
+        private printScopeTreeHelper(node, level, tree, dash): void {
+            let varsString: string = "";
             for (let key in node.value.buckets) { 
                 varsString += node.value.buckets[key].value.value + " " + key + ", ";
             }
@@ -446,6 +447,6 @@
             for (let i = 0; i < node.children.length; i++) {
                 this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
             }
-}
+        }
     }
 }
