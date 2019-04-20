@@ -32,8 +32,12 @@ var JuiceC;
                 },
                 nodeStructure: {}
             };
-            document.getElementById("output").value = "";
-            document.getElementById("CSTtext").value = "";
+            _Control.outputElement = document.getElementById("output");
+            _Control.CSTtextElement = document.getElementById("CSTtext");
+            _Control.ASTtextElement = document.getElementById("ASTtext");
+            _Control.outputElement.value = "";
+            _Control.CSTtextElement.value = "";
+            _Control.ASTtextElement.value = "";
             // Clear symbol table
             var table = document.getElementById("symbolTable");
             // Leave header in place
@@ -44,7 +48,7 @@ var JuiceC;
         };
         // Output a message to the HTML output log
         Control.prototype.putMessage = function (msg) {
-            document.getElementById("output").value += msg + "\n";
+            _Control.outputElement.value += msg + "\n";
         };
         // This is executed as a result of the user pressing the "compile" button between the two text areas, above
         Control.btnCompile_click = function () {
@@ -109,9 +113,9 @@ var JuiceC;
                                 }
                                 var ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 for (var k = 0; k < ast.tree.length; k++) {
-                                    document.getElementById("ASTtext").value += ast.tree[k] + "\n";
+                                    _Control.ASTtextElement.value += ast.tree[k] + "\n";
                                 }
-                                document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
+                                _Control.scrollToBottom();
                                 // Display AST visually with Treant.js
                                 Treant(ast.treant);
                                 // Display symbols in Symbol Table
@@ -319,9 +323,9 @@ var JuiceC;
             if (!parseResult.error) {
                 var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
                 for (var i = 0; i < cst.tree.length; i++) {
-                    document.getElementById("CSTtext").value += cst.tree[i] + "\n";
+                    _Control.outputElement.value += cst.tree[i] + "\n";
                 }
-                document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
+                this.scrollToBottom();
                 // Display CST visually with Treant.js
                 Treant(cst.treant);
             }
@@ -329,6 +333,10 @@ var JuiceC;
                 _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
             }
             _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
+        };
+        // Helper function to scroll to the bottom of the output div
+        Control.prototype.scrollToBottom = function () {
+            _Control.outputElement.scrollTop = _Control.outputElement.scrollHeight;
         };
         return Control;
     }());

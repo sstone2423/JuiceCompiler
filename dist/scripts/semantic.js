@@ -346,7 +346,7 @@ var JuiceC;
                         return ptr.value.buckets[node.value.value].value;
                     }
                 }
-                // Didn't find id in scope, push error and return false
+                // Didn't find id in scope, push error
                 this.error = true;
                 var err = new JuiceC.ScopeError("Undeclared Variable" /* UNDECLARED_VARIABLE */, node.value, node.lineNum, node.colNum, null, null);
                 this.errors.push(err);
@@ -381,6 +381,7 @@ var JuiceC;
             }
             return tree;
         };
+        // Recursive helper function for printScopeTree(node)
         Semantic.prototype.printScopeTreeHelper = function (node, level, tree, dash) {
             var varsString = "";
             for (var key in node.value.buckets) {

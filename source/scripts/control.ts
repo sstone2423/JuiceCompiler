@@ -16,13 +16,16 @@ module JuiceC {
         lexResults = [];
         lexWarning: boolean = false;
         lexError: boolean = false;
-        parseResults =[];
+        parseResults = [];
         parseError: boolean = false;
         cstVisual;
         treantCST;
         astVisual;
         treantAST;
         _Semantic;
+        outputElement: HTMLInputElement;
+        CSTtextElement: HTMLInputElement;
+        ASTtextElement: HTMLInputElement;
 
         constructor() { }
 
@@ -43,12 +46,16 @@ module JuiceC {
 				},
 				nodeStructure: {}
             };
-            (<HTMLInputElement>document.getElementById("output")).value = "";
-            (<HTMLInputElement>document.getElementById("CSTtext")).value = "";
+            _Control.outputElement = (<HTMLInputElement>document.getElementById("output"));
+            _Control.CSTtextElement = (<HTMLInputElement>document.getElementById("CSTtext"));
+            _Control.ASTtextElement = (<HTMLInputElement>document.getElementById("ASTtext"));
+            _Control.outputElement.value = "";
+            _Control.CSTtextElement.value = "";
+            _Control.ASTtextElement.value = "";
             // Clear symbol table
-			let table = (<HTMLTableElement>document.getElementById("symbolTable"));
+			let table: HTMLTableElement = (<HTMLTableElement>document.getElementById("symbolTable"));
 			// Leave header in place
-			let rowCount = table.rows.length;
+			let rowCount: number = table.rows.length;
 			for (let i = rowCount - 1; i > 1; i--) {
 				table.deleteRow(i);
 			}
@@ -56,7 +63,7 @@ module JuiceC {
 
         // Output a message to the HTML output log
         public putMessage(msg): void {
-            (<HTMLInputElement>document.getElementById("output")).value += msg + "\n";
+            _Control.outputElement.value += msg + "\n";
         }
 
         // This is executed as a result of the user pressing the "compile" button between the two text areas, above
@@ -117,7 +124,7 @@ module JuiceC {
 
                     // Semantic analysis only if there were no parser errors
                     if (!parseResult.error) {
-                        let _Semantic = new Semantic(parseResult.cst);
+                        let _Semantic: Semantic = new Semantic(parseResult.cst);
                         _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
                         let semanticResult = _Semantic.analyze();
 
@@ -129,32 +136,32 @@ module JuiceC {
                             
                                 let ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 for (let k = 0; k < ast.tree.length; k++) {
-                                    (<HTMLInputElement>document.getElementById("ASTtext")).value += ast.tree[k] + "\n";
+                                    _Control.ASTtextElement.value += ast.tree[k] + "\n";
                                 }
-                                (<HTMLInputElement>document.getElementById("output")).scrollTop = (<HTMLInputElement>document.getElementById("output")).scrollHeight;
+                                _Control.scrollToBottom()
                                 // Display AST visually with Treant.js
                                 Treant(ast.treant);
                                 // Display symbols in Symbol Table
                                 let symbols = semanticResult.symbols;
                                 for (let l = 0; l < symbols.length; l++) {
-                                    let table = (<HTMLTableElement>document.getElementById("symbolTable"));
-                                    let row = table.insertRow(-1);
-                                    let program = row.insertCell(0);
+                                    let table: HTMLTableElement = (<HTMLTableElement>document.getElementById("symbolTable"));
+                                    let row: HTMLTableRowElement = table.insertRow(-1);
+                                    let program: HTMLTableCellElement = row.insertCell(0);
                                     program.innerHTML = (programIndex + 1).toString();
-                                    let key = row.insertCell(1);
+                                    let key: HTMLTableCellElement = row.insertCell(1);
                                     key.innerHTML = symbols[l].key;
-                                    let type = row.insertCell(2);
+                                    let type: HTMLTableCellElement = row.insertCell(2);
                                     type.innerHTML = symbols[l].type;
-                                    let scope = row.insertCell(3);
+                                    let scope: HTMLTableCellElement = row.insertCell(3);
                                     scope.innerHTML = symbols[l].scope;
-                                    let lineNum = row.insertCell(4);
+                                    let lineNum: HTMLTableCellElement = row.insertCell(4);
                                     lineNum.innerHTML = symbols[l].line;
-                                    let colNum = row.insertCell(5);
+                                    let colNum: HTMLTableCellElement = row.insertCell(5);
                                     colNum.innerHTML = symbols[l].col;
                                 }
                                 // Fill out scope tree
-                                let scopeTreeArr = _Semantic.printScopeTree(semanticResult.scopeTree.root);
-                                let scopeInput = (<HTMLInputElement>document.getElementById("taScope"));
+                                let scopeTreeArr: Array<string> = _Semantic.printScopeTree(semanticResult.scopeTree.root);
+                                let scopeInput: HTMLInputElement = (<HTMLInputElement>document.getElementById("taScope"));
                                 scopeInput.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
                                 for (let m = 0; m < scopeTreeArr.length; m++) {
@@ -356,9 +363,9 @@ module JuiceC {
             if (!parseResult.error) {
                 let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
                 for (let i = 0; i < cst.tree.length; i++) {
-                    (<HTMLInputElement>document.getElementById("CSTtext")).value += cst.tree[i] + "\n";
+                    _Control.outputElement.value += cst.tree[i] + "\n";
                 }
-                (<HTMLInputElement>document.getElementById("output")).scrollTop = (<HTMLInputElement>document.getElementById("output")).scrollHeight;
+                this.scrollToBottom()
                 // Display CST visually with Treant.js
                 Treant(cst.treant);
             } else {
@@ -366,6 +373,11 @@ module JuiceC {
             }
             
 			_Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
+        }
+
+        // Helper function to scroll to the bottom of the output div
+        public scrollToBottom(): void {
+            _Control.outputElement.scrollTop = _Control.outputElement.scrollHeight;
         }
         
     }
