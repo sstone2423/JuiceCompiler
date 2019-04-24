@@ -5,9 +5,9 @@
 var JuiceC;
 (function (JuiceC) {
     var ScopeVariable = /** @class */ (function () {
-        function ScopeVariable(varName, values) {
+        function ScopeVariable(varName, token) {
             this.key = varName;
-            this.values = values;
+            this.token = token;
             this.used = false;
             this.initialized = false;
         }

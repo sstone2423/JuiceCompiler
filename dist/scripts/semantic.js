@@ -249,15 +249,24 @@ var JuiceC;
             }
         };
         Semantic.prototype.checkTypeMatch = function (id, idType, targetType, idLine, idCol, targetLine, targetCol) {
+            console.log("reached checkTypeMatch");
+            console.log("id: ");
+            console.log(id);
+            console.log("idType: " + idType);
+            console.log("targetType: " + targetType);
+            console.log("idLine: " + idLine);
+            console.log("idCol: " + idCol);
+            console.log("targetLine: " + targetLine);
+            console.log("targetCol: " + targetCol);
             if (targetType != null && idType != null) {
-                if (idType.value != targetType) {
+                if (idType != targetType) {
                     this.error = true;
                     this.errors++;
                     this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Type Mismatch - Variable [ " + id.value + " ] of type [ " + idType + " ] was assigned to type [ " + targetType
                         + " ] at ( " + targetLine + " : " + targetCol + " )");
                 }
                 else {
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + id.value + " ] of type " + idType.value + " matches its assignment type of " + targetType + " at ( " + targetLine + " : " + targetCol + " )");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + id.value + " ] of type " + idType + " matches its assignment type of " + targetType + " at ( " + targetLine + " : " + targetCol + " )");
                 }
             }
         };
@@ -341,7 +350,7 @@ var JuiceC;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
-                return ptr.value.buckets[node.value.value].value;
+                return ptr.value.buckets[node.value.value].token.value;
             }
             // Check parent scopes
             else {
@@ -350,7 +359,7 @@ var JuiceC;
                     // Check if id in scope
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                         this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
-                        return ptr.value.buckets[node.value.value].value;
+                        return ptr.value.buckets[node.value.value].token.value;
                     }
                 }
                 // Didn't find id in scope, push error
@@ -396,7 +405,7 @@ var JuiceC;
         Semantic.prototype.printScopeTreeHelper = function (node, level, tree, dash) {
             var varsString = "";
             for (var key in node.value.buckets) {
-                varsString += node.value.buckets[key].values.value + " " + key + ", ";
+                varsString += node.value.buckets[key].token.value + " " + key + ", ";
             }
             tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
             for (var i = 0; i < node.children.length; i++) {

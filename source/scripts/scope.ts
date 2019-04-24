@@ -9,13 +9,13 @@ module JuiceC {
         // Keys are the variable name
         key: string;
         // Values are the information about the variable
-        values: Token;
+        token: Token;
         used: boolean;
         initialized: boolean;
 
-        constructor (varName: string, values: Token) {
+        constructor (varName: string, token: Token) {
             this.key = varName;
-            this.values = values;
+            this.token = token;
             this.used = false;
             this.initialized = false;
         }
