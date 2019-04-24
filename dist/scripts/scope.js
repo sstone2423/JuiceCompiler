@@ -5,8 +5,11 @@
 var JuiceC;
 (function (JuiceC) {
     var ScopeVariable = /** @class */ (function () {
-        function ScopeVariable(varName) {
+        function ScopeVariable(varName, values) {
             this.key = varName;
+            this.values = values;
+            this.used = false;
+            this.initialized = false;
         }
         return ScopeVariable;
     }());

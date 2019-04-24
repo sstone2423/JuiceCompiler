@@ -172,93 +172,11 @@ module JuiceC {
                             _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
                         }
                         if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
-                            // Print warnings
-                            if (semanticResult.warnings.length > 0) {
-                                for (let j = 0; j < semanticResult.warnings.length; j++) {
-                                    switch (semanticResult.warnings[j].warningType) {
-                                        // Uninitialized Variable
-                                        case WarningType.UNINIT_VAR: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
-                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum 
-                                                + " ), but never initialized");
-                                            break;
-                                        }
-
-                                        // Unused Variable
-                                        case WarningType.UNUSED_VAR: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
-                                                + " ] was declared at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum 
-                                                + " ), but never used");
-                                            break;
-                                        }
-
-                                        // Used before initialized Variable
-                                        case WarningType.USED_BEFORE_INIT: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Variable [ " + semanticResult.warnings[j].value 
-                                                + " ] was used before being initialized at ( " + semanticResult.warnings[j].lineNum + " : " + semanticResult.warnings[j].colNum 
-                                                + " )");
-                                            break;
-                                        }
-
-                                        default: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
-                                        }
-                                    }
-                                }
-                            }
-                            // Print errors
-                            if (semanticResult.errors.length > 0) {
-                                for (let j = 0; j < semanticResult.errors.length; j++) {
-                                    switch (semanticResult.errors[j].errorType) {
-                                        // Duplicate Variable in scope
-                                        case ErrorType.DUPLICATE_VARIABLE: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ " + semanticResult.errors[j].value.value 
-                                                + " ] was declared at ( " + semanticResult.errors[j].lineNum + ":" + semanticResult.errors[j].colNum 
-                                                + " ), but the variable was already declared within the same scope at ( " + semanticResult.errors[j].firstDeclareLine 
-                                                + " : " + semanticResult.errors[j].firstDeclareCol + " )");
-                                            break;
-                                        }
-
-                                        // Type mismatch
-                                        case ErrorType.TYPE_MISMATCH: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Type Mismatch - Variable [ " + semanticResult.errors[j].value.value 
-                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType.value 
-                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
-                                            break;
-                                        }
-
-                                        // Undeclared variable being assigned
-                                        case ErrorType.UNDECLARED_VARIABLE: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Undeclared Variable - [ " + semanticResult.errors[j].value.value 
-                                                + " ] was assigned at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum 
-                                                + " ), but was not declared beforehand");
-                                            break;
-                                        }
-
-                                        // Incorrect Int expression
-                                        case ErrorType.INCORRECT_INT_EXPR: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Int Expression - [ " + semanticResult.errors[j].value 
-                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was assigned to type [ " + semanticResult.errors[j].idType 
-                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
-                                            break;
-                                        }
-
-                                        // Incorrect type comparison
-                                        case ErrorType.INCORRECT_TYPE_COMPAR: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Type Comparison - [ " + semanticResult.errors[j].value 
-                                                + " ] of type [ " + semanticResult.errors[j].targetType + " ] was compared to type [ " + semanticResult.errors[j].idType 
-                                                + " ] at ( " + semanticResult.errors[j].lineNum + " : " + semanticResult.errors[j].colNum + " )");
-                                            break;
-                                        }
-
-                                        default: {
-                                            _Control.putMessage(DEBUG + " - " + SEMANTIC + " - " + WARNING + ": Not sure what happened. Oops?");
-                                        }
-                                    }
-                                }
+                            for (let i = 0; i < semanticResult.log.length; i++) {
+                                _Control.putMessage(semanticResult.log[i]);
                             }
                         }
-                        _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors.length + " ERROR(S) and " + semanticResult.warnings.length + " WARNING(S)");
+                        _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                     }
                 }
             }
