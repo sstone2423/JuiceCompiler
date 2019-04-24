@@ -218,29 +218,29 @@ print(a)
         }
 
         public static semanticWarnings(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* has unused and undeclared variables */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Has unused and undeclared variables */
 {
-int a
-int b
-a = 3
-b = 4
-{
-string a
-a = "hey"
-print(a)
-print(b)
-}
-print(b)
-string s
-{
-boolean b
-b = false
-}
-string r
-r = "hey"
-int d
-print(d)
-d = 3
+  int a
+  int b
+  a = 3
+  b = 4
+  {
+    string a
+    a = "hey"
+    print(a)
+    print(b)
+  }
+  print(b)
+  string s
+  {
+    boolean b
+    b = false
+  }
+  string r
+  r = "hey"
+  int d
+  print(d)
+  d = 3
 }$`;
         }
 

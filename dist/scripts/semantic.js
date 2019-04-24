@@ -350,7 +350,6 @@ var JuiceC;
                     // Check if id in scope
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                         this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
-                        console.log(ptr.value.buckets[node.value.value]);
                         return ptr.value.buckets[node.value.value].value;
                     }
                 }
@@ -363,23 +362,20 @@ var JuiceC;
         };
         Semantic.prototype.findWarnings = function (node) {
             // Iterate through object 
-            //console.log(node.value.buckets);
             for (var key in node.value.buckets) {
-                console.log(node);
-                console.log(node.value);
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
                     this.warnings++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] has been declared at ( " + node.value.buckets[key].values.lineNum + " : " + node.value.buckets[key].values.colNum + " ), but was never initialized");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] has been declared at ( " + node.value.lineNum + " : " + node.value.colNum + " ), but was never initialized");
                     if (node.value.buckets[key].used == true) {
                         this.warnings++;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was used at ( " + node.value.buckets[key].values.lineNum + " : " + node.value.buckets[key].values.colNum + " ), before being initialized");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was used at ( " + node.value.lineNum + " : " + node.value.colNum + " ), before being initialized");
                     }
                 }
                 // Look for unused variables
                 if (node.value.buckets[key].used == false && node.value.buckets[key].initialized == true) {
                     this.warnings++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was declared at ( " + node.value.buckets[key].values.lineNum + " : " + node.value.buckets[key].values.colNum + " ), but was never used");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was declared at ( " + node.value.lineNum + " : " + node.value.colNum + " ), but was never used");
                 }
             }
             // Continue traversing in preorder fashion

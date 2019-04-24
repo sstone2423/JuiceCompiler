@@ -28,16 +28,4 @@ module JuiceC {
         }
     }
 
-    export class ScopeWarning extends Warning {
-        scopeLine: number;
-        scopeCol: number;
-        scopeId: number;
-        constructor(tokenType: WarningType, value: String, lineNum: number, colNum: number, node: ScopeHashMap){
-            super(tokenType, value, lineNum, colNum);
-            this.scopeLine = node.lineNum;
-            this.scopeCol = node.colNum;
-            this.scopeId = node.id;
-        }
-    }
-
 }

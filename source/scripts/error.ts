@@ -65,27 +65,4 @@ module JuiceC {
         }
     }
 
-    // For Duplicate Variable and Undeclared Variable
-    export class ScopeError extends Error {
-        firstDeclareLine: number;
-        firstDeclareCol: number;
-
-        constructor (tokenType: ErrorType, value: string, lineNum: number, colNum: number, firstDeclareLine: number, firstDeclareCol: number) {
-            super(tokenType, value, lineNum, colNum);
-            this.firstDeclareLine = firstDeclareLine;
-            this.firstDeclareCol = firstDeclareCol;
-        }
-    }
-
-    // For Type Mismatch
-    export class TypeError extends Error {
-        targetType: VariableType;
-        idType: VariableType;
-        constructor(tokenType: ErrorType, value: string, lineNum: number, colNum: number, idType: VariableType, targetType: VariableType) {
-            super(tokenType, value, lineNum, colNum);
-            this.targetType = targetType;
-            this.idType = idType;
-        }
-    }
-
 }

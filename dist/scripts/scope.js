@@ -14,17 +14,6 @@ var JuiceC;
         return ScopeVariable;
     }());
     JuiceC.ScopeVariable = ScopeVariable;
-    var VariableInfo = /** @class */ (function () {
-        function VariableInfo(lineNum, colNum, value) {
-            this.lineNum = lineNum;
-            this.colNum = colNum;
-            this.value = value;
-            this.used = false;
-            this.initialized = false;
-        }
-        return VariableInfo;
-    }());
-    JuiceC.VariableInfo = VariableInfo;
     var VariableType;
     (function (VariableType) {
         VariableType["Boolean"] = "boolean";

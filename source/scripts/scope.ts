@@ -22,22 +22,6 @@ module JuiceC {
 
     }
 
-    export class VariableInfo {
-        lineNum: number;
-        colNum: number;
-        value: any;
-        used: boolean;
-        initialized: boolean;
-
-        constructor (lineNum?: number, colNum?: number, value?: any) {
-            this.lineNum = lineNum;
-            this.colNum = colNum;
-            this.value = value;
-            this.used = false;
-            this.initialized = false;
-        }
-    }
-
     export enum VariableType {
         Boolean = "boolean",
         Int = "int",

@@ -67,7 +67,7 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* Test case for incomplete IntExpr */\n{\nint a\na = 1 +\nprint(a)\n}$";
         };
         Test.semanticWarnings = function () {
-            document.getElementById("sourceCode").value = "/* has unused and undeclared variables */\n{\nint a\nint b\na = 3\nb = 4\n{\nstring a\na = \"hey\"\nprint(a)\nprint(b)\n}\nprint(b)\nstring s\n{\nboolean b\nb = false\n}\nstring r\nr = \"hey\"\nint d\nprint(d)\nd = 3\n}$";
+            document.getElementById("sourceCode").value = "/* Has unused and undeclared variables */\n{\n  int a\n  int b\n  a = 3\n  b = 4\n  {\n    string a\n    a = \"hey\"\n    print(a)\n    print(b)\n  }\n  print(b)\n  string s\n  {\n    boolean b\n    b = false\n  }\n  string r\n  r = \"hey\"\n  int d\n  print(d)\n  d = 3\n}$";
         };
         Test.undeclaredVar = function () {
             document.getElementById("sourceCode").value = "/* Variables being used but not declared first */\n{\nint a\nb = 4\n}$";
