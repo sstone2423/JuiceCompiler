@@ -360,5 +360,15 @@ print((b != d))
 }$`;
         }
 
+        public static initButNotUsed(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variable initialized but not used. Produces semantic warning*/
+{    
+    int a
+    int b
+    b = 2
+    print(b)
+}$`;
+        }
+
     }
 }

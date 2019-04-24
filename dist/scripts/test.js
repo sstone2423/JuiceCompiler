@@ -90,6 +90,9 @@ var JuiceC;
         Test.tienBooleanHell = function () {
             document.getElementById("sourceCode").value = "/* Thanks Tien. Assuming you get past Boolean Hell\n- there is a boolean being compared to\n- a string which will cause a type error */\n{\nint a\na = 4\nboolean b\nb = true\nboolean c\nstring d\nd = \"there is no spoon\"\nc = (d != \"there is a spoon\")\nif(c == (false != (b == (true == (a == 3+1))))) {\nprint((b != d))\n}\n}$";
         };
+        Test.initButNotUsed = function () {
+            document.getElementById("sourceCode").value = "/* Variable initialized but not used. Produces semantic warning*/\n{    \n    int a\n    int b\n    b = 2\n    print(b)\n}$";
+        };
         return Test;
     }());
     JuiceC.Test = Test;

@@ -415,10 +415,7 @@
 
         public findWarnings(node): void {
             // Iterate through object 
-            //console.log(node.value.buckets);
             for (let key in node.value.buckets) {
-                console.log(node);
-                console.log(node.value);
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
                     this.warnings++;
