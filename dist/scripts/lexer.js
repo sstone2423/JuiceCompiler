@@ -41,7 +41,7 @@ var JuiceC;
             // Grab the "raw" source code.
             var sourceCode = document.getElementById("sourceCode").value;
             // Trim the leading and trailing spaces.
-            sourceCode = JuiceC.Utils.trim(sourceCode);
+            sourceCode = sourceCode.trim();
             // Lex until we reach the end of the source code
             while (this.startPtr < sourceCode.length) {
                 if (!this.inComment && !this.foundQuote) {
@@ -303,7 +303,7 @@ var JuiceC;
                         this.errors.push(new JuiceC.Error("Invalid Token in Comment" /* INVALID_T_COMMENT */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                     }
                     this.startPtr++;
-                    // If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
+                    // If not inComment, then a quote was found so only lowercase characters, comments, space character, and the end quote is allowed
                 }
                 else {
                     if (rCHAR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
@@ -332,6 +332,9 @@ var JuiceC;
                         if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
                             this.errors.push(new JuiceC.Error("Invalid New Line" /* INVALID_NEW_LINE */, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
                         }
+                        var token = new JuiceC.Token(JuiceC.TokenType.CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+                        // Push to tokens array
+                        this.tokens.push(token);
                         // If its not a character, its an invalid token so throw an error
                     }
                     else {

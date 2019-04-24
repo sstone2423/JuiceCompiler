@@ -42,9 +42,9 @@ module JuiceC {
 		public lex() {
 			// Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
 		    // Grab the "raw" source code.
-			let sourceCode = (<HTMLInputElement>document.getElementById("sourceCode")).value;
+			let sourceCode: string = (<HTMLInputElement>document.getElementById("sourceCode")).value;
 		    // Trim the leading and trailing spaces.
-			sourceCode = Utils.trim(sourceCode);
+			sourceCode = sourceCode.trim();
 			// Lex until we reach the end of the source code
 			while (this.startPtr < sourceCode.length) {
 				if (!this.inComment && !this.foundQuote) {
@@ -300,7 +300,7 @@ module JuiceC {
 						this.errors.push(new Error(ErrorType.INVALID_T_COMMENT, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
 					}
 					this.startPtr++;
-				// If not inComment, then a quote was found so only lowercase characters, comments and the end quote is allowed
+				// If not inComment, then a quote was found so only lowercase characters, comments, space character, and the end quote is allowed
 				} else {
 					if (rCHAR.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 						// Create a EOP token
@@ -325,6 +325,9 @@ module JuiceC {
 						if (rNEWLINE.test(sourceCode.substring(this.startPtr, this.endPtr))) {
 							this.errors.push(new Error(ErrorType.INVALID_NEW_LINE, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
 						}
+						let token: Token = new Token(TokenType.CHAR, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum);
+						// Push to tokens array
+						this.tokens.push(token);
 					// If its not a character, its an invalid token so throw an error
 					} else {
 						this.errors.push(new Error(ErrorType.INVALID_T_STRING, sourceCode.charAt(this.endPtr - 1), this.currentLineNum, this.currentColNum));
