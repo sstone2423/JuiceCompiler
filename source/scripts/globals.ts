@@ -7,6 +7,8 @@
 let _Lexer: JuiceC.Lexer;
 let _Parser: JuiceC.Parser;
 let _Control: JuiceC.Control;
+let _Semantic: JuiceC.Semantic;
+let _CodeGen: JuiceC.CodeGen;
 
 // String constants
 const INFO: string = "INFO";

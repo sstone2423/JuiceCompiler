@@ -1,3 +1,4 @@
+///<reference path="globals.ts" />
 /* --------
    semantic.ts
 
@@ -8,7 +9,6 @@ var JuiceC;
         function Semantic(cst) {
             this.cst = cst;
             this.ast = new JuiceC.Tree();
-            this.error = false;
             this.errors = 0;
             this.warnings = 0;
             this.scopeTree = new JuiceC.Tree();
@@ -27,7 +27,6 @@ var JuiceC;
                 "ast": this.ast,
                 "scopeTree": this.scopeTree,
                 "errors": this.errors,
-                "error": this.error,
                 "warnings": this.warnings,
                 "symbols": this.symbols,
                 "log": this.log
@@ -92,7 +91,6 @@ var JuiceC;
                     }
                     // Throw error if variable already declared in scope
                     else {
-                        this.error = true;
                         this.errors++;
                         this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ " + node.value.value + " ] was declared at ( " + node.lineNum + ":" + node.colNum
                             + " ), but the variable was already declared within the same scope at ( " + node.firstDeclareLine + " : " + node.firstDeclareCol + " )");
@@ -166,7 +164,6 @@ var JuiceC;
                             exprType = exprType.value;
                         }
                         if (exprType != JuiceC.VariableType.Int) {
-                            this.error = true;
                             this.errors++;
                             this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Int Expression - [ " + node.value + " ] of type [ " + node.targetType + " ] was assigned to type [ " + node.idType
                                 + " ] at ( " + node.lineNum + " : " + node.colNum + " )");
@@ -199,7 +196,6 @@ var JuiceC;
                             secondExprType = secondExprType.value;
                         }
                         if (firstExprType != secondExprType) {
-                            this.error = true;
                             this.errors++;
                             this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Type Comparison - [ " + node.value + " ] of type [ " + node.targetType + " ] was compared to type [ " + node.idType
                                 + " ] at ( " + node.lineNum + " : " + node.colNum + " )");
@@ -249,18 +245,8 @@ var JuiceC;
             }
         };
         Semantic.prototype.checkTypeMatch = function (id, idType, targetType, idLine, idCol, targetLine, targetCol) {
-            console.log("reached checkTypeMatch");
-            console.log("id: ");
-            console.log(id);
-            console.log("idType: " + idType);
-            console.log("targetType: " + targetType);
-            console.log("idLine: " + idLine);
-            console.log("idCol: " + idCol);
-            console.log("targetLine: " + targetLine);
-            console.log("targetCol: " + targetCol);
             if (targetType != null && idType != null) {
                 if (idType != targetType) {
-                    this.error = true;
                     this.errors++;
                     this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Type Mismatch - Variable [ " + id.value + " ] of type [ " + idType + " ] was assigned to type [ " + targetType
                         + " ] at ( " + targetLine + " : " + targetCol + " )");
@@ -363,7 +349,6 @@ var JuiceC;
                     }
                 }
                 // Didn't find id in scope, push error
-                this.error = true;
                 this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Undeclared Variable - [ " + node.value.value + " ] was assigned at ( " + node.lineNum + " : " + node.colNum
                     + " ), but was not declared beforehand");
                 this.errors++;

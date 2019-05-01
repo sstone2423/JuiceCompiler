@@ -128,11 +128,13 @@ module JuiceC {
                         _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
                         let semanticResult = _Semantic.analyze();
 
-                        if (!semanticResult.error) {
+                        if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
+                            for (let j = 0; j < semanticResult.log.length; j++) {
+                                _Control.putMessage(semanticResult.log[j]);
+                            }
+                        }
+                        if (semanticResult.errors === 0) {
                             if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
-                                for (let j = 0; j < semanticResult.log.length; j++) {
-                                    _Control.putMessage(semanticResult.log[j]);
-                                }
                             
                                 let ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 for (let k = 0; k < ast.tree.length; k++) {
@@ -167,16 +169,16 @@ module JuiceC {
                                 for (let m = 0; m < scopeTreeArr.length; m++) {
                                     scopeInput.value += scopeTreeArr[m] + "\n";
                                 }
+                                _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                                _CodeGen = new CodeGen(semanticResult);
+                                _CodeGen.generateCode();
                             }
                         } else {
                             _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
+                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+
                         }
-                        if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
-                            for (let i = 0; i < semanticResult.log.length; i++) {
-                                _Control.putMessage(semanticResult.log[i]);
-                            }
-                        }
-                        _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+
                     }
                 }
             }

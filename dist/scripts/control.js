@@ -103,14 +103,16 @@ var JuiceC;
                     _Control.parserLog(parseResult, programIndex);
                     // Semantic analysis only if there were no parser errors
                     if (!parseResult.error) {
-                        var _Semantic = new JuiceC.Semantic(parseResult.cst);
+                        var _Semantic_1 = new JuiceC.Semantic(parseResult.cst);
                         _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
-                        var semanticResult = _Semantic.analyze();
-                        if (!semanticResult.error) {
+                        var semanticResult = _Semantic_1.analyze();
+                        if (document.getElementById("verboseCheck").checked) {
+                            for (var j = 0; j < semanticResult.log.length; j++) {
+                                _Control.putMessage(semanticResult.log[j]);
+                            }
+                        }
+                        if (semanticResult.errors === 0) {
                             if (document.getElementById("verboseCheck").checked) {
-                                for (var j = 0; j < semanticResult.log.length; j++) {
-                                    _Control.putMessage(semanticResult.log[j]);
-                                }
                                 var ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 for (var k = 0; k < ast.tree.length; k++) {
                                     _Control.ASTtextElement.value += ast.tree[k] + "\n";
@@ -137,24 +139,22 @@ var JuiceC;
                                     colNum.innerHTML = symbols[l].col;
                                 }
                                 // Fill out scope tree
-                                var scopeTreeArr = _Semantic.printScopeTree(semanticResult.scopeTree.root);
+                                var scopeTreeArr = _Semantic_1.printScopeTree(semanticResult.scopeTree.root);
                                 var scopeInput = document.getElementById("taScope");
                                 scopeInput.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
                                 for (var m = 0; m < scopeTreeArr.length; m++) {
                                     scopeInput.value += scopeTreeArr[m] + "\n";
                                 }
+                                _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                                _CodeGen = new JuiceC.CodeGen(semanticResult);
+                                _CodeGen.generateCode();
                             }
                         }
                         else {
                             _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
+                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                         }
-                        if (document.getElementById("verboseCheck").checked) {
-                            for (var i = 0; i < semanticResult.log.length; i++) {
-                                _Control.putMessage(semanticResult.log[i]);
-                            }
-                        }
-                        _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                     }
                 }
             }

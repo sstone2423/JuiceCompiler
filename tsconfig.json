@@ -1,0 +1,13 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+	"lib": ["es6", "dom"],
+	"outDir": "dist/scripts/"
+    },
+    "include": [
+        "source/scripts/*"
+    ],
+    "exclude": [
+        "node_modules",
+    ]
+}
