@@ -13,7 +13,7 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* Test case for print statement */\n{\n    print(\"i love compilers\")\n}$";
         };
         Test.fullProgram = function () {
-            document.getElementById("sourceCode").value = "/* Test case for a 'regular' program. Prints 1, true, 2, 3, stra, strb, true */\n{\n    int a\n    a = 1\n    print(a)\n    boolean b\n    b = true\n    print(b)\n    {\n        int a\n        a = 2\n        print(a)\n    }\n    {\n        int a\n        a = 3\n        print(a)\n    }\n    string s\n    s = \"stra\"\n    print(s)\n    s = \"strb\"\n    print(s)\n    if (a != 5) {\n        print(\"true\")\n    }\n    if (a == 5) {\n        print(\"false\")\n    }\n}$";
+            document.getElementById("sourceCode").value = "/* Test case for a 'regular' program. Prints 1true23strastrbtrue */\n{\n    int a\n    a = 1\n    print(a)\n    boolean b\n    b = true\n    print(b)\n    {\n        int a\n        a = 2\n        print(a)\n    }\n    {\n        int a\n        a = 3\n        print(a)\n    }\n    string s\n    s = \"stra\"\n    print(s)\n    s = \"strb\"\n    print(s)\n    if (a != 5) {\n        print(\"true\")\n    }\n    if (a == 5) {\n        print(\"false\")\n    }\n}$";
         };
         Test.multiplePrograms = function () {
             document.getElementById("sourceCode").value = "/* Test case for multiple programs */\n{\n    print(\"i love compilers\")\n    int a\n    a = 2\n    string s\n    s = \"ha\"\n}$\n{\n    int b\n    b = 4\n    string s\n    s = \"hey\"\n}$";
@@ -22,10 +22,10 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* Test case for crazy one liner */\n+${hellotruefalse!======trueprinta=3b=0print(\"false true\")whi33leiftruefalsestring!= stringintbooleanaa truewhileif{hi+++==!==}}/*aaahaha*/hahahahaha/*awao*/$";
         };
         Test.whileStatement = function () {
-            document.getElementById("sourceCode").value = "/* Test case for WhileStatement. Prints 2, 3, 4, 5, 8 */\n{\n    int a\n    a = 1\n    {\n        int a\n        a = 2\n        print(a)\n    }\n    {\n        while (a != 5) {\n            a = 1 + a\n            print(a)\n        }\n        print(3 + a)\n    }\n} $";
+            document.getElementById("sourceCode").value = "/* Test case for WhileStatement. Prints 23458 */\n{\n    int a\n    a = 1\n    {\n        int a\n        a = 2\n        print(a)\n    }\n    {\n        while (a != 5) {\n            a = 1 + a\n            print(a)\n        }\n        print(3 + a)\n    }\n} $";
         };
         Test.ifStatement = function () {
-            document.getElementById("sourceCode").value = "/* Test case for IfStatement. Prints nums,ids,strings,booleans */\n{\n    int a\n    a = 1\n    if(1 == 1){\n        print(\"nums\")\n    }\n    if(a == a){\n        print(\"ids\")\n    }\n    if(\"hey\" == \"hey\"){\n        print(\"strings\")\n    }\n    if(true == true){\n        print(\"booleans\")\n    }\n} $";
+            document.getElementById("sourceCode").value = "/* Test case for IfStatement. Prints numsidsstringsbooleans */\n{\n    int a\n    a = 1\n    if(1 == 1){\n        print(\"nums\")\n    }\n    if(a == a){\n        print(\"ids\")\n    }\n    if(\"hey\" == \"hey\"){\n        print(\"strings\")\n    }\n    if(true == true){\n        print(\"booleans\")\n    }\n} $";
         };
         Test.missingEOP = function () {
             document.getElementById("sourceCode").value = "/* Missing EOP */\n{\n    int b\n    b = 4\n    string s\n    s = \"hey\"\n}";
@@ -106,7 +106,7 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* Valid code but can't fit into 256 bytes */\n{\nint a\nint b\nint c\nint d\na = 2\n{\nb = 5\nprint(b)\na = 1 + a\n{\n    print(a)\n    a = 5\n}\nif(a == b) {\n    print(\"wowza\")\n}\nint d\nd = 5\n{\n    string d\n    d = \"hey\"\n    print(d)\n    d = \"sap\"\n    print(d)\n}\nprint(d)\n}\nc = 4\nprint(c)\nwhile (c != 7) {\nc = 1 + 1 + 1 + c\nprint(c)\n}\nc = 9 + c\nprint(c)\n}$";
         };
         Test.stackOverflow = function () {
-            document.getElementById("sourceCode").value = "/* Stack Overflow */\n{\nint a\na = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n}$";
+            document.getElementById("sourceCode").value = "/* Stack Overflow */\n{\nint a\na = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1\n}$";
         };
         Test.heapOverflow = function () {
             document.getElementById("sourceCode").value = "/* Heap Overflow */\n{\nstring a\na = \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}$";

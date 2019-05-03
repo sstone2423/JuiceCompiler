@@ -92,9 +92,16 @@ var JuiceC;
                     _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
                     var parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
                     if (document.getElementById("verboseCheck").checked) {
-                        for (var i = 0; i < parseResult.log.length; i++) {
-                            _Control.putMessage(parseResult.log[i]);
-                        }
+                        parseResult.log.forEach(function (entry) {
+                            _Control.putMessage(entry);
+                        });
+                    }
+                    else {
+                        parseResult.log.forEach(function (entry) {
+                            if (entry.includes(ERROR) || entry.includes(WARNING)) {
+                                _Control.putMessage(entry);
+                            }
+                        });
                     }
                     // If there were no errors while parsing, display the CST
                     if (!parseResult.error) {
@@ -116,9 +123,16 @@ var JuiceC;
                         _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
                         var semanticResult = _Semantic_1.analyze();
                         if (document.getElementById("verboseCheck").checked) {
-                            for (var j = 0; j < semanticResult.log.length; j++) {
-                                _Control.putMessage(semanticResult.log[j]);
-                            }
+                            semanticResult.log.forEach(function (entry) {
+                                _Control.putMessage(entry);
+                            });
+                        }
+                        else {
+                            semanticResult.log.forEach(function (entry) {
+                                if (entry.includes(ERROR) || entry.includes(WARNING)) {
+                                    _Control.putMessage(entry);
+                                }
+                            });
                         }
                         if (semanticResult.errors === 0) {
                             if (document.getElementById("verboseCheck").checked) {
@@ -154,21 +168,30 @@ var JuiceC;
                                 for (var m = 0; m < scopeTreeArr.length; m++) {
                                     _Control.scopeTreeElement.value += scopeTreeArr[m] + "\n";
                                 }
-                                _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
-                                _CodeGen = new JuiceC.CodeGen(semanticResult);
-                                _Control.putMessage(INFO + "\tStarting Code Generation of Program " + (programIndex + 1));
-                                // If code gen is successful, add the code to the Code output
-                                if (_CodeGen.generateCode()) {
-                                    _CodeGen.generatedCode.forEach(function (code) {
-                                        _Control.codeGenElement.value += code + " ";
-                                    });
-                                }
+                            }
+                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                            _CodeGen = new JuiceC.CodeGen(semanticResult);
+                            _Control.putMessage(INFO + "\tStarting Code Generation of Program " + (programIndex + 1));
+                            // If code gen is successful, add the code to the Code output
+                            if (_CodeGen.generateCode()) {
+                                _CodeGen.generatedCode.forEach(function (code) {
+                                    _Control.codeGenElement.value += code + " ";
+                                });
+                            }
+                            if (document.getElementById("verboseCheck").checked) {
                                 _CodeGen.log.forEach(function (entry) {
                                     _Control.putMessage(entry);
                                 });
-                                _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
-                                _Control.scrollToBottom();
                             }
+                            else {
+                                _CodeGen.log.forEach(function (entry) {
+                                    if (entry.includes(ERROR) || entry.includes(WARNING)) {
+                                        _Control.putMessage(entry);
+                                    }
+                                });
+                            }
+                            _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
+                            _Control.scrollToBottom();
                         }
                         else {
                             _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
@@ -193,71 +216,69 @@ var JuiceC;
                     _Control.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type + " [ " + lexResults[programIndex].tokens[i].value
                         + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
                 }
-                // Print all warnings
-                if (_Control.lexResults[programIndex].warnings.length > 0) {
-                    for (var i = 0; i < lexResults[programIndex].warnings.length; i++) {
-                        // Check for EOP warning
-                        if (lexResults[programIndex].warnings[i].warningType === "No EOP" /* NoEOP */) {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": " + "No EOP" /* NoEOP */ + " [ $ ] detected at end-of-file. Adding to end-of-file for you.");
-                            // Insert an EOP into the tokens array
-                            lexResults[programIndex].tokens.push(new JuiceC.Token("EOP" /* EOP */, "$", lexResults[programIndex].line, lexResults[programIndex].col));
-                        }
-                        else {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": Not really sure why I'm warning so oops?");
-                        }
+            }
+            // Print all warnings
+            if (_Control.lexResults[programIndex].warnings.length > 0) {
+                for (var i = 0; i < lexResults[programIndex].warnings.length; i++) {
+                    // Check for EOP warning
+                    if (lexResults[programIndex].warnings[i].warningType === "No EOP" /* NoEOP */) {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": " + "No EOP" /* NoEOP */ + " [ $ ] detected at end-of-file. Adding to end-of-file for you.");
+                        // Insert an EOP into the tokens array
+                        lexResults[programIndex].tokens.push(new JuiceC.Token("EOP" /* EOP */, "$", lexResults[programIndex].line, lexResults[programIndex].col));
+                    }
+                    else {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": Not really sure why I'm warning so oops?");
                     }
                 }
-                // Print all errors
-                for (var i = 0; i < lexResults[programIndex].errors.length; i++) {
-                    switch (lexResults[programIndex].errors[i].errorType) {
-                        // Invalid Token check
-                        case "Invalid Token" /* InvalidT */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token" /* InvalidT */ + " [ " + lexResults[programIndex].errors[i].value
-                                + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
-                            break;
-                        }
-                        // Missing end of comment
-                        case "Missing End Comment" /* NoEndComment */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Comment" /* NoEndComment */ + " brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value
-                                + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
-                            break;
-                        }
-                        // Missing end of string quote
-                        case "Missing End Quote in string literal" /* NoEndQuote */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Quote in string literal" /* NoEndQuote */ + " [ " + lexResults[programIndex].errors[i].value
-                                + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
-                            break;
-                        }
-                        // Invalid token in string
-                        case "Invalid Token in string literal" /* InvalidTInStr */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in string literal" /* InvalidTInStr */ + " [ " + lexResults[programIndex].errors[i].value
-                                + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
-                            break;
-                        }
-                        // Invalid token in comment
-                        case "Invalid Token in Comment" /* InvalidTInComm */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in Comment" /* InvalidTInComm */ + " [ " + lexResults[programIndex].errors[i].value
-                                + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
-                            break;
-                        }
-                        // Invalid new line
-                        case "Invalid New Line" /* InvalidNewLine */: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */ + " ] found at ( " + lexResults[programIndex].errors[i].lineNum
-                                + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
-                            break;
-                        }
-                        // Unknown error
-                        default: {
-                            _Control.putMessage(DEBUG + " - " + JuiceC.Lexer + " - " + ERROR + ": Unknown error found [ " + lexResults[programIndex].errors[i].value
-                                + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
-                            break;
-                        }
+            }
+            // Print all errors
+            for (var i = 0; i < lexResults[programIndex].errors.length; i++) {
+                switch (lexResults[programIndex].errors[i].errorType) {
+                    // Invalid Token check
+                    case "Invalid Token" /* InvalidT */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token" /* InvalidT */ + " [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        break;
+                    }
+                    // Missing end of comment
+                    case "Missing End Comment" /* NoEndComment */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Comment" /* NoEndComment */ + " brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        break;
+                    }
+                    // Missing end of string quote
+                    case "Missing End Quote in string literal" /* NoEndQuote */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Quote in string literal" /* NoEndQuote */ + " [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        break;
+                    }
+                    // Invalid token in string
+                    case "Invalid Token in string literal" /* InvalidTInStr */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in string literal" /* InvalidTInStr */ + " [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
+                        break;
+                    }
+                    // Invalid token in comment
+                    case "Invalid Token in Comment" /* InvalidTInComm */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in Comment" /* InvalidTInComm */ + " [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
+                        break;
+                    }
+                    // Invalid new line
+                    case "Invalid New Line" /* InvalidNewLine */: {
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */ + " ] found at ( " + lexResults[programIndex].errors[i].lineNum
+                            + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
+                        break;
+                    }
+                    // Unknown error
+                    default: {
+                        _Control.putMessage(DEBUG + " - " + JuiceC.Lexer + " - " + ERROR + ": Unknown error found [ " + lexResults[programIndex].errors[i].value
+                            + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        break;
                     }
                 }
             }
             _Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " " + WARNING + "(S) and " + lexResults[programIndex].errors.length + " " + ERROR + "(S)");
-        };
-        Control.prototype.parserLog = function (parseResult, programIndex) {
         };
         // Helper function to scroll to the bottom of the output div
         Control.prototype.scrollToBottom = function () {

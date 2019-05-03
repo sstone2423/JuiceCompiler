@@ -18,7 +18,7 @@ module JuiceC {
         }
 
         public static fullProgram(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program. Prints 1, true, 2, 3, stra, strb, true */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program. Prints 1true23strastrbtrue */
 {
     int a
     a = 1
@@ -72,7 +72,7 @@ module JuiceC {
         }
 
         public static whileStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement. Prints 2, 3, 4, 5, 8 */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement. Prints 23458 */
 {
     int a
     a = 1
@@ -92,7 +92,7 @@ module JuiceC {
         }
 
         public static ifStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement. Prints nums,ids,strings,booleans */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement. Prints numsidsstringsbooleans */
 {
     int a
     a = 1
@@ -472,8 +472,8 @@ print(c)
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Stack Overflow */
 {
 int a
-a = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
-}$`;
+a = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+}$`
         }
 
         public static heapOverflow(): void {
