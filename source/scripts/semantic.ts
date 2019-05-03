@@ -95,7 +95,7 @@
 
                     // Add variable declaration to current scope
                     // Check if already declared in current scope
-                    if (!this.scopeTree.curr.value.buckets.hasOwnProperty(id.value)){ 
+                    if (!this.scopeTree.curr.value.buckets.hasOwnProperty(id.value)) { 
                         this.scopeTree.curr.value.buckets[id.value] = new ScopeVariable(id.value, token);
                         let symbol = {
                             "type": token.value,
@@ -110,8 +110,11 @@
                     // Throw error if variable already declared in scope
                     else {
                         this.errors++;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ " + node.value.value + " ] was declared at ( " + node.lineNum + ":" + node.colNum 
-                            + " ), but the variable was already declared within the same scope at ( " + node.firstDeclareLine + " : " + node.firstDeclareCol + " )")
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ " 
+                            + node.children[1].children[0].value.value + " ] was declared at ( " + node.children[1].lineNum 
+                            + " : " + node.children[1].children[0].colNum 
+                            + " ), but the variable was already declared within the same scope starting at ( " 
+                            + this.scopeTree.curr.value.lineNum + " : " + this.scopeTree.curr.value.colNum + " )")
                     }
 
                     break;
@@ -143,7 +146,7 @@
                     if (expressionType != null && expressionType.value != null) {
                         expressionType = expressionType.value;
                     }
-                    this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[0].children[0].lineNum, node.children[0].children[0].colNum, node.children[2].lineNum, node.children[2].colNum);
+                    this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[2].lineNum, node.children[2].colNum);
                     // Update scope tree node object initialized flag. variable has been initialized.
                     this.markAsInitialized(node.children[0].children[0]);
                     
@@ -284,7 +287,7 @@
             }
         }
         
-        public checkTypeMatch(id, idType, targetType, idLine, idCol, targetLine, targetCol): void {
+        public checkTypeMatch(id, idType, targetType, targetLine, targetCol): void {
             if (targetType != null && idType != null) {
                 if (idType != targetType) {
                     this.errors++;

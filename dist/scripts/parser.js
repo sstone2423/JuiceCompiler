@@ -278,7 +278,7 @@ var JuiceC;
                 return true;
             }
             else {
-                this.log.push(DEBUG + " - " + PARSER + " - + " + ERROR + ": " + "Boolean Operation Expected" /* BoolOpExpected */ + " - found [ " + this.tokens[this.currentTokenIndex].type
+                this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + "Boolean Operation Expected" /* BoolOpExpected */ + " - found [ " + this.tokens[this.currentTokenIndex].type
                     + ", " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + "Expression" /* Expr */
                     + " ::== == | !=");
                 this.error = true;
@@ -342,7 +342,7 @@ var JuiceC;
             else {
                 // If token was expected and was not present, throw an error
                 if (expected) {
-                    this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + "Token Expected" /* TExpected */ + " [ " + "Expression" /* Expr */ + " ] - found [ " + this.tokens[this.currentTokenIndex].type
+                    this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + "Token Expected" /* TExpected */ + " [ " + "Expression" /* Expr */ + " ] " + " - found [ " + this.tokens[this.currentTokenIndex].type
                         + ", " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " )");
                     this.error = true;
                     this.errors++;

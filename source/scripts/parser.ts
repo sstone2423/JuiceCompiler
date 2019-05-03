@@ -291,7 +291,7 @@ module JuiceC {
                 this.cst.ascendTree();
                 return true;
             } else {
-                this.log.push(DEBUG + " - " + PARSER + " - + " + ERROR + ": " + ErrorType.BoolOpExpected + " - found [ " + this.tokens[this.currentTokenIndex].type 
+                this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + ErrorType.BoolOpExpected + " - found [ " + this.tokens[this.currentTokenIndex].type 
                 + ", " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " ) - " + Production.Expr 
                     + " ::== == | !=");
                 this.error = true;
@@ -355,7 +355,7 @@ module JuiceC {
             } else {
                 // If token was expected and was not present, throw an error
                 if (expected) {
-                    this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + ErrorType.TExpected + " [ " + Production.Expr + " ] - found [ " + this.tokens[this.currentTokenIndex].type 
+                    this.log.push(DEBUG + " - " + PARSER + " - " + ERROR + ": " + ErrorType.TExpected + " [ " + Production.Expr + " ] " +  " - found [ " + this.tokens[this.currentTokenIndex].type 
                     + ", " + this.tokens[this.currentTokenIndex].value + " ] at ( " + this.tokens[this.currentTokenIndex].lineNum + ":" + this.tokens[this.currentTokenIndex].colNum + " )");
                     this.error = true;
                     this.errors++;
