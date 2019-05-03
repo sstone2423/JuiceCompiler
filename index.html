@@ -3,12 +3,13 @@
 <head>
    <title>JuiceC - A browser-based Compiler in Typescript</title>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
+   
    <!-- Enable Treant -->
    <link rel="stylesheet" href="dist/styles/Treant.css" type="text/css"/>
    <!-- Enable bootstrap -->
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
+   <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
 </head>
 <body onload="JuiceC.Control.init();">
@@ -89,7 +90,7 @@
             <div class="row justify-content-md-center">
                <div class="col-sm-3">
                   <label>CST</label>
-                  <textarea class="form-control" id="CSTtext" rows="20" readonly></textarea>
+                  <textarea class="form-control small-text" id="CSTtext" rows="20" readonly></textarea>
                </div>
                <div class="col-sm-9">
                      <label>CST</label>
@@ -124,9 +125,9 @@
                            <tr></tr>
                      </tbody>
 					   </table>
-                  <div id="scopeTree" class="justify-content-md-center">
+                  <div class="justify-content-md-center">
                      <h5>Scope Tree</h5>
-                     <textarea id="taScope" rows="14" readonly disabled></textarea>
+                     <textarea class="form-control" id="scopeTree" rows="14" readonly disabled></textarea>
                   </div>
                </div>
             </div>

@@ -23,6 +23,7 @@ module JuiceC {
         CSTtextElement: HTMLInputElement;
         ASTtextElement: HTMLInputElement;
         codeGenElement: HTMLInputElement;
+        scopeTreeElement: HTMLInputElement;
 
         constructor() { }
 
@@ -47,10 +48,12 @@ module JuiceC {
             _Control.CSTtextElement = (<HTMLInputElement>document.getElementById("CSTtext"));
             _Control.ASTtextElement = (<HTMLInputElement>document.getElementById("ASTtext"));
             _Control.codeGenElement = (<HTMLInputElement>document.getElementById("codeGen"));
+            _Control.scopeTreeElement = (<HTMLInputElement>document.getElementById("scopeTree"));
             _Control.outputElement.value = "";
             _Control.CSTtextElement.value = "";
             _Control.ASTtextElement.value = "";
             _Control.codeGenElement.value = "";
+            _Control.scopeTreeElement.value = "";
             // Clear symbol table
 			let table: HTMLTableElement = (<HTMLTableElement>document.getElementById("symbolTable"));
 			// Leave header in place
@@ -109,8 +112,28 @@ module JuiceC {
                     _Control.prepareLexLog(programIndex);
                     // Only parse if there were no errors. No need to waste time and resources
                     _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
+
                     let parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
-                    _Control.parserLog(parseResult, programIndex);
+                    if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
+                        for (let i = 0; i < parseResult.log.length; i++) {
+                            _Control.putMessage(parseResult.log[i]);
+                        }
+                    }
+        
+                    // If there were no errors while parsing, display the CST
+                    if (!parseResult.error) {
+                        let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
+                        for (let i = 0; i < cst.tree.length; i++) {
+                            _Control.CSTtextElement.value += cst.tree[i] + "\n";
+                        }
+                        _Control.scrollToBottom();
+                        // Display CST visually with Treant.js
+                        Treant(cst.treant);
+                    } else {
+                        _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
+                    }
+                    
+                    _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
 
                     // Semantic analysis only if there were no parser errors
                     if (!parseResult.error) {
@@ -153,11 +176,10 @@ module JuiceC {
                                 }
                                 // Fill out scope tree
                                 let scopeTreeArr: Array<string> = _Semantic.printScopeTree(semanticResult.scopeTree.root);
-                                let scopeInput: HTMLInputElement = (<HTMLInputElement>document.getElementById("taScope"));
-                                scopeInput.value += "Program " + (programIndex + 1) + "\n";
+                                _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
                                 for (let m = 0; m < scopeTreeArr.length; m++) {
-                                    scopeInput.value += scopeTreeArr[m] + "\n";
+                                    _Control.scopeTreeElement.value += scopeTreeArr[m] + "\n";
                                 }
                                 _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                                 _CodeGen = new CodeGen(semanticResult);
@@ -273,26 +295,7 @@ module JuiceC {
         }
 
         public parserLog(parseResult, programIndex: number): void {
-            if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
-                for (let i = 0; i < parseResult.log.length; i++) {
-                    _Control.putMessage(parseResult.log[i]);
-                }
-            }
-
-            // If there were no errors while parsing, display the CST
-            if (!parseResult.error) {
-                let cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
-                for (let i = 0; i < cst.tree.length; i++) {
-                    _Control.outputElement.value += cst.tree[i] + "\n";
-                }
-                this.scrollToBottom()
-                // Display CST visually with Treant.js
-                Treant(cst.treant);
-            } else {
-                _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
-            }
             
-			_Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
         }
 
         // Helper function to scroll to the bottom of the output div

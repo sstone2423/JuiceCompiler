@@ -32,10 +32,12 @@ var JuiceC;
             _Control.CSTtextElement = document.getElementById("CSTtext");
             _Control.ASTtextElement = document.getElementById("ASTtext");
             _Control.codeGenElement = document.getElementById("codeGen");
+            _Control.scopeTreeElement = document.getElementById("scopeTree");
             _Control.outputElement.value = "";
             _Control.CSTtextElement.value = "";
             _Control.ASTtextElement.value = "";
             _Control.codeGenElement.value = "";
+            _Control.scopeTreeElement.value = "";
             // Clear symbol table
             var table = document.getElementById("symbolTable");
             // Leave header in place
@@ -89,7 +91,25 @@ var JuiceC;
                     // Only parse if there were no errors. No need to waste time and resources
                     _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
                     var parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
-                    _Control.parserLog(parseResult, programIndex);
+                    if (document.getElementById("verboseCheck").checked) {
+                        for (var i = 0; i < parseResult.log.length; i++) {
+                            _Control.putMessage(parseResult.log[i]);
+                        }
+                    }
+                    // If there were no errors while parsing, display the CST
+                    if (!parseResult.error) {
+                        var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
+                        for (var i = 0; i < cst.tree.length; i++) {
+                            _Control.CSTtextElement.value += cst.tree[i] + "\n";
+                        }
+                        _Control.scrollToBottom();
+                        // Display CST visually with Treant.js
+                        Treant(cst.treant);
+                    }
+                    else {
+                        _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
+                    }
+                    _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
                     // Semantic analysis only if there were no parser errors
                     if (!parseResult.error) {
                         var _Semantic_1 = new JuiceC.Semantic(parseResult.cst);
@@ -129,11 +149,10 @@ var JuiceC;
                                 }
                                 // Fill out scope tree
                                 var scopeTreeArr = _Semantic_1.printScopeTree(semanticResult.scopeTree.root);
-                                var scopeInput = document.getElementById("taScope");
-                                scopeInput.value += "Program " + (programIndex + 1) + "\n";
+                                _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
                                 for (var m = 0; m < scopeTreeArr.length; m++) {
-                                    scopeInput.value += scopeTreeArr[m] + "\n";
+                                    _Control.scopeTreeElement.value += scopeTreeArr[m] + "\n";
                                 }
                                 _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                                 _CodeGen = new JuiceC.CodeGen(semanticResult);
@@ -238,25 +257,6 @@ var JuiceC;
             _Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " " + WARNING + "(S) and " + lexResults[programIndex].errors.length + " " + ERROR + "(S)");
         };
         Control.prototype.parserLog = function (parseResult, programIndex) {
-            if (document.getElementById("verboseCheck").checked) {
-                for (var i = 0; i < parseResult.log.length; i++) {
-                    _Control.putMessage(parseResult.log[i]);
-                }
-            }
-            // If there were no errors while parsing, display the CST
-            if (!parseResult.error) {
-                var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
-                for (var i = 0; i < cst.tree.length; i++) {
-                    _Control.outputElement.value += cst.tree[i] + "\n";
-                }
-                this.scrollToBottom();
-                // Display CST visually with Treant.js
-                Treant(cst.treant);
-            }
-            else {
-                _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
-            }
-            _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
         };
         // Helper function to scroll to the bottom of the output div
         Control.prototype.scrollToBottom = function () {
