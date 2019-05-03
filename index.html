@@ -39,7 +39,10 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - If Statement</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Missing EOP</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.semanticWarnings()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Semantic Warnings Bonanza</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.initButNotUsed()" href="#"><span class="badge badge-pill badge-success">G</span> Lex/Parse/Semantic - Initialized But Unused Var</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.initButNotUsed()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Initialized But Unused Var</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.booleanExpressions()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Boolean Expressions</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.variableAddition()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Variable Addition</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.longAddition()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Long Addition</a>
                           <hr>
                           <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#"><span class="badge badge-pill badge-success">P</span><span class="badge badge-pill badge-danger">F</span> - Alan's Test</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - EOP Inside of String</a>
@@ -61,8 +64,11 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.typeMismatch()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Type Mismatch</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.incorrectTypeCompar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Type Comparison</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.incorrectIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Int Expression</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.tienBooleanHell()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Tien's Boolean Hell</a>   
-                          <a class="dropdown-item" onclick="JuiceC.Test.tienTest()" href="#">Derp - tienTest</a>          
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.infiniteLoopMaxMemory()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Infinite Loop</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.booleanHell()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Boolean Hell</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.stackOverflow()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Stack Overflow Addition</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.stackOverflow()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Heap Overflow String</a>
                         </div>
                      </div>
                   <textarea class="form-control" id="sourceCode" rows="15"></textarea>

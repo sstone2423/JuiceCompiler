@@ -194,6 +194,7 @@ module JuiceC {
                                     _Control.putMessage(entry);
                                 });
                                 _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
+                                _Control.scrollToBottom();
 
                             }
                         } else {
