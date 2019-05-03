@@ -1,6 +1,6 @@
 module JuiceC {
 
-    export enum Production {
+    export const enum Production {
 
         Program = "Program",
         Block = "Block",

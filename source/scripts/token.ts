@@ -5,31 +5,31 @@
 
 module JuiceC {
 
-    export enum TokenType {
+    export const enum TokenType {
 
         // Lexer tokens
-        ID = "Id",
-        LBRACE = "LBrace",
-        RBRACE = "RBrace",
+        Id = "Id",
+        LBrace = "LBrace",
+        RBrace = "RBrace",
         EOP = "EOP",
-        DIGIT = "Digit",
-        INTOP = "IntOp",
-        BOOLVAL = "BoolVal",
-        TYPE = "Type",
-        ASSIGN = "Assign",
-        BOOLOP = "BoolOp",
-        WHILE = "While",
-        IF = "If",
-        PRINT = "Print",
-        RPAREN = "RParen",
-        LPAREN = "LParen",
-        QUOTE = "Quote",
-        CHAR = "Char",
-        SPACE = "Space",
-        STRING = "String",
-        ADDITION = "Addition",
-        EQUALS = "Equals",
-        NOTEQUALS = "NotEquals",
+        Digit = "Digit",
+        IntOp = "IntOp",
+        BoolVal = "BoolVal",
+        Type = "Type",
+        Assign = "Assign",
+        BoolOp = "BoolOp",
+        While = "While",
+        If = "If",
+        Print = "Print",
+        RParen = "RParen",
+        LParen = "LParen",
+        Quote = "Quote",
+        Char = "Char",
+        Space = "Space",
+        String = "String",
+        Addition = "Addition",
+        Equals = "Equals",
+        NotEquals = "NotEquals",
 
     }
 

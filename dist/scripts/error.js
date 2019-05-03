@@ -15,6 +15,9 @@ var JuiceC;
             this.colNum = colNum;
             this.expectedToken = expectedToken;
         }
+        Error.logUnknownError = function (section, log) {
+            log.push(DEBUG + " - " + section + " - " + ERROR + " - Unknown Error has occured");
+        };
         return Error;
     }());
     JuiceC.Error = Error;

@@ -185,7 +185,7 @@
                 case Production.IntExpr:
                     // Check if it is not a digit
                     if (node.children.length > 1) {
-                        this.ast.addNode(new Token(TokenType.ADDITION, "Addition", null, null));
+                        this.ast.addNode(new Token(TokenType.Addition, "Addition", null, null));
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
 
@@ -214,10 +214,10 @@
                     // Check if it is not a boolval
                     if (node.children.length > 1) {
                         if (node.children[2].children[0].value.value == "==") {
-                            this.ast.addNode(new Token(TokenType.EQUALS, "Equals", null, null));
+                            this.ast.addNode(new Token(TokenType.Equals, "Equals", null, null));
                         }
                         else {
-                            this.ast.addNode(new Token(TokenType.NOTEQUALS, "NotEquals", null, null));
+                            this.ast.addNode(new Token(TokenType.NotEquals, "NotEquals", null, null));
                         }
 
                         // Get types returned by the two Expr children and make sure they're the same
@@ -265,7 +265,7 @@
                     }
                     stringBuilder.push("\"");
                     let resString: string = stringBuilder.join("");
-                    this.ast.addNode(new Token(TokenType.STRING, resString, null, null));
+                    this.ast.addNode(new Token(TokenType.String, resString, null, null));
                     this.ast.ascendTree();
 
                     return VariableType.String;

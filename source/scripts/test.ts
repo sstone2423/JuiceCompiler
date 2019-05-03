@@ -18,7 +18,7 @@ module JuiceC {
         }
 
         public static fullProgram(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program*/
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program. Prints 1, true, 2, 3, stra, strb, true */
 {
     int a
     a = 1
@@ -72,13 +72,11 @@ module JuiceC {
         }
 
         public static whileStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement. Prints 2, 3, 4, 5, 8 */
 {
-    string s
     int a
     a = 1
     {
-        s = "hey there"
         int a
         a = 2
         print(a)
@@ -89,13 +87,12 @@ module JuiceC {
             print(a)
         }
         print(3 + a)
-        print(s)
     }
 } $`;
         }
 
         public static ifStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement. Prints nums,ids,strings,booleans */
 {
     int a
     a = 1
@@ -108,7 +105,7 @@ module JuiceC {
     if("hey" == "hey"){
         print("strings")
     }
-    if(true == (a == a)){
+    if(true == true){
         print("booleans")
     }
 } $`;

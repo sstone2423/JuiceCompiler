@@ -14,11 +14,16 @@ var DEBUG = "DEBUG";
 var LEXER = "Lexer";
 var PARSER = "Parser";
 var SEMANTIC = "Semantic";
+var CODEGEN = "Code Gen";
 var VALID = "VALID";
 var EOF = "$";
 var SCOPE = "SCOPE";
 var WARNING = "WARNING";
 var ERROR = "ERROR";
+var ZERO = "0";
+var BACKPATCH = "Backpatching";
+var TRUE = "true";
+var FALSE = "false";
 // Regex
 var rLBRACE = new RegExp('{$'); // Left Brace
 var rRBRACE = new RegExp('}$'); // Right brace

@@ -7,11 +7,11 @@ module JuiceC {
 
     export const enum WarningType {
         // Lex warnings
-        NO_EOP = "No EOP",
+        NoEOP = "No EOP",
         // Semantic warnings
-        USED_BEFORE_INIT = "Variable Used Before Being Initialized",
-        UNINIT_VAR = "Uninitialized Variable",
-        UNUSED_VAR = "Unused Variable"
+        UsedBeforeInit = "Variable Used Before Being Initialized",
+        UninitVar = "Uninitialized Variable",
+        UnusedVar = "Unused Variable"
     }
 
 	export class Warning {

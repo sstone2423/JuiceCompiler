@@ -36,14 +36,14 @@ var JuiceC;
         // When found, construct and add them to the AST
         Semantic.prototype.traverse = function (node) {
             switch (node.value) {
-                case JuiceC.Production.Block:
+                case "Block" /* Block */:
                     // Scope tree: add a scope to the tree whenever we encounter a Block
                     // Increase the number of scopes that have been declared
                     // Increase the scope level as we are on a new one
                     var newScope = new JuiceC.ScopeHashMap(node.lineNum, node.colNum, this.currentScope);
                     this.scopeTree.addNode(newScope);
                     // Add the Block node and increase the scope by 1
-                    this.ast.addNode(JuiceC.Production.Block);
+                    this.ast.addNode("Block" /* Block */);
                     this.currentScope++;
                     this.totalScopes++;
                     // Recursively traverse each child node
@@ -60,9 +60,9 @@ var JuiceC;
                         this.currentScope--;
                     }
                     break;
-                case JuiceC.Production.VarDeclaration:
+                case "VarDecl" /* VarDeclaration */:
                     // Add the VarDecl node
-                    this.ast.addNode(JuiceC.Production.VarDeclaration);
+                    this.ast.addNode("VarDecl" /* VarDeclaration */);
                     // Get its children and add to AST
                     // Get the type
                     var token = node.children[0].children[0].value;
@@ -96,16 +96,16 @@ var JuiceC;
                             + " ), but the variable was already declared within the same scope at ( " + node.firstDeclareLine + " : " + node.firstDeclareCol + " )");
                     }
                     break;
-                case JuiceC.Production.PrintStatement:
+                case "PrintStatement" /* PrintStatement */:
                     // Add the PrintStatement node
-                    this.ast.addNode(JuiceC.Production.PrintStatement);
+                    this.ast.addNode("PrintStatement" /* PrintStatement */);
                     // Find the expression by traversing the child at index 2 AKA the good stuff
                     this.traverse(node.children[2]);
                     this.ast.ascendTree();
                     break;
-                case JuiceC.Production.AssignStatement:
+                case "AssignmentStatement" /* AssignStatement */:
                     // Add the AssignStatement node
-                    this.ast.addNode(JuiceC.Production.AssignStatement);
+                    this.ast.addNode("AssignmentStatement" /* AssignStatement */);
                     // Get the id
                     var id = node.children[0].children[0].value;
                     // Set the scope on the id
@@ -125,19 +125,19 @@ var JuiceC;
                     // Update scope tree node object initialized flag. variable has been initialized.
                     this.markAsInitialized(node.children[0].children[0]);
                     break;
-                case JuiceC.Production.WhileStatement:
-                    this.ast.addNode(JuiceC.Production.WhileStatement);
+                case "WhileStatement" /* WhileStatement */:
+                    this.ast.addNode("WhileStatement" /* WhileStatement */);
                     this.traverse(node.children[1]);
                     this.traverse(node.children[2]);
                     this.ast.ascendTree();
                     break;
-                case JuiceC.Production.IfStatement:
-                    this.ast.addNode(JuiceC.Production.IfStatement);
+                case "IfStatement" /* IfStatement */:
+                    this.ast.addNode("IfStatement" /* IfStatement */);
                     this.traverse(node.children[1]);
                     this.traverse(node.children[2]);
                     this.ast.ascendTree();
                     break;
-                case JuiceC.Production.Id:
+                case "Id" /* Id */:
                     // Get the id and also assign its scope
                     var id = node.children[0].value;
                     // Set the scope on the id
@@ -152,10 +152,10 @@ var JuiceC;
                     // Look for used but uninitialized variables
                     this.checkUsedButUninit(node.children[0]);
                     return foundType;
-                case JuiceC.Production.IntExpr:
+                case "IntegerExpression" /* IntExpr */:
                     // Check if it is not a digit
                     if (node.children.length > 1) {
-                        this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.ADDITION, "Addition", null, null));
+                        this.ast.addNode(new JuiceC.Token("Addition" /* Addition */, "Addition", null, null));
                         this.ast.addNode(node.children[0].children[0].value);
                         this.ast.ascendTree();
                         // Ensure return type is int
@@ -177,14 +177,14 @@ var JuiceC;
                     }
                     // return the type returned by intexpr
                     return JuiceC.VariableType.Int;
-                case JuiceC.Production.BooleanExpr:
+                case "BooleanExpression" /* BooleanExpr */:
                     // Check if it is not a boolval
                     if (node.children.length > 1) {
                         if (node.children[2].children[0].value.value == "==") {
-                            this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.EQUALS, "Equals", null, null));
+                            this.ast.addNode(new JuiceC.Token("Equals" /* Equals */, "Equals", null, null));
                         }
                         else {
-                            this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.NOTEQUALS, "NotEquals", null, null));
+                            this.ast.addNode(new JuiceC.Token("NotEquals" /* NotEquals */, "NotEquals", null, null));
                         }
                         // Get types returned by the two Expr children and make sure they're the same
                         var firstExprType = this.traverse(node.children[1]);
@@ -209,7 +209,7 @@ var JuiceC;
                     }
                     // return the type returned by boolexpr
                     return JuiceC.VariableType.Boolean;
-                case JuiceC.Production.StringExpr:
+                case "StringExpression" /* StringExpr */:
                     // Generate the string until end of the charlist
                     // Surround string in quotes
                     var stringBuilder = ["\""];
@@ -229,14 +229,14 @@ var JuiceC;
                     }
                     stringBuilder.push("\"");
                     var resString = stringBuilder.join("");
-                    this.ast.addNode(new JuiceC.Token(JuiceC.TokenType.STRING, resString, null, null));
+                    this.ast.addNode(new JuiceC.Token("String" /* String */, resString, null, null));
                     this.ast.ascendTree();
                     return JuiceC.VariableType.String;
                 default:
                     // Traverse node's children
                     for (var i = 0; i < node.children.length; i++) {
                         // If node is an Expression, return, so we can properly return the type of the expression
-                        if (node.value == JuiceC.Production.Expr) {
+                        if (node.value == "Expression" /* Expr */) {
                             return this.traverse(node.children[i]);
                         }
                         this.traverse(node.children[i]);

@@ -12,12 +12,8 @@ module JuiceC {
     
     export class Control {
 
-        programDetected: boolean = false;
         lexResults = [];
-        lexWarning: boolean = false;
-        lexError: boolean = false;
         parseResults = [];
-        parseError: boolean = false;
         cstVisual;
         treantCST;
         astVisual;
@@ -26,6 +22,7 @@ module JuiceC {
         outputElement: HTMLInputElement;
         CSTtextElement: HTMLInputElement;
         ASTtextElement: HTMLInputElement;
+        codeGenElement: HTMLInputElement;
 
         constructor() { }
 
@@ -49,9 +46,11 @@ module JuiceC {
             _Control.outputElement = (<HTMLInputElement>document.getElementById("output"));
             _Control.CSTtextElement = (<HTMLInputElement>document.getElementById("CSTtext"));
             _Control.ASTtextElement = (<HTMLInputElement>document.getElementById("ASTtext"));
+            _Control.codeGenElement = (<HTMLInputElement>document.getElementById("codeGen"));
             _Control.outputElement.value = "";
             _Control.CSTtextElement.value = "";
             _Control.ASTtextElement.value = "";
+            _Control.codeGenElement.value = "";
             // Clear symbol table
 			let table: HTMLTableElement = (<HTMLTableElement>document.getElementById("symbolTable"));
 			// Leave header in place
@@ -62,7 +61,7 @@ module JuiceC {
         }
 
         // Output a message to the HTML output log
-        public putMessage(msg): void {
+        public putMessage(msg: string): void {
             _Control.outputElement.value += msg + "\n";
         }
 
@@ -97,19 +96,10 @@ module JuiceC {
             _Control.lexResults = _Lexer.lex();
             // Iterate through each program result
             for (let programIndex = 0; programIndex < _Control.lexResults.length; programIndex++) {
-                // Check if there were warnings
-                if (_Control.lexResults[programIndex].warnings.length != 0) {
-                    _Control.lexWarning = true;
-                } else {
-                    _Control.lexWarning = false;
-                }
-
                 // Output the log if there are any errors
                 if (_Control.lexResults[programIndex].errors.length != 0) {
                     _Control.prepareLexLog(programIndex);
                     _Control.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
-                    // Save the lexer error state
-                    _Control.lexError = true;
                 } 
                 // If no tokens are found, output an error
                 else if (_Control.lexResults[programIndex].tokens.length == 0) {
@@ -171,7 +161,18 @@ module JuiceC {
                                 }
                                 _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
                                 _CodeGen = new CodeGen(semanticResult);
-                                _CodeGen.generateCode();
+                                _Control.putMessage(INFO + "\tStarting Code Generation of Program " + (programIndex + 1));
+                                // If code gen is successful, add the code to the Code output
+                                if (_CodeGen.generateCode()) {
+                                    _CodeGen.generatedCode.forEach(code => {
+                                        _Control.codeGenElement.value += code + " ";
+                                    });
+                                }
+                                _CodeGen.log.forEach(entry => {
+                                    _Control.putMessage(entry);
+                                });
+                                _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
+
                             }
                         } else {
                             _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
@@ -184,10 +185,9 @@ module JuiceC {
             }
         }
 
-        // Swaps programDetected boolean to true, outputs the program that is being compiled, and begins the lexerLog
+        // Outputs the program that is being compiled, and begins the lexerLog
         public prepareLexLog(programIndex: number): void {
             // Errors mean there was typed code
-			_Control.programDetected = true;
             _Control.putMessage(INFO + "\tCompiling Program " + (programIndex + 1));
             // Log/output the lexer analysis results
             _Control.lexerLog(_Control.lexResults, programIndex);
@@ -202,15 +202,15 @@ module JuiceC {
                                     + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
                 }
                 // Print all warnings
-                if (_Control.lexWarning) {
+                if (_Control.lexResults[programIndex].warnings.length > 0) {
                     for (let i = 0; i < lexResults[programIndex].warnings.length; i++) {
                         // Check for EOP warning
-                        if (lexResults[programIndex].warnings[i].warningType == WarningType.NO_EOP) {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: No EOP [ $ ] detected at end-of-file. Adding to end-of-file for you.");
+                        if (lexResults[programIndex].warnings[i].warningType === WarningType.NoEOP) {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": " + WarningType.NoEOP + " [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                             // Insert an EOP into the tokens array
                             lexResults[programIndex].tokens.push(new Token(TokenType.EOP, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                         } else {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - WARNING: Not really sure why I'm warning so oops?");
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": Not really sure why I'm warning so oops?");
                         }
                     }
                 }
@@ -218,50 +218,50 @@ module JuiceC {
                 for (let i = 0; i < lexResults[programIndex].errors.length; i++) {
                     switch (lexResults[programIndex].errors[i].errorType) {
                         // Invalid Token check
-                        case ErrorType.INVALID_T: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.InvalidT: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidT + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Missing end of comment
-                        case ErrorType.NO_END_COMMENT: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: Missing ending comment brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.NoEndComment: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.NoEndComment + " brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Missing end of string quote
-                        case ErrorType.NO_END_QUOTE: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.NO_END_QUOTE + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.NoEndQuote: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.NoEndQuote + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
 
                         // Invalid token in string
-                        case ErrorType.INVALID_T_STRING: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T_STRING + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.InvalidTInStr: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidTInStr + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
                             break;
                         }
 
                         // Invalid token in comment
-                        case ErrorType.INVALID_T: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_T_COMMENT + " [ " + lexResults[programIndex].errors[i].value 
+                        case ErrorType.InvalidTInComm: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidTInComm + " [ " + lexResults[programIndex].errors[i].value 
                                     + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
                             break;
                         }
 
                         // Invalid new line
-                        case ErrorType.INVALID_NEW_LINE: {
-                            _Control.putMessage(DEBUG + " - " + LEXER + " - ERROR: " + ErrorType.INVALID_NEW_LINE + " ] found at ( " + lexResults[programIndex].errors[i].lineNum 
-                            + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments");
+                        case ErrorType.InvalidNewLine: {
+                            _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidNewLine + " ] found at ( " + lexResults[programIndex].errors[i].lineNum 
+                            + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
                             break;
                         }
 
                         // Unknown error
                         default: {
-                            _Control.putMessage(DEBUG + " - " + Lexer + " - ERROR: Unknown error found [ " + lexResults[programIndex].errors[i].value 
+                            _Control.putMessage(DEBUG + " - " + Lexer + " - " + ERROR + ": Unknown error found [ " + lexResults[programIndex].errors[i].value 
                                         + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                             break;
                         }
@@ -269,7 +269,7 @@ module JuiceC {
                 }
             }
             
-			_Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " WARNING(S) and " + lexResults[programIndex].errors.length + " ERROR(S)");
+			_Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " " + WARNING + "(S) and " + lexResults[programIndex].errors.length + " " + ERROR + "(S)");
         }
 
         public parserLog(parseResult, programIndex: number): void {
