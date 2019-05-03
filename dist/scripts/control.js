@@ -266,7 +266,7 @@ var JuiceC;
                     }
                     // Invalid new line
                     case "Invalid New Line" /* InvalidNewLine */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */ + " ] found at ( " + lexResults[programIndex].errors[i].lineNum
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */ + " [ \\n ] found at ( " + lexResults[programIndex].errors[i].lineNum
                             + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
                         break;
                     }

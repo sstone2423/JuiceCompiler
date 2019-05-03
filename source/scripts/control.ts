@@ -297,7 +297,7 @@ module JuiceC {
 
                     // Invalid new line
                     case ErrorType.InvalidNewLine: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidNewLine + " ] found at ( " + lexResults[programIndex].errors[i].lineNum 
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + ErrorType.InvalidNewLine + " [ \\n ] found at ( " + lexResults[programIndex].errors[i].lineNum 
                         + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
                         break;
                     }
