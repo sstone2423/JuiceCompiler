@@ -1,11 +1,12 @@
 ///<reference path="globals.ts" />
-/* 
-	codegen.ts
-
-*/
+/**
+ *  codegen.ts  
+ * 
+ *  The Code Generator takes in the AST and Scope tree from Semantic Analysis, 
+ *  generates 6502 opcodes, and returns them to the control
+ */
 
 module JuiceC {
-
     // Static data format: tempLocation, variableName, scope, offset, location
     export class StaticData {
         // tempLocation: string -- Acts as the key to the staticDataMap
@@ -16,6 +17,7 @@ module JuiceC {
         loc: string;
     }
 
+    // string constants for codegen
     const MAX_BYTE_SIZE: number = 256;
     const TERMINATOR: string = "00"; // pun intended
     const ZERO_ONE: string = "01";
@@ -135,8 +137,10 @@ module JuiceC {
                     break;
 
                 case Production.PrintStatement:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.PrintStatement + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for printing a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.PrintStatement 
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for printing a(n) " 
+                        + astNode.children[0].value.type);
                     // Determine type of child
                     switch (astNode.children[0].value.type) {
                         case TokenType.Digit:
@@ -223,7 +227,8 @@ module JuiceC {
                     break;
 
                 case Production.VarDeclaration:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.VarDeclaration + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.VarDeclaration 
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
                     // Set a new staticData entry
                     var temp = T + this.staticDataCount;
                     this.staticDataMap.set(temp, {
@@ -239,8 +244,10 @@ module JuiceC {
                     break;
 
                 case Production.AssignStatement:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.AssignStatement + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for assigning a " + astNode.children[1].value.type + " to a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.AssignStatement 
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for assigning a " 
+                        + astNode.children[1].value.type + " to a(n) " + astNode.children[0].value.type);
                     // Determine assignment type
                     switch (astNode.children[1].value.type) {
                         case TokenType.Digit:
@@ -318,8 +325,10 @@ module JuiceC {
                     break;
 
                 case Production.WhileStatement:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.WhileStatement + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a while condition on a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.WhileStatement 
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a while condition on a(n) " 
+                        + astNode.children[0].value.type);
                     let whileStartPtr = this.codePtr;
                     var address: string;
                     // Evaluate left-hand side boolean result first
@@ -404,8 +413,10 @@ module JuiceC {
                     break;
 
                 case Production.IfStatement:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.IfStatement + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for an if condition on a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.IfStatement 
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for an if condition on a(n) " 
+                        + astNode.children[0].value.type);
                     // look at its left and right children
                     switch (astNode.children[0].value.type) {
                         // If left-hand side is a boolean value, set zero flag to 1 if true, set zero flag to 0 if false
@@ -466,7 +477,8 @@ module JuiceC {
             // If code pointer is overflowing into the heap, throw an error
             if (this.codePtr >= this.heapPtr) {
                 this.addError();
-                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.ExceedStackLimit + ". The Stack has reached the heap inducing Stack overflow")
+                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.ExceedStackLimit 
+                    + ". The Stack has reached the heap inducing Stack overflow")
             }
         }
 
@@ -475,7 +487,8 @@ module JuiceC {
          * @param equalsNode takes in the equals node
          */
         private generateEquals(equalsNode): string {
-            this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a " + Production.BooleanExpr + " comparing a(n) " + equalsNode.children[0].value.type + " to a(n) " + equalsNode.children[1].value.type);
+            this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a " + Production.BooleanExpr 
+                + " comparing a(n) " + equalsNode.children[0].value.type + " to a(n) " + equalsNode.children[1].value.type);
             // LHS: load what is in left-hand side into x register
             switch (equalsNode.children[0].value.type) {
                 case TokenType.Digit:
@@ -516,17 +529,19 @@ module JuiceC {
                     // TODO: Nested Booleans
                     // for now, throw error showing nonsupport
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean + ". Nested booleans are not supported at this time")
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean 
+                        + ". Nested booleans are not supported at this time")
                     break;
 
                 case TokenType.NotEquals:
                     // TODO: Nested Booleans
                     // for now, throw error showing nonsupport
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean + ". Nested booleans are not supported at this time")
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean 
+                        + ". Nested booleans are not supported at this time")
                     break;
             }
-            // RHS: compare to address of what right-hand side is. actually, just return mem address of right-hand side
+            // Compare to address of what right-hand side is
             switch (equalsNode.children[1].value.type) {
                 case TokenType.Digit:
                     this.loadAccWithConst(ZERO + equalsNode.children[1].value.value);
@@ -571,14 +586,15 @@ module JuiceC {
                 case TokenType.Equals:
                     // TODO: Nested booleans
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean + ". Nested booleans are not supported at this time");
-
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean 
+                        + ". Nested booleans are not supported at this time");
                     break;
 
                 case TokenType.NotEquals:
                     // TODO: Nested booleans
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean + ". Nested booleans are not supported at this time");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.NestedBoolean 
+                        + ". Nested booleans are not supported at this time");
                     break;
             }
         }
@@ -639,7 +655,7 @@ module JuiceC {
             if (this.staticPtr + numberOfVariables >= this.heapPtr) {
                 this.addError();
                 this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + ErrorType.ExceedStaticLimit
-                            + ". The Static area overflowed into the heap")
+                    + ". The Static area overflowed into the heap")
                 return;
             }
             // Start assigning memory addresses for variables in statics table
@@ -666,15 +682,15 @@ module JuiceC {
                     let memAddr = this.staticDataMap.get(temp)["loc"];
                     this.generatedCode[i] = memAddr;
                     this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Static Variable Placeholder " 
-                                + temp + " at Address: " + i.toString(16).toUpperCase() + " with Memory Address: " + memAddr);
+                        + temp + " at Address: " + i.toString(16).toUpperCase() + " with Memory Address: " + memAddr);
                 }
                 // found a placeholder for jump
                 if (this.generatedCode[i].charAt(0) == J) {
                     let temp = this.generatedCode[i];
                     let jumpAmount = this.jumpMap.get(temp);
                     this.generatedCode[i] = jumpAmount;
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Jump Variable Placeholder " 
-                                + temp + " at Address: " + i.toString(16).toUpperCase() + " forward " + jumpAmount + " address(es)");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Jump Variable Placeholder " + temp 
+                        + " at Address: " + i.toString(16).toUpperCase() + " forward " + jumpAmount + " address(es)");
                 }
             }
         }
@@ -730,7 +746,8 @@ module JuiceC {
             // Check for heap overflow
             if (this.codePtr >= this.heapPtr) {
                 this.addError();
-                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + " - " + ErrorType.ExceedHeapLimit + ". The Heap has reached the stack inducing Heap Overflow");
+                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + " - " + ErrorType.ExceedHeapLimit 
+                    + ". The Heap has reached the stack inducing Heap Overflow");
             }
             // Return pointer to beginning of string
             return stringPtr.toString(16).toUpperCase();

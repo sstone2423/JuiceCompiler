@@ -1,15 +1,15 @@
 ///<reference path="globals.ts" />
-/*
-    control.ts
-        Methods and variables for use with the index.html . All changes and functionality of the HTML
-        should be here.
-*/
+/**
+ *  control.ts
+ *
+ *  Methods and variables for use with the index.html . All changes and functionality of the HTML
+ *  should be here.
+ */
 var JuiceC;
 (function (JuiceC) {
     var Control = /** @class */ (function () {
         function Control() {
             this.lexResults = [];
-            this.parseResults = [];
         }
         // Set the initial values for our globals
         Control.init = function () {
@@ -75,127 +75,134 @@ var JuiceC;
             };
             _Control.putMessage(INFO + "\tCompilation started");
             // Grab the tokens, warnings, errors, and statuses from the lexer
-            _Control.lexResults = _Lexer.lex();
-            // Iterate through each program result
-            for (var programIndex = 0; programIndex < _Control.lexResults.length; programIndex++) {
-                // Output the log if there are any errors
-                if (_Control.lexResults[programIndex].errors.length != 0) {
-                    _Control.prepareLexLog(programIndex);
-                    _Control.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
-                }
-                // If no tokens are found, output an error
-                else if (_Control.lexResults[programIndex].tokens.length == 0) {
-                    _Control.putMessage(INFO + "\tCompilation failed due to no tokens being found. Where's the code?");
-                } // Otherwise continue to output the lex log
-                else {
-                    _Control.prepareLexLog(programIndex);
-                    // Only parse if there were no errors. No need to waste time and resources
-                    _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
-                    var parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
-                    if (document.getElementById("verboseCheck").checked) {
-                        parseResult.log.forEach(function (entry) {
-                            _Control.putMessage(entry);
-                        });
+            if (document.getElementById("sourceCode").value.length == 0) {
+                _Control.putMessage(INFO + "\tCompilation stopped. No source code provided");
+            }
+            else {
+                _Control.lexResults = _Lexer.lex();
+                // Iterate through each program result
+                for (var programIndex = 0; programIndex < _Control.lexResults.length; programIndex++) {
+                    // Output the log if there are any errors
+                    if (_Control.lexResults[programIndex].errors.length != 0) {
+                        _Control.prepareLexLog(programIndex);
+                        _Control.putMessage(INFO + "\tCompilation stopped due to Lexer errors");
                     }
+                    // If no tokens are found, output an error
+                    else if (_Control.lexResults[programIndex].tokens.length == 0) {
+                        _Control.putMessage(INFO + "\tCompilation failed due to no tokens being found. Where's the code?");
+                    } // Otherwise continue to output the lex log
                     else {
-                        parseResult.log.forEach(function (entry) {
-                            if (entry.includes(ERROR) || entry.includes(WARNING)) {
-                                _Control.putMessage(entry);
-                            }
-                        });
-                    }
-                    // If there were no errors while parsing, display the CST
-                    if (!parseResult.error) {
-                        var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
-                        for (var i = 0; i < cst.tree.length; i++) {
-                            _Control.CSTtextElement.value += cst.tree[i] + "\n";
-                        }
-                        _Control.scrollToBottom();
-                        // Display CST visually with Treant.js
-                        Treant(cst.treant);
-                    }
-                    else {
-                        _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
-                    }
-                    _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
-                    // Semantic analysis only if there were no parser errors
-                    if (!parseResult.error) {
-                        var _Semantic_1 = new JuiceC.Semantic(parseResult.cst);
-                        _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
-                        var semanticResult = _Semantic_1.analyze();
+                        _Control.prepareLexLog(programIndex);
+                        // Only parse if there were no errors. No need to waste time and resources
+                        _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
+                        var parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
                         if (document.getElementById("verboseCheck").checked) {
-                            semanticResult.log.forEach(function (entry) {
+                            parseResult.log.forEach(function (entry) {
                                 _Control.putMessage(entry);
                             });
                         }
                         else {
-                            semanticResult.log.forEach(function (entry) {
+                            parseResult.log.forEach(function (entry) {
                                 if (entry.includes(ERROR) || entry.includes(WARNING)) {
                                     _Control.putMessage(entry);
                                 }
                             });
                         }
-                        if (semanticResult.errors === 0) {
-                            if (document.getElementById("verboseCheck").checked) {
-                                var ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
-                                for (var k = 0; k < ast.tree.length; k++) {
-                                    _Control.ASTtextElement.value += ast.tree[k] + "\n";
-                                }
-                                _Control.scrollToBottom();
-                                // Display AST visually with Treant.js
-                                Treant(ast.treant);
-                                // Display symbols in Symbol Table
-                                var symbols = semanticResult.symbols;
-                                for (var l = 0; l < symbols.length; l++) {
-                                    var table = document.getElementById("symbolTable");
-                                    var row = table.insertRow(-1);
-                                    var program = row.insertCell(0);
-                                    program.innerHTML = (programIndex + 1).toString();
-                                    var key = row.insertCell(1);
-                                    key.innerHTML = symbols[l].key;
-                                    var type = row.insertCell(2);
-                                    type.innerHTML = symbols[l].type;
-                                    var scope = row.insertCell(3);
-                                    scope.innerHTML = symbols[l].scope;
-                                    var lineNum = row.insertCell(4);
-                                    lineNum.innerHTML = symbols[l].line;
-                                    var colNum = row.insertCell(5);
-                                    colNum.innerHTML = symbols[l].col;
-                                }
-                                var scopeTree = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
-                                _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
-                                // Display scope tree in scope tree field
-                                for (var m = 0; m < scopeTree.tree.length; m++) {
-                                    _Control.scopeTreeElement.value += scopeTree.tree[m] + "\n";
-                                }
+                        // If there were no errors while parsing, display the CST
+                        if (!parseResult.error) {
+                            var cst = parseResult.cst.traverseTreeCST(_Control.treantCST, (programIndex + 1));
+                            for (var i = 0; i < cst.tree.length; i++) {
+                                _Control.CSTtextElement.value += cst.tree[i] + "\n";
                             }
-                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
-                            _CodeGen = new JuiceC.CodeGen(semanticResult);
-                            _Control.putMessage(INFO + "\tStarting Code Generation of Program " + (programIndex + 1));
-                            // If code gen is successful, add the code to the Code output
-                            if (_CodeGen.generateCode()) {
-                                _CodeGen.generatedCode.forEach(function (code) {
-                                    _Control.codeGenElement.value += code + " ";
-                                });
-                            }
+                            _Control.scrollToBottom();
+                            // Display CST visually with Treant.js
+                            Treant(cst.treant);
+                        }
+                        else {
+                            _Control.putMessage(INFO + "\tCST failed to generate due to parsing errors");
+                        }
+                        _Control.putMessage(INFO + "\tParsing complete with " + parseResult.errors + " ERROR(S)");
+                        // Semantic analysis only if there were no parser errors
+                        if (!parseResult.error) {
+                            var _Semantic = new JuiceC.Semantic(parseResult.cst);
+                            _Control.putMessage(INFO + "\tStarting Semantic Analysis of Program " + (programIndex + 1));
+                            var semanticResult = _Semantic.analyze();
                             if (document.getElementById("verboseCheck").checked) {
-                                _CodeGen.log.forEach(function (entry) {
+                                semanticResult.log.forEach(function (entry) {
                                     _Control.putMessage(entry);
                                 });
                             }
                             else {
-                                _CodeGen.log.forEach(function (entry) {
+                                semanticResult.log.forEach(function (entry) {
                                     if (entry.includes(ERROR) || entry.includes(WARNING)) {
                                         _Control.putMessage(entry);
                                     }
                                 });
                             }
-                            _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
-                            _Control.scrollToBottom();
-                        }
-                        else {
-                            _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
-                            _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                            if (semanticResult.errors === 0) {
+                                if (document.getElementById("verboseCheck").checked) {
+                                    var ast = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
+                                    for (var k = 0; k < ast.tree.length; k++) {
+                                        _Control.ASTtextElement.value += ast.tree[k] + "\n";
+                                    }
+                                    _Control.scrollToBottom();
+                                    // Display AST visually with Treant.js
+                                    Treant(ast.treant);
+                                    // Display symbols in Symbol Table
+                                    var symbols = semanticResult.symbols;
+                                    for (var l = 0; l < symbols.length; l++) {
+                                        var table = document.getElementById("symbolTable");
+                                        var row = table.insertRow(-1);
+                                        var program = row.insertCell(0);
+                                        program.innerHTML = (programIndex + 1).toString();
+                                        var key = row.insertCell(1);
+                                        key.innerHTML = symbols[l].key;
+                                        var type = row.insertCell(2);
+                                        type.innerHTML = symbols[l].type;
+                                        var scope = row.insertCell(3);
+                                        scope.innerHTML = symbols[l].scope;
+                                        var lineNum = row.insertCell(4);
+                                        lineNum.innerHTML = symbols[l].line;
+                                        var colNum = row.insertCell(5);
+                                        colNum.innerHTML = symbols[l].col;
+                                    }
+                                    var scopeTree = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
+                                    _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
+                                    // Display scope tree in scope tree field
+                                    for (var m = 0; m < scopeTree.tree.length; m++) {
+                                        _Control.scopeTreeElement.value += scopeTree.tree[m] + "\n";
+                                    }
+                                }
+                                _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors
+                                    + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                                _CodeGen = new JuiceC.CodeGen(semanticResult);
+                                _Control.putMessage(INFO + "\tStarting Code Generation of Program " + (programIndex + 1));
+                                // If code gen is successful, add the code to the Code output
+                                if (_CodeGen.generateCode()) {
+                                    _CodeGen.generatedCode.forEach(function (code) {
+                                        _Control.codeGenElement.value += code + " ";
+                                    });
+                                }
+                                if (document.getElementById("verboseCheck").checked) {
+                                    _CodeGen.log.forEach(function (entry) {
+                                        _Control.putMessage(entry);
+                                    });
+                                }
+                                else {
+                                    _CodeGen.log.forEach(function (entry) {
+                                        if (entry.includes(ERROR) || entry.includes(WARNING)) {
+                                            _Control.putMessage(entry);
+                                        }
+                                    });
+                                }
+                                _Control.putMessage(INFO + "\tCode Generation complete with " + _CodeGen.errors + " ERROR(S)");
+                                _Control.scrollToBottom();
+                            }
+                            else {
+                                _Control.putMessage(INFO + "\tAST failed to generate due to semantic analysis errors");
+                                _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors
+                                    + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");
+                            }
                         }
                     }
                 }
@@ -213,8 +220,9 @@ var JuiceC;
             if (document.getElementById("verboseCheck").checked) {
                 // Print all tokens
                 for (var i = 0; i < lexResults[programIndex].tokens.length; i++) {
-                    _Control.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type + " [ " + lexResults[programIndex].tokens[i].value
-                        + " ] found at (" + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
+                    _Control.putMessage(DEBUG + " - " + LEXER + " - " + lexResults[programIndex].tokens[i].type
+                        + " [ " + lexResults[programIndex].tokens[i].value + " ] found at ("
+                        + lexResults[programIndex].tokens[i].lineNum + ":" + lexResults[programIndex].tokens[i].colNum + ")");
                 }
             }
             // Print all warnings
@@ -222,7 +230,8 @@ var JuiceC;
                 for (var i = 0; i < lexResults[programIndex].warnings.length; i++) {
                     // Check for EOP warning
                     if (lexResults[programIndex].warnings[i].warningType === "No EOP" /* NoEOP */) {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": " + "No EOP" /* NoEOP */ + " [ $ ] detected at end-of-file. Adding to end-of-file for you.");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + WARNING + ": " + "No EOP" /* NoEOP */
+                            + " [ $ ] detected at end-of-file. Adding to end-of-file for you.");
                         // Insert an EOP into the tokens array
                         lexResults[programIndex].tokens.push(new JuiceC.Token("EOP" /* EOP */, "$", lexResults[programIndex].line, lexResults[programIndex].col));
                     }
@@ -236,49 +245,60 @@ var JuiceC;
                 switch (lexResults[programIndex].errors[i].errorType) {
                     // Invalid Token check
                     case "Invalid Token" /* InvalidT */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token" /* InvalidT */ + " [ " + lexResults[programIndex].errors[i].value
-                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token" /* InvalidT */
+                            + " [ " + lexResults[programIndex].errors[i].value + " ] found at ( "
+                            + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                         break;
                     }
                     // Missing end of comment
                     case "Missing End Comment" /* NoEndComment */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Comment" /* NoEndComment */ + " brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value
-                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Comment" /* NoEndComment */
+                            + " brace (*/) for comment starting at [ " + lexResults[programIndex].errors[i].value
+                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":"
+                            + lexResults[programIndex].errors[i].colNum + " )");
                         break;
                     }
                     // Missing end of string quote
                     case "Missing End Quote in string literal" /* NoEndQuote */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Quote in string literal" /* NoEndQuote */ + " [ " + lexResults[programIndex].errors[i].value
-                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Missing End Quote in string literal" /* NoEndQuote */ + " [ "
+                            + lexResults[programIndex].errors[i].value + " ] found at ( "
+                            + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                         break;
                     }
                     // Invalid token in string
                     case "Invalid Token in string literal" /* InvalidTInStr */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in string literal" /* InvalidTInStr */ + " [ " + lexResults[programIndex].errors[i].value
-                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only lowercase characters a - z are allowed");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in string literal" /* InvalidTInStr */
+                            + " [ " + lexResults[programIndex].errors[i].value + " ] found at ( "
+                            + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum
+                            + " ) - Only lowercase characters a - z are allowed");
                         break;
                     }
                     // Invalid token in comment
                     case "Invalid Token in Comment" /* InvalidTInComm */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in Comment" /* InvalidTInComm */ + " [ " + lexResults[programIndex].errors[i].value
-                            + " ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " ) - Only characters and digits are allowed");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid Token in Comment" /* InvalidTInComm */
+                            + " [ " + lexResults[programIndex].errors[i].value + " ] found at ( "
+                            + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum
+                            + " ) - Only characters and digits are allowed");
                         break;
                     }
                     // Invalid new line
                     case "Invalid New Line" /* InvalidNewLine */: {
-                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */ + " [ \\n ] found at ( " + lexResults[programIndex].errors[i].lineNum
-                            + ":" + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
+                        _Control.putMessage(DEBUG + " - " + LEXER + " - " + ERROR + ": " + "Invalid New Line" /* InvalidNewLine */
+                            + " [ \\n ] found at ( " + lexResults[programIndex].errors[i].lineNum + ":"
+                            + lexResults[programIndex].errors[i].colNum + " ) - New lines are not allowed in comments or strings");
                         break;
                     }
                     // Unknown error
                     default: {
-                        _Control.putMessage(DEBUG + " - " + JuiceC.Lexer + " - " + ERROR + ": Unknown error found [ " + lexResults[programIndex].errors[i].value
-                            + " ] at ( " + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
+                        _Control.putMessage(DEBUG + " - " + JuiceC.Lexer + " - " + ERROR + ": Unknown error found [ "
+                            + lexResults[programIndex].errors[i].value + " ] at ( "
+                            + lexResults[programIndex].errors[i].lineNum + ":" + lexResults[programIndex].errors[i].colNum + " )");
                         break;
                     }
                 }
             }
-            _Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length + " " + WARNING + "(S) and " + lexResults[programIndex].errors.length + " " + ERROR + "(S)");
+            _Control.putMessage(INFO + "\tLexical Analysis complete with " + lexResults[programIndex].warnings.length
+                + " " + WARNING + "(S) and " + lexResults[programIndex].errors.length + " " + ERROR + "(S)");
         };
         // Helper function to scroll to the bottom of the output div
         Control.prototype.scrollToBottom = function () {

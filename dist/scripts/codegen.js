@@ -1,8 +1,10 @@
 ///<reference path="globals.ts" />
-/*
-    codegen.ts
-
-*/
+/**
+ *  codegen.ts
+ *
+ *  The Code Generator takes in the AST and Scope tree from Semantic Analysis,
+ *  generates 6502 opcodes, and returns them to the control
+ */
 var JuiceC;
 (function (JuiceC) {
     // Static data format: tempLocation, variableName, scope, offset, location
@@ -12,6 +14,7 @@ var JuiceC;
         return StaticData;
     }());
     JuiceC.StaticData = StaticData;
+    // string constants for codegen
     var MAX_BYTE_SIZE = 256;
     var TERMINATOR = "00"; // pun intended
     var ZERO_ONE = "01";
@@ -95,8 +98,10 @@ var JuiceC;
                     }
                     break;
                 case "PrintStatement" /* PrintStatement */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "PrintStatement" /* PrintStatement */ + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for printing a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "PrintStatement" /* PrintStatement */
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for printing a(n) "
+                        + astNode.children[0].value.type);
                     // Determine type of child
                     switch (astNode.children[0].value.type) {
                         case "Digit" /* Digit */:
@@ -124,7 +129,6 @@ var JuiceC;
                             var scope_1 = astNode.children[0].value.scopeId;
                             var tempAddress = this.findVariableInStaticMap(tempVar_1, scope_1);
                             this.loadYFromMem(tempAddress);
-                            console.log(this.staticDataMap.get(tempAddress)["type"]);
                             if (this.staticDataMap.get(tempAddress)["type"] == JuiceC.VariableType.String ||
                                 this.staticDataMap.get(tempAddress)["type"] == JuiceC.VariableType.Boolean) {
                                 this.loadXWithConst(ZERO_TWO);
@@ -176,7 +180,8 @@ var JuiceC;
                     this.writeCode(JuiceC.Instruction.SysCall);
                     break;
                 case "VarDecl" /* VarDeclaration */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "VarDecl" /* VarDeclaration */ + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "VarDecl" /* VarDeclaration */
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
                     // Set a new staticData entry
                     var temp = T + this.staticDataCount;
                     this.staticDataMap.set(temp, {
@@ -191,8 +196,10 @@ var JuiceC;
                     this.staticDataCount++;
                     break;
                 case "AssignmentStatement" /* AssignStatement */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "AssignmentStatement" /* AssignStatement */ + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for assigning a " + astNode.children[1].value.type + " to a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "AssignmentStatement" /* AssignStatement */
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for assigning a "
+                        + astNode.children[1].value.type + " to a(n) " + astNode.children[0].value.type);
                     // Determine assignment type
                     switch (astNode.children[1].value.type) {
                         case "Digit" /* Digit */:
@@ -263,8 +270,10 @@ var JuiceC;
                     this.storeAccInMemWithTempLoc(tempAddress);
                     break;
                 case "WhileStatement" /* WhileStatement */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "WhileStatement" /* WhileStatement */ + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a while condition on a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "WhileStatement" /* WhileStatement */
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a while condition on a(n) "
+                        + astNode.children[0].value.type);
                     var whileStartPtr = this.codePtr;
                     var address;
                     // Evaluate left-hand side boolean result first
@@ -346,8 +355,10 @@ var JuiceC;
                     this.jumpMap.set(endWhileJump, jumpValue);
                     break;
                 case "IfStatement" /* IfStatement */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "IfStatement" /* IfStatement */ + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for an if condition on a(n) " + astNode.children[0].value.type);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "IfStatement" /* IfStatement */
+                        + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for an if condition on a(n) "
+                        + astNode.children[0].value.type);
                     // look at its left and right children
                     switch (astNode.children[0].value.type) {
                         // If left-hand side is a boolean value, set zero flag to 1 if true, set zero flag to 0 if false
@@ -406,7 +417,8 @@ var JuiceC;
             // If code pointer is overflowing into the heap, throw an error
             if (this.codePtr >= this.heapPtr) {
                 this.addError();
-                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Exceeded Stack Memory Limit" /* ExceedStackLimit */ + ". The Stack has reached the heap inducing Stack overflow");
+                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Exceeded Stack Memory Limit" /* ExceedStackLimit */
+                    + ". The Stack has reached the heap inducing Stack overflow");
             }
         };
         /**
@@ -414,7 +426,8 @@ var JuiceC;
          * @param equalsNode takes in the equals node
          */
         CodeGen.prototype.generateEquals = function (equalsNode) {
-            this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a " + "BooleanExpression" /* BooleanExpr */ + " comparing a(n) " + equalsNode.children[0].value.type + " to a(n) " + equalsNode.children[1].value.type);
+            this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for a " + "BooleanExpression" /* BooleanExpr */
+                + " comparing a(n) " + equalsNode.children[0].value.type + " to a(n) " + equalsNode.children[1].value.type);
             // LHS: load what is in left-hand side into x register
             switch (equalsNode.children[0].value.type) {
                 case "Digit" /* Digit */:
@@ -451,16 +464,18 @@ var JuiceC;
                     // TODO: Nested Booleans
                     // for now, throw error showing nonsupport
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */ + ". Nested booleans are not supported at this time");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */
+                        + ". Nested booleans are not supported at this time");
                     break;
                 case "NotEquals" /* NotEquals */:
                     // TODO: Nested Booleans
                     // for now, throw error showing nonsupport
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */ + ". Nested booleans are not supported at this time");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */
+                        + ". Nested booleans are not supported at this time");
                     break;
             }
-            // RHS: compare to address of what right-hand side is. actually, just return mem address of right-hand side
+            // Compare to address of what right-hand side is
             switch (equalsNode.children[1].value.type) {
                 case "Digit" /* Digit */:
                     this.loadAccWithConst(ZERO + equalsNode.children[1].value.value);
@@ -501,12 +516,14 @@ var JuiceC;
                 case "Equals" /* Equals */:
                     // TODO: Nested booleans
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */ + ". Nested booleans are not supported at this time");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */
+                        + ". Nested booleans are not supported at this time");
                     break;
                 case "NotEquals" /* NotEquals */:
                     // TODO: Nested booleans
                     this.addError();
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */ + ". Nested booleans are not supported at this time");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + ": " + "Nested Boolean" /* NestedBoolean */
+                        + ". Nested booleans are not supported at this time");
                     break;
             }
         };
@@ -584,12 +601,9 @@ var JuiceC;
         CodeGen.prototype.backPatch = function () {
             // When coming across placeholders for variables, lookup in map, replace with its location
             for (var i = 0; i < this.generatedCode.length; i++) {
-                // found a placeholder for static variable
                 if (this.generatedCode[i].charAt(0) == T) {
                     var temp = this.generatedCode[i];
-                    // lookup in map and get mem address
                     var memAddr = this.staticDataMap.get(temp)["loc"];
-                    // replace
                     this.generatedCode[i] = memAddr;
                     this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Static Variable Placeholder "
                         + temp + " at Address: " + i.toString(16).toUpperCase() + " with Memory Address: " + memAddr);
@@ -597,13 +611,10 @@ var JuiceC;
                 // found a placeholder for jump
                 if (this.generatedCode[i].charAt(0) == J) {
                     var temp = this.generatedCode[i];
-                    // lookup in map and get mem address
-                    console.log(this.jumpMap);
                     var jumpAmount = this.jumpMap.get(temp);
-                    // replace
                     this.generatedCode[i] = jumpAmount;
-                    this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Jump Variable Placeholder "
-                        + temp + " at Address: " + i.toString(16).toUpperCase() + " forward " + jumpAmount + " address(es)");
+                    this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Jump Variable Placeholder " + temp
+                        + " at Address: " + i.toString(16).toUpperCase() + " forward " + jumpAmount + " address(es)");
                 }
             }
         };
@@ -657,7 +668,8 @@ var JuiceC;
             // Check for heap overflow
             if (this.codePtr >= this.heapPtr) {
                 this.addError();
-                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + " - " + "Exceeded Heap Memory Limit" /* ExceedHeapLimit */ + ". The Heap has reached the stack inducing Heap Overflow");
+                this.log.push(DEBUG + " - " + CODEGEN + " - " + ERROR + " - " + "Exceeded Heap Memory Limit" /* ExceedHeapLimit */
+                    + ". The Heap has reached the stack inducing Heap Overflow");
             }
             // Return pointer to beginning of string
             return stringPtr.toString(16).toUpperCase();
