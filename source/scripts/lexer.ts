@@ -1,17 +1,55 @@
 ///<reference path="globals.ts" />
-/* 
-	lexer.ts
-
-	Lexer checks the code given to ensure that all of the characters belong in the Language Grammar. If they belong, create tokens
-	for each and pass them on to the Parser. If there were errors in the Lexer, stop compiling the current program and report the
-	errors. The only warning currently is for a missing end of program $ character. The Lexer will add the character to the program
-	and report the warning back to the user.
-*/
+/**
+ * 	lexer.ts
+ * 
+ * 	The Lexer checks the code given to ensure that all of the characters belong in the Language Grammar. 
+ * 	If they belong, create tokens for each and pass them on to the Parser. If there were errors in 
+ * 	the Lexer, stop compiling the current program and report the errors. The only warning currently 
+ * 	is for a missing end of program $ character. The Lexer will add the character to the program and 
+ * 	report the warning back to the user.
+ *  */ 
 
 module JuiceC {
+	// Regex
+	const rLBRACE: RegExp = new RegExp('{$'); // Left Brace
+	const rRBRACE: RegExp = new RegExp('}$'); // Right brace
+	const rPRINT: RegExp = new RegExp('print$'); // Print
+	const rLPAREN: RegExp = new RegExp('\\($'); // Left Paren
+	const rRPAREN: RegExp = new RegExp('\\)$'); // Right paren
+	const rASSIGN: RegExp = new RegExp('\=$'); // Assignment operator
+	const rWHILE: RegExp = new RegExp('while$'); // While
+	const rIF: RegExp = new RegExp('if$'); // If
+	const rQUOTE: RegExp = new RegExp('"$'); // Quote
+	const rTYPEINT: RegExp = new RegExp('int$'); // Integer type
+	const rTYPEBOOL: RegExp = new RegExp('boolean$'); // Boolean type
+	const rTYPESTR: RegExp = new RegExp('string$'); // String type
+	const rCHAR: RegExp = new RegExp('[a-z]$'); // Character
+	const rSPACE: RegExp = new RegExp(' $'); // Space
+	const rDIGIT: RegExp = new RegExp('[0-9]$'); // Digit
+	const rEOP: RegExp = new RegExp('\\$$'); // EOP
+	const rID: RegExp = new RegExp('[a-z]$'); // ID
+	const rBOOLOPEQUALS: RegExp = new RegExp('\=\=$'); // Boolean operator equals
+	const rBOOLOPNOTEQUALS: RegExp = new RegExp('\\!\=$'); // Boolean operator not equals
+	const rBOOLVALTRUE: RegExp = new RegExp('true$'); // Boolean true value
+	const rBOOLVALFALSE: RegExp = new RegExp('false$'); // Boolean false value
+	const rINTOP: RegExp = new RegExp('\\+$'); // Integer operation
+	const rWHITESPACE: RegExp = new RegExp(' $|\t$|\n$|\r$'); // Whitespace
+	const rNEWLINE: RegExp = new RegExp('\n$'); // New line
+	const rCOMMENTSTART: RegExp = new RegExp('/\\*$'); // Start of comment
+	const rCOMMENTEND: RegExp = new RegExp('\\*/$'); // End of comment
+
+	export interface LexResult {
+		inComment: boolean,
+		foundQuote: boolean,
+		foundEOP: boolean,
+		tokens: Array<Token>,
+		errors: Array<Error>,
+		warnings: Array<Warning>,
+		line: number,
+		col: number
+	}
 
 	export class Lexer {
-
 		// Token array
 		tokens: Array<Token> = [];
 		// Error array
@@ -19,8 +57,8 @@ module JuiceC {
 		// Warning array
 		warnings: Array<Warning> = [];
 		// Program counter
-		lexAnalysisResult = {};
-		resultsArray = [];
+		lexAnalysisResult: LexResult;
+		resultsArray: Array<LexResult> = [];
 		// Pointers that indicate which characters are being matched
 		startPtr: number = 0;
 		endPtr: number = 1;
@@ -39,8 +77,8 @@ module JuiceC {
 
 		constructor() { }
 
-		public lex() {
-			// Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
+		// Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
+		public lex(): Array<LexResult> {
 		    // Grab the "raw" source code.
 			let sourceCode: string = (<HTMLInputElement>document.getElementById("sourceCode")).value;
 		    // Trim the leading and trailing spaces.
@@ -372,10 +410,7 @@ module JuiceC {
 					}
 				}
 			}
-
 			return this.resultsArray;
 		}
-
 	}
-	
 }

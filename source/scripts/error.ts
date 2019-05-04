@@ -1,15 +1,14 @@
 ///<reference path="globals.ts" />
-/* 
-    error.ts
-
-    Error class for the Lexer and Parser that contain the Error Type, Value that was given instead of the one that was expected,
-    and the Line number and Column number of the error instance.
-*/
+/**
+ *  error.ts
+ * 
+ *  Error class that contains the Error Type, Value that was given instead of the one that was expected,
+ *  and the Line number and Column number of the error instance. Error Type string constants are located
+ *  here as well
+ *  */ 
 
 module JuiceC {
-
     export const enum ErrorType {
-
         // Lexer errors
         NoEndQuote = "Missing End Quote in string literal",
         NoEndComment = "Missing End Comment",
@@ -52,11 +51,9 @@ module JuiceC {
         ExceedHeapLimit = "Exceeded Heap Memory Limit",
         ExceedStaticLimit = "Exceeded Static Variable Memory Limit",
         NestedBoolean = "Nested Boolean"
-
     }
 
 	export class Error {
-
         errorType: string;
         value: any;
         lineNum: number;
@@ -71,9 +68,14 @@ module JuiceC {
             this.expectedToken = expectedToken;
         }
 
-        public static logUnknownError(section: string, log: Array<string>): void {
+        /**
+         * Helper function for logging unknown errors
+         * @param section refers to Lexer, Parser, Semantic, or CodeGen
+         * @param log the section's log
+         */
+        public static logUnknownError(section: string, log: Array<string>): Array<string> {
             log.push(DEBUG + " - " + section + " - " + ERROR + " - Unknown Error has occured");
+            return log;
         }
     }
-
 }

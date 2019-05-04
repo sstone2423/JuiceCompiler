@@ -1,11 +1,18 @@
-/*
-    test.ts
-*/
+/**
+ * test.ts
+ *
+ * Provides sample tests for each section of the compiler. The goal is to have 100%
+ * coverage. Contains passing and failing tests for each section (Lexer, Parser, Semantic,
+ * Code Gen)
+ *  */
 var JuiceC;
 (function (JuiceC) {
     var Test = /** @class */ (function () {
         function Test() {
         }
+        /* ----------------------------------
+            Passing Tests
+        ----------------------------------- */
         Test.simpleTest1 = function () {
             document.getElementById("sourceCode").value = "/* This is a simple program with no operations */\n{}$";
         };
@@ -30,6 +37,24 @@ var JuiceC;
         Test.missingEOP = function () {
             document.getElementById("sourceCode").value = "/* Missing EOP */\n{\n    int b\n    b = 4\n    string s\n    s = \"hey\"\n}";
         };
+        Test.infiniteLoopMaxMemory = function () {
+            document.getElementById("sourceCode").value = "/* This code segment uses the max\n- allotted memory 256 bytes \n- Also this is an infinite loop. Credit: Tien */\n{\nint a\na = 1\nif(\"a\" == \"a\") {\na = 2\nprint(\"a now is two\")\n}\nif(a != 1) {\na = 3\nprint(\" a now is three\")\n}\nif(a == 1) {\na = 3\nprint(\"this does not print\")\n}\n\nwhile true {\nprint(\" this will always be true hahahahahahaha\")\n}\n\nif false {\nprint(\"this\")\n}\n} $";
+        };
+        Test.booleanExpressions = function () {
+            document.getElementById("sourceCode").value = "/* Boolean Expr Printing: This test case\n- demonstrates the compiler's ability to\n- generate code for computing the result\n- of a BooeleanExpr and printing the result\n- Result: falsefalsetruetruetruetruefalsefalsefalsetrue \n- Credit: Tien */\n{\nboolean a\na = false\nprint((a == true))\nprint((true == a))\nprint((a == false))\nprint((false == a))\nprint((a != true))\nprint((true != a))\nprint((a != false))\nprint((false != a))\nprint(a)\nif (a == false) {\na = true\n}\nprint(a)\n}$";
+        };
+        Test.variableAddition = function () {
+            document.getElementById("sourceCode").value = "/*\nDemonstrates compiler's ability to generate code that properly handles variable addition\nCredit: Tien\n*/\n{\nint a\na = 1\nint b\nb = 1\nb = 1 + a\nwhile (2 + a != 3 + b) {\na = 1 + a\nprint(\"int a is \")\nprint(a)\nprint(\" \")\n}\nprint(\"int b is \")\nprint(b)\n}$";
+        };
+        Test.longAddition = function () {
+            document.getElementById("sourceCode").value = "/* This statement shows that addition\n- checking and printing are both valid\n- options that can be performed. Credit: Tien\n- Result: 666addition checkfalse*/\n{\nint a\nwhile (a != 3) {\nprint(1 + 2 + 3)\na = 1 + a\n}\nif (1+1+1+1+1 == 2+3) {\nprint(\"addition check\")\n}\nif (1+5+3 != 8) {\nprint(false)\n}\n} $";
+        };
+        /* ------------------------------------
+            Failing Tests
+        -------------------------------------- */
+        /* -----------------------------------
+            Lexer
+        ---------------------------------------*/
         Test.alan = function () {
             document.getElementById("sourceCode").value = "/*  Provided By \n    - Compiler Tyrant\n    - Alan G Labouseur\n    - Program 1: Pass Lex, Parse, Semantic\n    - Program 2: Pass Lex, Parse, Semantic\n    - Program 3: Pass Lex, fail parse\n    - Program 4: Fail Lex\n*/\n{}$\t\n{{{{{{}}}}}}$\t\n{{{{{{}}}}}}}$\t\n{int\t@}$";
         };
@@ -48,6 +73,9 @@ var JuiceC;
         Test.extraRightBrace = function () {
             document.getElementById("sourceCode").value = "/*  Extra Right Brace */\n{{{{{{}}} /* comments are ignored */ }}}}$";
         };
+        /* -----------------------------------
+            Parser
+        ------------------------------------- */
         Test.invalidStatementList = function () {
             document.getElementById("sourceCode").value = "/* Test case for invalid StatementList */\n{\n4 + 2\n}$";
         };
@@ -66,6 +94,9 @@ var JuiceC;
         Test.incompleteIntExpr = function () {
             document.getElementById("sourceCode").value = "/* Test case for incomplete IntExpr */\n{\nint a\na = 1 +\nprint(a)\n}$";
         };
+        /* --------------------------------------
+            Semantic Analysis
+        --------------------------------------- */
         Test.semanticWarnings = function () {
             document.getElementById("sourceCode").value = "/* Has unused and undeclared variables */\n{\n  int a\n  int b\n  a = 3\n  b = 4\n  {\n    string a\n    a = \"hey\"\n    print(a)\n    print(b)\n  }\n  print(b)\n  string s\n  {\n    boolean b\n    b = false\n  }\n  string r\n  r = \"hey\"\n  int d\n  print(d)\n  d = 3\n}$";
         };
@@ -87,18 +118,9 @@ var JuiceC;
         Test.initButNotUsed = function () {
             document.getElementById("sourceCode").value = "/* Variable initialized but not used. Produces semantic warning*/\n{    \n    int a\n    int b\n    b = 2\n    print(b)\n}$";
         };
-        Test.infiniteLoopMaxMemory = function () {
-            document.getElementById("sourceCode").value = "/* This code segment uses the max\n- allotted memory 256 bytes \n- Also this is an infinite loop. Credit: Tien */\n{\nint a\na = 1\nif(\"a\" == \"a\") {\na = 2\nprint(\"a now is two\")\n}\nif(a != 1) {\na = 3\nprint(\" a now is three\")\n}\nif(a == 1) {\na = 3\nprint(\"this does not print\")\n}\n\nwhile true {\nprint(\" this will always be true hahahahahahaha\")\n}\n\nif false {\nprint(\"this\")\n}\n} $";
-        };
-        Test.booleanExpressions = function () {
-            document.getElementById("sourceCode").value = "/* Boolean Expr Printing: This test case\n- demonstrates the compiler's ability to\n- generate code for computing the result\n- of a BooeleanExpr and printing the result\n- Result: falsefalsetruetruetruetruefalsefalsefalsetrue \n- Credit: Tien */\n{\nboolean a\na = false\nprint((a == true))\nprint((true == a))\nprint((a == false))\nprint((false == a))\nprint((a != true))\nprint((true != a))\nprint((a != false))\nprint((false != a))\nprint(a)\nif (a == false) {\na = true\n}\nprint(a)\n}$";
-        };
-        Test.variableAddition = function () {
-            document.getElementById("sourceCode").value = "/*\nDemonstrates compiler's ability to generate code that properly handles variable addition\nCredit: Tien\n*/\n{\nint a\na = 1\nint b\nb = 1\nb = 1 + a\nwhile (2 + a != 3 + b) {\na = 1 + a\nprint(\"int a is \")\nprint(a)\nprint(\" \")\n}\nprint(\"int b is \")\nprint(b)\n}$";
-        };
-        Test.longAddition = function () {
-            document.getElementById("sourceCode").value = "/* This statement shows that addition\n- checking and printing are both valid\n- options that can be performed. Credit: Tien\n- Result: 666addition checkfalse*/\n{\nint a\nwhile (a != 3) {\nprint(1 + 2 + 3)\na = 1 + a\n}\nif (1+1+1+1+1 == 2+3) {\nprint(\"addition check\")\n}\nif (1+5+3 != 8) {\nprint(false)\n}\n} $";
-        };
+        /* --------------------------------
+            Code Generation
+        --------------------------------- */
         Test.booleanHell = function () {
             document.getElementById("sourceCode").value = "/* This test case is included because it completely messed\n- up my AST with boolean hell and keeping track of boolexpr\n- may it serve as a good benchmark for those who come after \n- CREDIT: TIEN */\n{\nint a\na = 0\nboolean b\nb = false\nboolean c\nc = true\nwhile(((a!=9) == (\"test\" != \"alan\")) == ((5==5) != (b == c))) {\nprint(\"a\")\nstring d\nd = \"yes\"\nprint(d)\n{\n    int a\n    a = 5\n}\n}\n}$";
         };

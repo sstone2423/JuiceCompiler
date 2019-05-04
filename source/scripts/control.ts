@@ -13,7 +13,7 @@ module JuiceC {
     
     export class Control {
 
-        lexResults = [];
+        lexResults: Array<LexResult> = [];
         cstVisual;
         treantCST;
         astVisual;
@@ -117,7 +117,7 @@ module JuiceC {
                         // Only parse if there were no errors. No need to waste time and resources
                         _Control.putMessage(INFO + "\tParsing Program " + (programIndex + 1));
 
-                        let parseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
+                        let parseResult: ParseResult = _Parser.parse(_Control.lexResults[programIndex].tokens);
                         if ((<HTMLInputElement>document.getElementById("verboseCheck")).checked) {
                             parseResult.log.forEach(entry => {
                                 _Control.putMessage(entry);

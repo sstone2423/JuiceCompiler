@@ -1,7 +1,10 @@
 ///<reference path="globals.ts" />
-/*
-    token.ts
-*/
+/**
+ * token.ts
+ *
+ * Represents the Token object created in the Lexer. These tokens are defined from the grammar
+ * and contain information about the TokenType, value, line number, and column number
+ *  */
 var JuiceC;
 (function (JuiceC) {
     var Token = /** @class */ (function () {

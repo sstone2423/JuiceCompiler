@@ -1,7 +1,9 @@
 ///<reference path="globals.ts" />
-/*
-    scope.ts
-*/
+/**
+ * scope.ts
+ *
+ * Defines the Scope Tree's Hashmap Nodes
+ *  */
 var JuiceC;
 (function (JuiceC) {
     var ScopeVariable = /** @class */ (function () {
@@ -14,12 +16,6 @@ var JuiceC;
         return ScopeVariable;
     }());
     JuiceC.ScopeVariable = ScopeVariable;
-    var VariableType;
-    (function (VariableType) {
-        VariableType["Boolean"] = "boolean";
-        VariableType["Int"] = "int";
-        VariableType["String"] = "string";
-    })(VariableType = JuiceC.VariableType || (JuiceC.VariableType = {}));
     var ScopeHashMap = /** @class */ (function () {
         function ScopeHashMap(lineNum, colNum, id) {
             this.lineNum = lineNum;

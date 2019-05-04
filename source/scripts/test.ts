@@ -1,10 +1,17 @@
-/* 
-    test.ts  
-*/
+/**
+ * test.ts  
+ * 
+ * Provides sample tests for each section of the compiler. The goal is to have 100% 
+ * coverage. Contains passing and failing tests for each section (Lexer, Parser, Semantic,
+ * Code Gen)
+ *  */ 
 
 module JuiceC {
-
     export class Test {
+        /* ----------------------------------
+            Passing Tests
+        ----------------------------------- */
+
         public static simpleTest1(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This is a simple program with no operations */
 {}$`;
@@ -121,189 +128,6 @@ module JuiceC {
 }`;
         }
 
-        public static alan(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Provided By 
-    - Compiler Tyrant
-    - Alan G Labouseur
-    - Program 1: Pass Lex, Parse, Semantic
-    - Program 2: Pass Lex, Parse, Semantic
-    - Program 3: Pass Lex, fail parse
-    - Program 4: Fail Lex
-*/
-{}$	
-{{{{{{}}}}}}$	
-{{{{{{}}}}}}}$	
-{int	@}$`;
-        }
-
-        public static typeInsideString(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Type inside of a String */
-{	
-    boolean d
-    d = ("string") != "string")	
-}$`;
-        }
-        
-        public static EOPinsideString(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  EOP inside of a String */
-{"$"} $`;
-        }
-
-        public static unterminatedComment(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated Comment */
-{ int a /* unterminated comment }$`;
-        }
-
-        public static unterminatedString(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated String */
-{ a = "unterminated string }$`;
-        }
-
-        public static extraRightBrace(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
-{{{{{{}}} /* comments are ignored */ }}}}$`;
-        }
-
-        public static invalidStatementList(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid StatementList */
-{
-4 + 2
-}$`;
-        }
-
-        public static invalidExpr(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Expr */
-{
-int a
-a = a + 2
-}$`;
-        }
-
-        public static invalidVarDecl(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid VarDecl */
-{
-int 4
-}$`;
-        }
-
-        public static invalidPrint(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Print pt. 2 */
-{
-print("$)
-}$`;
-        }
-
-        public static incompleteBoolExpr(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete BooleanExpr */
-{
-s = "strb"
-print(s)
-
-if (a != ) {
-print("true")
-}
-}$`;
-        }
-
-        public static incompleteIntExpr(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete IntExpr */
-{
-int a
-a = 1 +
-print(a)
-}$`;
-        }
-
-        public static semanticWarnings(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Has unused and undeclared variables */
-{
-  int a
-  int b
-  a = 3
-  b = 4
-  {
-    string a
-    a = "hey"
-    print(a)
-    print(b)
-  }
-  print(b)
-  string s
-  {
-    boolean b
-    b = false
-  }
-  string r
-  r = "hey"
-  int d
-  print(d)
-  d = 3
-}$`;
-        }
-
-        public static undeclaredVar(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being used but not declared first */
-{
-int a
-b = 4
-}$`;
-        }
-
-        public static duplicateVar(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being declared again in same scope*/
-{
-int a
-{
-string a
-a = "this is fine"
-}
-boolean a /* this is not fine" */
-}$`;
-        }
-        public static typeMismatch(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A variable's type is not compatible with its assignment*/
-{
-string s
-s = 4 + 3
-}$`;
-        }
-
-        public static incorrectTypeCompar(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Types do not match in Boolean comparison*/
-{
-if(4 == false){
-print("this no good")
-}
-if(4 == "hey"){
-print("int to string")
-}
-if(false != "hey"){
-print("bool to string")
-}
-if(4 != 3){
-print("int to int")
-}
-}$`;
-        }
-
-        public static incorrectIntExpr(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A digit is added to something other than a digit */
-{
-int a
-a = 4 + false
-}$`;
-        }
-
-        public static initButNotUsed(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variable initialized but not used. Produces semantic warning*/
-{    
-    int a
-    int b
-    b = 2
-    print(b)
-}$`;
-        }
-
         public static infiniteLoopMaxMemory(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This code segment uses the max
 - allotted memory 256 bytes 
@@ -402,6 +226,209 @@ print(false)
 } $`;
         }
 
+        /* ------------------------------------
+            Failing Tests
+        -------------------------------------- */
+
+        /* -----------------------------------
+            Lexer
+        ---------------------------------------*/
+
+        public static alan(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Provided By 
+    - Compiler Tyrant
+    - Alan G Labouseur
+    - Program 1: Pass Lex, Parse, Semantic
+    - Program 2: Pass Lex, Parse, Semantic
+    - Program 3: Pass Lex, fail parse
+    - Program 4: Fail Lex
+*/
+{}$	
+{{{{{{}}}}}}$	
+{{{{{{}}}}}}}$	
+{int	@}$`;
+        }
+
+        public static typeInsideString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Type inside of a String */
+{	
+    boolean d
+    d = ("string") != "string")	
+}$`;
+        }
+        
+        public static EOPinsideString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  EOP inside of a String */
+{"$"} $`;
+        }
+
+        public static unterminatedComment(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated Comment */
+{ int a /* unterminated comment }$`;
+        }
+
+        public static unterminatedString(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated String */
+{ a = "unterminated string }$`;
+        }
+
+        public static extraRightBrace(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
+{{{{{{}}} /* comments are ignored */ }}}}$`;
+        }
+
+        /* -----------------------------------
+            Parser
+        ------------------------------------- */
+
+        public static invalidStatementList(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid StatementList */
+{
+4 + 2
+}$`;
+        }
+
+        public static invalidExpr(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Expr */
+{
+int a
+a = a + 2
+}$`;
+        }
+
+        public static invalidVarDecl(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid VarDecl */
+{
+int 4
+}$`;
+        }
+
+        public static invalidPrint(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Print pt. 2 */
+{
+print("$)
+}$`;
+        }
+
+        public static incompleteBoolExpr(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete BooleanExpr */
+{
+s = "strb"
+print(s)
+
+if (a != ) {
+print("true")
+}
+}$`;
+        }
+
+        public static incompleteIntExpr(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete IntExpr */
+{
+int a
+a = 1 +
+print(a)
+}$`;
+        }
+
+        /* --------------------------------------
+            Semantic Analysis
+        --------------------------------------- */
+
+        public static semanticWarnings(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Has unused and undeclared variables */
+{
+  int a
+  int b
+  a = 3
+  b = 4
+  {
+    string a
+    a = "hey"
+    print(a)
+    print(b)
+  }
+  print(b)
+  string s
+  {
+    boolean b
+    b = false
+  }
+  string r
+  r = "hey"
+  int d
+  print(d)
+  d = 3
+}$`;
+        }
+
+        public static undeclaredVar(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being used but not declared first */
+{
+int a
+b = 4
+}$`;
+        }
+
+        public static duplicateVar(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being declared again in same scope*/
+{
+int a
+{
+string a
+a = "this is fine"
+}
+boolean a /* this is not fine" */
+}$`;
+        }
+        public static typeMismatch(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A variable's type is not compatible with its assignment*/
+{
+string s
+s = 4 + 3
+}$`;
+        }
+
+        public static incorrectTypeCompar(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Types do not match in Boolean comparison*/
+{
+if(4 == false){
+print("this no good")
+}
+if(4 == "hey"){
+print("int to string")
+}
+if(false != "hey"){
+print("bool to string")
+}
+if(4 != 3){
+print("int to int")
+}
+}$`;
+        }
+
+        public static incorrectIntExpr(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A digit is added to something other than a digit */
+{
+int a
+a = 4 + false
+}$`;
+        }
+
+        public static initButNotUsed(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variable initialized but not used. Produces semantic warning*/
+{    
+    int a
+    int b
+    b = 2
+    print(b)
+}$`;
+        }
+
+        /* --------------------------------
+            Code Generation
+        --------------------------------- */
+    
         public static booleanHell(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This test case is included because it completely messed
 - up my AST with boolean hell and keeping track of boolexpr

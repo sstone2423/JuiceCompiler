@@ -1,12 +1,13 @@
 ///<reference path="globals.ts" />
-/* 
-    token.ts  
-*/
+/**
+ * token.ts  
+ * 
+ * Represents the Token object created in the Lexer. These tokens are defined from the grammar
+ * and contain information about the TokenType, value, line number, and column number
+ *  */ 
 
 module JuiceC {
-
     export const enum TokenType {
-
         // Lexer tokens
         Id = "Id",
         LBrace = "LBrace",
@@ -30,11 +31,9 @@ module JuiceC {
         Addition = "Addition",
         Equals = "Equals",
         NotEquals = "NotEquals",
-
     }
 
 	export class Token {
-
         type: string;
         value: any;
         lineNum: number;
@@ -46,7 +45,5 @@ module JuiceC {
             this.lineNum = lineNum;
             this.colNum = colNum;
         }
-
     }
-
 }

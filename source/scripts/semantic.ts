@@ -1,13 +1,31 @@
 ///<reference path="globals.ts" />
-/* --------  
-   semantic.ts
+/**
+ * semantic.ts
+ * 
+ * The Semantic Analyzer takes in the CST from a successful Parse, then scope and type checks the tokens
+ * to enforce the grammar as the context-sensitive level. A successful result will return a scope tree,
+ * symbol table, and AST.
+ */
 
-   -------- */
+module JuiceC {
+    export interface SemanticResult {
+        ast: Tree,
+        scopeTree: Tree,
+        errors: number,
+        warnings: number,
+        symbols: Array<any>,
+        log: Array<string>
+    }
 
-   module JuiceC {
+    export interface Symbol {
+        type: string,
+        key: string,
+        line: number,
+        col: number,
+        scope: number
+    }
 
     export class Semantic {
-
         cst: Tree;
         ast: Tree;
         scopeTree: Tree;
@@ -16,7 +34,7 @@
         totalScopes: number;
         currentScope: number;
         log: Array<string>;
-        symbols: Array<any>;
+        symbols: Array<Symbol>;
         
         constructor(cst: Tree) {
             this.cst = cst;
@@ -25,29 +43,33 @@
             this.warnings = 0;
             this.scopeTree = new Tree();
             this.totalScopes = 0;
-            // Scopes always increase by 1, so currentScope will increase to 0 on the first block production
             this.currentScope = 0;
             this.log = [];
             this.symbols = [];
         }
 
-        public analyze() {
+        // Traverses the CST type and scope checking, checks the scopeTree for warnings, and returns the results to control
+        public analyze(): SemanticResult {
             // Traverse the CST looking for the "good stuff"
             this.traverse(this.cst.root);
             // Traverse scope tree to generate warnings
             this.findWarnings(this.scopeTree.root);
-            return {
+            let result: SemanticResult = {
                 "ast": this.ast,
                 "scopeTree": this.scopeTree,
                 "errors": this.errors,
                 "warnings": this.warnings,
                 "symbols": this.symbols,
-                "log": this.log,
+                "log": this.log
             }
+            return result;
         }
 
-        // Recursive function that traverses the CST in up-to-down, left-most descent looking for the key parts of the language.
-        // When found, construct and add them to the AST
+        /**
+         * Recursive function that traverses the CST in top-to-down, left-most descent looking for the key parts of the language.
+         * When found, construct and add them to the AST
+         * @param node is the current tree node being evaluated
+         */
         public traverse(node) {
             switch (node.value) {
                 case Production.Block:
@@ -77,9 +99,9 @@
                     
                     break;
 
-                case Production.VarDeclaration: 
+                case Production.VarDecl: 
                     // Add the VarDecl node
-                    this.ast.addNode(Production.VarDeclaration);
+                    this.ast.addNode(Production.VarDecl);
                     // Get its children and add to AST
                     // Get the type
                     let token: Token = node.children[0].children[0].value;
@@ -97,7 +119,7 @@
                     // Check if already declared in current scope
                     if (!this.scopeTree.curr.value.buckets.hasOwnProperty(id.value)) { 
                         this.scopeTree.curr.value.buckets[id.value] = new ScopeVariable(id.value, token);
-                        let symbol = {
+                        let symbol: Symbol = {
                             "type": token.value,
                             "key": id.value,
                             "line": node.children[1].children[0].lineNum,
@@ -287,6 +309,14 @@
             }
         }
         
+        /**
+         * Checks to see if the id type matches its target type and logs the location of id target
+         * @param id the variable name
+         * @param idType the type of the id being assigned to
+         * @param targetType the type that is being assigned to id
+         * @param targetLine the line of the target
+         * @param targetCol column of the target
+         */
         public checkTypeMatch(id, idType, targetType, targetLine, targetCol): void {
             if (targetType != null && idType != null) {
                 if (idType != targetType) {
@@ -299,6 +329,10 @@
             }
         }
 
+        /**
+         * Marks an id as initialized in current or parent scope
+         * @param node the node whose value we're marking as initialized
+         */
         public markAsInitialized(node): void {
             // Pointer to current position in scope tree
             let ptr: TreeNode = this.scopeTree.curr;
@@ -326,6 +360,10 @@
             }
         }
 
+        /**
+         * Marks an id as used in current or parent scope
+         * @param node the node whose value we're marking as initialized
+         */
         public markAsUsed(node): void {
             // Pointer to current position in scope tree
             let ptr: TreeNode = this.scopeTree.curr;
@@ -353,6 +391,10 @@
             }
         }
 
+        /**
+         * Checks to see if a variable is used before being initialized
+         * @param node the node in tree we're starting at
+         */
         public checkUsedButUninit(node): void {
             // Pointer to current position in scope tree
             let ptr: TreeNode = this.scopeTree.curr;
@@ -362,7 +404,6 @@
                     this.warnings++;
                     this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + node.value.value + " ] was used at ( " + node.lineNum + " : " + node.colNum + " ), before being initialized");
                 }
-                
                 return;
             }
             // Check parent scopes
@@ -375,13 +416,17 @@
                             this.warnings++;
                             this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + node.value.value + " ] was used at ( " + node.lineNum + " : " + node.colNum + " ), before being initialized");
                         }
-                        
                         return;
                     }
                 }
             }
         }
 
+        /**
+         * Checks to see if id is declared in current or parent scope
+         * @param node the node whose value we're checking is in scope or not
+         * @return the scope object if any
+         */
         public checkScopes(node) {
             // Pointer to current position in scope tree
             let ptr: TreeNode = this.scopeTree.curr;
@@ -408,6 +453,10 @@
             }
         }
 
+        /**
+         * Traverses the scope tree in preorder fashion to find warnings to generate
+         * @param node the node in tree we're starting at
+         */
         public findWarnings(node): void {
             // Iterate through object 
             for (let key in node.value.buckets) {

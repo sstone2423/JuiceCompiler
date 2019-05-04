@@ -129,8 +129,8 @@ var JuiceC;
                             var scope_1 = astNode.children[0].value.scopeId;
                             var tempAddress = this.findVariableInStaticMap(tempVar_1, scope_1);
                             this.loadYFromMem(tempAddress);
-                            if (this.staticDataMap.get(tempAddress)["type"] == JuiceC.VariableType.String ||
-                                this.staticDataMap.get(tempAddress)["type"] == JuiceC.VariableType.Boolean) {
+                            if (this.staticDataMap.get(tempAddress)["type"] == "string" /* String */ ||
+                                this.staticDataMap.get(tempAddress)["type"] == "boolean" /* Boolean */) {
                                 this.loadXWithConst(ZERO_TWO);
                             }
                             else {
@@ -175,12 +175,12 @@ var JuiceC;
                             break;
                         default:
                             this.addError();
-                            JuiceC.Error.logUnknownError(CODEGEN, this.log);
+                            this.log = JuiceC.Error.logUnknownError(CODEGEN, this.log);
                     }
                     this.writeCode(JuiceC.Instruction.SysCall);
                     break;
-                case "VarDecl" /* VarDeclaration */:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "VarDecl" /* VarDeclaration */
+                case "VarDecl" /* VarDecl */:
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + "VarDecl" /* VarDecl */
                         + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
                     // Set a new staticData entry
                     var temp = T + this.staticDataCount;
@@ -261,7 +261,7 @@ var JuiceC;
                             break;
                         default:
                             this.addError();
-                            JuiceC.Error.logUnknownError(CODEGEN, this.log);
+                            this.log = JuiceC.Error.logUnknownError(CODEGEN, this.log);
                     }
                     // Find the temp address of tempVar
                     var tempVar = astNode.children[0].value.value;
@@ -310,7 +310,7 @@ var JuiceC;
                             break;
                         default:
                             this.addError();
-                            JuiceC.Error.logUnknownError(CODEGEN, this.log);
+                            this.log = JuiceC.Error.logUnknownError(CODEGEN, this.log);
                     }
                     // Z flag has now been assigned. set acc to 1
                     this.loadAccWithConst(ZERO_ONE);

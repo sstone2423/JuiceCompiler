@@ -1,14 +1,42 @@
 ///<reference path="globals.ts" />
-/*
-    lexer.ts
-
-    Lexer checks the code given to ensure that all of the characters belong in the Language Grammar. If they belong, create tokens
-    for each and pass them on to the Parser. If there were errors in the Lexer, stop compiling the current program and report the
-    errors. The only warning currently is for a missing end of program $ character. The Lexer will add the character to the program
-    and report the warning back to the user.
-*/
+/**
+ * 	lexer.ts
+ *
+ * 	The Lexer checks the code given to ensure that all of the characters belong in the Language Grammar.
+ * 	If they belong, create tokens for each and pass them on to the Parser. If there were errors in
+ * 	the Lexer, stop compiling the current program and report the errors. The only warning currently
+ * 	is for a missing end of program $ character. The Lexer will add the character to the program and
+ * 	report the warning back to the user.
+ *  */
 var JuiceC;
 (function (JuiceC) {
+    // Regex
+    var rLBRACE = new RegExp('{$'); // Left Brace
+    var rRBRACE = new RegExp('}$'); // Right brace
+    var rPRINT = new RegExp('print$'); // Print
+    var rLPAREN = new RegExp('\\($'); // Left Paren
+    var rRPAREN = new RegExp('\\)$'); // Right paren
+    var rASSIGN = new RegExp('\=$'); // Assignment operator
+    var rWHILE = new RegExp('while$'); // While
+    var rIF = new RegExp('if$'); // If
+    var rQUOTE = new RegExp('"$'); // Quote
+    var rTYPEINT = new RegExp('int$'); // Integer type
+    var rTYPEBOOL = new RegExp('boolean$'); // Boolean type
+    var rTYPESTR = new RegExp('string$'); // String type
+    var rCHAR = new RegExp('[a-z]$'); // Character
+    var rSPACE = new RegExp(' $'); // Space
+    var rDIGIT = new RegExp('[0-9]$'); // Digit
+    var rEOP = new RegExp('\\$$'); // EOP
+    var rID = new RegExp('[a-z]$'); // ID
+    var rBOOLOPEQUALS = new RegExp('\=\=$'); // Boolean operator equals
+    var rBOOLOPNOTEQUALS = new RegExp('\\!\=$'); // Boolean operator not equals
+    var rBOOLVALTRUE = new RegExp('true$'); // Boolean true value
+    var rBOOLVALFALSE = new RegExp('false$'); // Boolean false value
+    var rINTOP = new RegExp('\\+$'); // Integer operation
+    var rWHITESPACE = new RegExp(' $|\t$|\n$|\r$'); // Whitespace
+    var rNEWLINE = new RegExp('\n$'); // New line
+    var rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
+    var rCOMMENTEND = new RegExp('\\*/$'); // End of comment
     var Lexer = /** @class */ (function () {
         function Lexer() {
             // Token array
@@ -17,8 +45,6 @@ var JuiceC;
             this.errors = [];
             // Warning array
             this.warnings = [];
-            // Program counter
-            this.lexAnalysisResult = {};
             this.resultsArray = [];
             // Pointers that indicate which characters are being matched
             this.startPtr = 0;
@@ -36,8 +62,8 @@ var JuiceC;
             this.startCommentCol = 0;
             this.startCommentLine = 0;
         }
+        // Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
         Lexer.prototype.lex = function () {
-            // Order of lex precedence is 1. Keyword, 2. ID, 3. Symbol, 4. Digit, 5. Character
             // Grab the "raw" source code.
             var sourceCode = document.getElementById("sourceCode").value;
             // Trim the leading and trailing spaces.

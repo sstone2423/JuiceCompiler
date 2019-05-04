@@ -1,10 +1,11 @@
 ///<reference path="globals.ts" />
-/* 
-    scope.ts
-*/
+/**
+ * scope.ts
+ * 
+ * Defines the Scope Tree's Hashmap Nodes
+ *  */ 
 
 module JuiceC {
-
     export class ScopeVariable {
         // Keys are the variable name
         key: string;
@@ -19,10 +20,9 @@ module JuiceC {
             this.used = false;
             this.initialized = false;
         }
-
     }
 
-    export enum VariableType {
+    export const enum VariableType {
         Boolean = "boolean",
         Int = "int",
         String = "string"
@@ -41,5 +41,4 @@ module JuiceC {
             this.buckets = [];
         }
     }
-
 }

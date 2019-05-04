@@ -1,8 +1,11 @@
 ///<reference path="globals.ts" />
-/* --------
-   semantic.ts
-
-   -------- */
+/**
+ * semantic.ts
+ *
+ * The Semantic Analyzer takes in the CST from a successful Parse, then scope and type checks the tokens
+ * to enforce the grammar as the context-sensitive level. A successful result will return a scope tree,
+ * symbol table, and AST.
+ */
 var JuiceC;
 (function (JuiceC) {
     var Semantic = /** @class */ (function () {
@@ -13,17 +16,17 @@ var JuiceC;
             this.warnings = 0;
             this.scopeTree = new JuiceC.Tree();
             this.totalScopes = 0;
-            // Scopes always increase by 1, so currentScope will increase to 0 on the first block production
             this.currentScope = 0;
             this.log = [];
             this.symbols = [];
         }
+        // Traverses the CST type and scope checking, checks the scopeTree for warnings, and returns the results to control
         Semantic.prototype.analyze = function () {
             // Traverse the CST looking for the "good stuff"
             this.traverse(this.cst.root);
             // Traverse scope tree to generate warnings
             this.findWarnings(this.scopeTree.root);
-            return {
+            var result = {
                 "ast": this.ast,
                 "scopeTree": this.scopeTree,
                 "errors": this.errors,
@@ -31,9 +34,13 @@ var JuiceC;
                 "symbols": this.symbols,
                 "log": this.log
             };
+            return result;
         };
-        // Recursive function that traverses the CST in up-to-down, left-most descent looking for the key parts of the language.
-        // When found, construct and add them to the AST
+        /**
+         * Recursive function that traverses the CST in top-to-down, left-most descent looking for the key parts of the language.
+         * When found, construct and add them to the AST
+         * @param node is the current tree node being evaluated
+         */
         Semantic.prototype.traverse = function (node) {
             switch (node.value) {
                 case "Block" /* Block */:
@@ -60,9 +67,9 @@ var JuiceC;
                         this.currentScope--;
                     }
                     break;
-                case "VarDecl" /* VarDeclaration */:
+                case "VarDecl" /* VarDecl */:
                     // Add the VarDecl node
-                    this.ast.addNode("VarDecl" /* VarDeclaration */);
+                    this.ast.addNode("VarDecl" /* VarDecl */);
                     // Get its children and add to AST
                     // Get the type
                     var token = node.children[0].children[0].value;
@@ -166,7 +173,7 @@ var JuiceC;
                         if (exprType.value != null) {
                             exprType = exprType.value;
                         }
-                        if (exprType != JuiceC.VariableType.Int) {
+                        if (exprType != "int" /* Int */) {
                             this.errors++;
                             this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Int Expression - [ " + node.value + " ] of type [ " + node.targetType + " ] was assigned to type [ " + node.idType
                                 + " ] at ( " + node.lineNum + " : " + node.colNum + " )");
@@ -179,7 +186,7 @@ var JuiceC;
                         this.ast.ascendTree();
                     }
                     // return the type returned by intexpr
-                    return JuiceC.VariableType.Int;
+                    return "int" /* Int */;
                 case "BooleanExpression" /* BooleanExpr */:
                     // Check if it is not a boolval
                     if (node.children.length > 1) {
@@ -211,7 +218,7 @@ var JuiceC;
                         this.ast.ascendTree();
                     }
                     // return the type returned by boolexpr
-                    return JuiceC.VariableType.Boolean;
+                    return "boolean" /* Boolean */;
                 case "StringExpression" /* StringExpr */:
                     // Generate the string until end of the charlist
                     // Surround string in quotes
@@ -234,7 +241,7 @@ var JuiceC;
                     var resString = stringBuilder.join("");
                     this.ast.addNode(new JuiceC.Token("String" /* String */, resString, null, null));
                     this.ast.ascendTree();
-                    return JuiceC.VariableType.String;
+                    return "string" /* String */;
                 default:
                     // Traverse node's children
                     for (var i = 0; i < node.children.length; i++) {
@@ -247,6 +254,14 @@ var JuiceC;
                     break;
             }
         };
+        /**
+         * Checks to see if the id type matches its target type and logs the location of id target
+         * @param id the variable name
+         * @param idType the type of the id being assigned to
+         * @param targetType the type that is being assigned to id
+         * @param targetLine the line of the target
+         * @param targetCol column of the target
+         */
         Semantic.prototype.checkTypeMatch = function (id, idType, targetType, targetLine, targetCol) {
             if (targetType != null && idType != null) {
                 if (idType != targetType) {
@@ -259,6 +274,10 @@ var JuiceC;
                 }
             }
         };
+        /**
+         * Marks an id as initialized in current or parent scope
+         * @param node the node whose value we're marking as initialized
+         */
         Semantic.prototype.markAsInitialized = function (node) {
             // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
@@ -283,6 +302,10 @@ var JuiceC;
                 }
             }
         };
+        /**
+         * Marks an id as used in current or parent scope
+         * @param node the node whose value we're marking as initialized
+         */
         Semantic.prototype.markAsUsed = function (node) {
             // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
@@ -307,6 +330,10 @@ var JuiceC;
                 }
             }
         };
+        /**
+         * Checks to see if a variable is used before being initialized
+         * @param node the node in tree we're starting at
+         */
         Semantic.prototype.checkUsedButUninit = function (node) {
             // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
@@ -333,6 +360,11 @@ var JuiceC;
                 }
             }
         };
+        /**
+         * Checks to see if id is declared in current or parent scope
+         * @param node the node whose value we're checking is in scope or not
+         * @return the scope object if any
+         */
         Semantic.prototype.checkScopes = function (node) {
             // Pointer to current position in scope tree
             var ptr = this.scopeTree.curr;
@@ -357,6 +389,10 @@ var JuiceC;
                 this.errors++;
             }
         };
+        /**
+         * Traverses the scope tree in preorder fashion to find warnings to generate
+         * @param node the node in tree we're starting at
+         */
         Semantic.prototype.findWarnings = function (node) {
             // Iterate through object 
             for (var key in node.value.buckets) {

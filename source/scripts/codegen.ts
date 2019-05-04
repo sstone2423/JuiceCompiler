@@ -221,13 +221,13 @@ module JuiceC {
 
                         default:
                             this.addError();
-                            Error.logUnknownError(CODEGEN, this.log);                    
+                            this.log = Error.logUnknownError(CODEGEN, this.log);                    
                     }
                     this.writeCode(Instruction.SysCall);
                     break;
 
-                case Production.VarDeclaration:
-                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.VarDeclaration 
+                case Production.VarDecl:
+                    this.log.push(DEBUG + " - " + CODEGEN + " - Generating Op Codes for [ " + Production.VarDecl 
                         + " ] in Scope " + this.scopeNodes[this.scopePtr].value.id);
                     // Set a new staticData entry
                     var temp = T + this.staticDataCount;
@@ -315,7 +315,7 @@ module JuiceC {
 
                         default:
                             this.addError();
-                            Error.logUnknownError(CODEGEN, this.log);
+                            this.log = Error.logUnknownError(CODEGEN, this.log);
                     }
                     // Find the temp address of tempVar
                     let tempVar = astNode.children[0].value.value;
@@ -367,7 +367,7 @@ module JuiceC {
                         
                         default:
                             this.addError();
-                            Error.logUnknownError(CODEGEN, this.log);
+                            this.log = Error.logUnknownError(CODEGEN, this.log);
                     }
                     // Z flag has now been assigned. set acc to 1
                     this.loadAccWithConst(ZERO_ONE);
