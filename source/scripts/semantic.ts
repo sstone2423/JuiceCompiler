@@ -431,27 +431,5 @@
                 this.findWarnings(node.children[i]);
             }
         }
-
-        // Traverses the scope tree and returns a string representation
-        public printScopeTree(node): Array<string> {
-            let tree: Array<string> = [];
-            let level: number = 0;
-            if (node != null) {
-                this.printScopeTreeHelper(node, level, tree, "");
-            }
-            return tree;
-        }
-
-        // Recursive helper function for printScopeTree(node)
-        private printScopeTreeHelper(node, level, tree, dash): void {
-            let varsString: string = "";
-            for (let key in node.value.buckets) { 
-                varsString += node.value.buckets[key].token.value + " " + key + ", ";
-            }
-            tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
-            for (let i = 0; i < node.children.length; i++) {
-                this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
-            }
-        }
     }
 }

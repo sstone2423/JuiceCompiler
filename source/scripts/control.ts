@@ -186,12 +186,12 @@ module JuiceC {
                                     let colNum: HTMLTableCellElement = row.insertCell(5);
                                     colNum.innerHTML = symbols[l].col;
                                 }
-                                // Fill out scope tree
-                                let scopeTreeArr: Array<string> = _Semantic.printScopeTree(semanticResult.scopeTree.root);
+   
+                                let scopeTree = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
-                                for (let m = 0; m < scopeTreeArr.length; m++) {
-                                    _Control.scopeTreeElement.value += scopeTreeArr[m] + "\n";
+                                for (let m = 0; m < scopeTree.tree.length; m++) {
+                                    _Control.scopeTreeElement.value += scopeTree.tree[m] + "\n";
                                 }
                             }
 

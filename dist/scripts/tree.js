@@ -1,6 +1,8 @@
 ///<reference path="globals.ts" />
 /*
     tree.ts
+
+    Created with the help from Kai's Kompailer. Many thanks!
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {

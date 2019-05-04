@@ -380,26 +380,6 @@ var JuiceC;
                 this.findWarnings(node.children[i]);
             }
         };
-        // Traverses the scope tree and returns a string representation
-        Semantic.prototype.printScopeTree = function (node) {
-            var tree = [];
-            var level = 0;
-            if (node != null) {
-                this.printScopeTreeHelper(node, level, tree, "");
-            }
-            return tree;
-        };
-        // Recursive helper function for printScopeTree(node)
-        Semantic.prototype.printScopeTreeHelper = function (node, level, tree, dash) {
-            var varsString = "";
-            for (var key in node.value.buckets) {
-                varsString += node.value.buckets[key].token.value + " " + key + ", ";
-            }
-            tree.push(dash + "- Scope " + node.value.id + " : " + varsString);
-            for (var i = 0; i < node.children.length; i++) {
-                this.printScopeTreeHelper(node.children[i], level + 1, tree, dash + "-");
-            }
-        };
         return Semantic;
     }());
     JuiceC.Semantic = Semantic;

@@ -161,12 +161,11 @@ var JuiceC;
                                     var colNum = row.insertCell(5);
                                     colNum.innerHTML = symbols[l].col;
                                 }
-                                // Fill out scope tree
-                                var scopeTreeArr = _Semantic_1.printScopeTree(semanticResult.scopeTree.root);
+                                var scopeTree = semanticResult.ast.traverseTreeAST(_Control.treantAST, (programIndex + 1));
                                 _Control.scopeTreeElement.value += "Program " + (programIndex + 1) + "\n";
                                 // Display scope tree in scope tree field
-                                for (var m = 0; m < scopeTreeArr.length; m++) {
-                                    _Control.scopeTreeElement.value += scopeTreeArr[m] + "\n";
+                                for (var m = 0; m < scopeTree.tree.length; m++) {
+                                    _Control.scopeTreeElement.value += scopeTree.tree[m] + "\n";
                                 }
                             }
                             _Control.putMessage(INFO + "\tSemantic Analysis complete with " + semanticResult.errors + " ERROR(S) and " + semanticResult.warnings + " WARNING(S)");

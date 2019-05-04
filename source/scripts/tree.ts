@@ -1,6 +1,8 @@
 ///<reference path="globals.ts" />
 /* 
     tree.ts  
+
+    Created with the help from Kai's Kompailer. Many thanks!
 */
 
 module JuiceC {
