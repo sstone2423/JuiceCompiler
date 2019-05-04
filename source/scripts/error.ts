@@ -1,55 +1,59 @@
 ///<reference path="globals.ts" />
-/* 
-    error.ts
-
-    Error class for the Lexer and Parser that contain the Error Type, Value that was given instead of the one that was expected,
-    and the Line number and Column number of the error instance.
-*/
+/**
+ *  error.ts
+ * 
+ *  Error class that contains the Error Type, Value that was given instead of the one that was expected,
+ *  and the Line number and Column number of the error instance. Error Type string constants are located
+ *  here as well
+ *  */ 
 
 module JuiceC {
-
     export const enum ErrorType {
-
         // Lexer errors
-        NO_END_QUOTE = "No End Quote in string literal",
-        NO_END_COMMENT = "No End Comment",
-        INVALID_T = "Invalid Token",
-        INVALID_T_STRING = "Invalid Token in string literal",
-        INVALID_T_COMMENT = "Invalid Token in Comment",
-        INVALID_NEW_LINE = "Invalid New Line",
+        NoEndQuote = "Missing End Quote in string literal",
+        NoEndComment = "Missing End Comment",
+        InvalidT = "Invalid Token",
+        InvalidTInStr = "Invalid Token in string literal",
+        InvalidTInComm = "Invalid Token in Comment",
+        InvalidNewLine = "Invalid New Line",
 
         // Parser errors
-        BLOCK_EXPECTED = "Block Expected",
-        PRINT_EXPECTED = "Print Statement Expected",
-        ASSIGNMENT_EXPECTED = "Assignment Statement Expected",
-        VAR_DECL_EXPECTED = "Variable Declaration Expected",
-        IF_EXPECTED = "If Statement Expected",
-        WHILE_EXPECTED = "While Statement Expected",
-        EXPR_EXPECTED = "Expression Expected",
-        INT_EXPR_EXPECTED = "Integer Expression Expected",
-        STRING_EXPR_EXPECTED = "String Expression Expected",
-        BOOL_EXPR_EXPECTED = "Boolean Expression Expected",
-        BOOL_VAL_EXPECTED = "Boolean Value Expected",
-        ID_EXPECTED = "ID Expected",
-        TYPE_EXPECTED = "Type Expected",
-        CHAR_EXPECTED = "Character Expected",
-        DIGIT_EXPECTED = "Digit Expected",
-        INT_OP_EXPECTED = "Integer Operation Expected",
-        BOOL_OP_EXPECTED = "Boolean Operation Expected",
-        SPACE_EXPECTED = "Space Expected",
-        TOKEN_EXPECTED = "Token Expected",
+        BlockExpected = "Block Expected",
+        PrintExpected = "Print Statement Expected",
+        AssignExpected = "Assignment Statement Expected",
+        VarDeclExpected = "Variable Declaration Expected",
+        IfExpected = "If Statement Expected",
+        WhileExpected = "While Statement Expected",
+        ExprExpected = "Expression Expected",
+        IntExprExpected = "Integer Expression Expected",
+        StrExprExpected = "String Expression Expected",
+        BoolExprExpected = "Boolean Expression Expected",
+        BoolValExpected = "Boolean Value Expected",
+        IdExpected = "ID Expected",
+        TypeExpected = "Type Expected",
+        CharExpected = "Character Expected",
+        DigitExpected = "Digit Expected",
+        IntOpExpected = "Integer Operation Expected",
+        BoolOpExpected = "Boolean Operation Expected",
+        SpaceExpected = "Space Expected",
+        TExpected = "Token Expected",
 
         // Semantic Errors
-        DUPLICATE_VARIABLE = "Duplicate Variable",
-        TYPE_MISMATCH = "Type Mismatch",
-        UNDECLARED_VARIABLE = "Undeclared Variable",
-        INCORRECT_INT_EXPR = "Incorrect Integer Expression",
-        INCORRECT_TYPE_COMPAR = "Incorrect Type Comparison"
+        DupVar = "Duplicate Variable",
+        TypeMismatch = "Type Mismatch",
+        UndeclaredVar = "Undeclared Variable",
+        IncorrectIntExpr = "Incorrect Integer Expression",
+        IncorrectTypeCompar = "Incorrect Type Comparison",
 
+        // CodeGen Errors
+        ExceedMemLimit = "Exceeded Memory Limit",
+        ExceedStackLimit = "Exceeded Stack Memory Limit",
+        ExceedHeapLimit = "Exceeded Heap Memory Limit",
+        ExceedStaticLimit = "Exceeded Static Variable Memory Limit",
+        NestedBoolean = "Nested Boolean"
     }
 
 	export class Error {
-
         errorType: string;
         value: any;
         lineNum: number;
@@ -63,29 +67,15 @@ module JuiceC {
             this.colNum = colNum;
             this.expectedToken = expectedToken;
         }
-    }
 
-    // For Duplicate Variable and Undeclared Variable
-    export class ScopeError extends Error {
-        firstDeclareLine: number;
-        firstDeclareCol: number;
-
-        constructor (tokenType: ErrorType, value: string, lineNum: number, colNum: number, firstDeclareLine: number, firstDeclareCol: number) {
-            super(tokenType, value, lineNum, colNum);
-            this.firstDeclareLine = firstDeclareLine;
-            this.firstDeclareCol = firstDeclareCol;
+        /**
+         * Helper function for logging unknown errors
+         * @param section refers to Lexer, Parser, Semantic, or CodeGen
+         * @param log the section's log
+         */
+        public static logUnknownError(section: string, log: Array<string>): Array<string> {
+            log.push(DEBUG + " - " + section + " - " + ERROR + " - Unknown Error has occured");
+            return log;
         }
     }
-
-    // For Type Mismatch
-    export class TypeError extends Error {
-        targetType: VariableType;
-        idType: VariableType;
-        constructor(tokenType: ErrorType, value: string, lineNum: number, colNum: number, idType: VariableType, targetType: VariableType) {
-            super(tokenType, value, lineNum, colNum);
-            this.targetType = targetType;
-            this.idType = idType;
-        }
-    }
-
 }

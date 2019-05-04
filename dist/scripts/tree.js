@@ -1,7 +1,11 @@
 ///<reference path="globals.ts" />
-/*
-    tree.ts
-*/
+/**
+ * tree.ts
+ *
+ * Defines the Tree structure and logic used by the Scope Tree, CST, and AST
+ *
+ * Created with the help from Kai's Kompailer. Many thanks!
+ *  */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -87,7 +91,11 @@ var JuiceC;
                 this.DFSCST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
             }
             // Return array of nodes and tree config
-            return { "tree": tree, "treant": treantTree };
+            var result = {
+                "tree": tree,
+                "treant": treantTree
+            };
+            return result;
         };
         /**
          * Prints the tree in dfs for AST display
@@ -99,7 +107,11 @@ var JuiceC;
                 this.DFSAST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
             }
             // Return array of nodes and tree config
-            return { "tree": tree, "treant": treantTree };
+            var result = {
+                "tree": tree,
+                "treant": treantTree
+            };
+            return result;
         };
         // Returns an array representation of depth-first search of tree
         Tree.prototype.traverseTree = function () {
@@ -124,7 +136,9 @@ var JuiceC;
                 // Add new node to children array passed
                 // Pass reference to new children array to next call
                 child = {
-                    text: { name: "[ " + node.value.value + " ]" },
+                    text: {
+                        name: "[ " + node.value.value + " ]"
+                    },
                     children: []
                 };
                 treantTree.push(child);
@@ -139,7 +153,9 @@ var JuiceC;
                 // Add new node to children array passed
                 // Pass reference to new children array to next call
                 child = {
-                    text: { name: "< " + nodeValue + " >" },
+                    text: {
+                        name: "< " + nodeValue + " >"
+                    },
                     children: []
                 };
                 treantTree.push(child);
@@ -166,7 +182,9 @@ var JuiceC;
                 }
                 tree.push(dash + nodeValue);
                 child = {
-                    text: { name: nodeValue + " " },
+                    text: {
+                        name: nodeValue + " "
+                    },
                     children: []
                 };
             }
@@ -178,7 +196,9 @@ var JuiceC;
                 }
                 tree.push(dash + nodeValue);
                 child = {
-                    text: { name: nodeValue + " " },
+                    text: {
+                        name: nodeValue + " "
+                    },
                     children: []
                 };
             }

@@ -3,12 +3,12 @@
 <head>
    <title>JuiceC - A browser-based Compiler in Typescript</title>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <!-- Enable Treant -->
    <link rel="stylesheet" href="dist/styles/Treant.css" type="text/css"/>
    <!-- Enable bootstrap -->
    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" rel="stylesheet">
+   <link rel="stylesheet" type="text/css" href="dist/styles/compiler.css" />
    <link rel="shortcut icon" href="dist/images/favicon.ico" />
 </head>
 <body onload="JuiceC.Control.init();">
@@ -37,6 +37,12 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.whileStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - While Statement</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.ifStatement()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - If Statement</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.missingEOP()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Missing EOP</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.semanticWarnings()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Semantic Warnings Bonanza</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.initButNotUsed()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic - Initialized But Unused Var</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.booleanExpressions()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Boolean Expressions</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.variableAddition()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Variable Addition</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.longAddition()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Long Addition</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.infiniteLoopMaxMemory()" href="#"><span class="badge badge-pill badge-success">P</span> Lex/Parse/Semantic/CodeGen - Infinite Loop</a>
                           <hr>
                           <a class="dropdown-item" onclick="JuiceC.Test.alan()" href="#"><span class="badge badge-pill badge-success">P</span><span class="badge badge-pill badge-danger">F</span> - Alan's Test</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.EOPinsideString()" href="#"><span class="badge badge-pill badge-danger">F</span> Lex - EOP Inside of String</a>
@@ -58,11 +64,17 @@
                           <a class="dropdown-item" onclick="JuiceC.Test.typeMismatch()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Type Mismatch</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.incorrectTypeCompar()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Type Comparison</a>
                           <a class="dropdown-item" onclick="JuiceC.Test.incorrectIntExpr()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Incorrect Int Expression</a>
-                          <a class="dropdown-item" onclick="JuiceC.Test.tienBooleanHell()" href="#"><span class="badge badge-pill badge-danger">F</span> Semantic - Tien's Boolean Hell</a>   
-                          <a class="dropdown-item" onclick="JuiceC.Test.tienTest()" href="#">Derp - tienTest</a>          
+                          <hr>
+                          <a class="dropdown-item" onclick="JuiceC.Test.booleanHell()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Boolean Hell</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.stackOverflow()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Stack Overflow Addition</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.heapOverflow()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Heap Overflow String</a>
+                          <a class="dropdown-item" onclick="JuiceC.Test.booleanHell()" href="#"><span class="badge badge-pill badge-danger">F</span> Code Gen - Over-Max Memory</a>
                         </div>
                      </div>
                   <textarea class="form-control" id="sourceCode" rows="15"></textarea>
+                  <label class="mt-1" for="codeGen">Generated Code</label>
+                  <textarea class="form-control" id="codeGen" rows="3" readonly></textarea>
+                  <button id="copyClipboard" class="btn btn-block btn-primary" data-clipboard-target="#codeGen">Copy to Clipboard</button>
                </div>
                <!--Output column-->
                <div class="col-sm-7">
@@ -71,7 +83,7 @@
                   <div class="float-right">
                      <label for="output">Output</label>
                   </div>
-                  <textarea class="form-control" id="output" rows="20" readonly></textarea>
+                  <textarea class="form-control" id="output" rows="22" readonly></textarea>
                </div>
             </div>
             <!--Compile button row-->
@@ -85,7 +97,7 @@
             <div class="row justify-content-md-center">
                <div class="col-sm-3">
                   <label>CST</label>
-                  <textarea class="form-control" id="CSTtext" rows="20" readonly></textarea>
+                  <textarea class="form-control small-text" id="CSTtext" rows="20" readonly></textarea>
                </div>
                <div class="col-sm-9">
                      <label>CST</label>
@@ -120,9 +132,9 @@
                            <tr></tr>
                      </tbody>
 					   </table>
-                  <div id="scopeTree" class="justify-content-md-center">
+                  <div class="justify-content-md-center">
                      <h5>Scope Tree</h5>
-                     <textarea id="taScope" rows="14" readonly disabled></textarea>
+                     <textarea class="form-control" id="scopeTree" rows="14" readonly disabled></textarea>
                   </div>
                </div>
             </div>
@@ -131,28 +143,32 @@
       </div>
    </div>
    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">JuiceC</a>
-      <ul class="navbar-nav navbar-center">
-         <li class="nav-item">
-            <a class="nav-link" href="https://github.com/sstone2423/JuiceCompiler">
-               <img src="dist/images/GitHub_Logo.png" alt="Stephen's Github" height="26px" width="60px" />
-            </a>
-         </li>
-         <li class="nav-item">
-            <a class="nav-link" href="https://www.linkedin.com/in/stephen-stone/">
-               <img id="linkedIn" src="dist/images/LinkedIn_Logo.svg.png" alt="Stephen's LinkedIn" height="23px" width="69px" />
-            </a>
-         </li>
-         <li class="nav-item">
-            <a class="nav-link" id="grammar" href="grammar.pdf">Grammar</a>
-         </li>
-      </ul>
+            <ul style="margin:auto;" class="navbar-nav navbar-center">
+               <li class="nav-item px-2">
+                  <a class="nav-link" id="JuiceC" href="#">JuiceC</a>
+               </li>
+               <li class="nav-item px-2">
+                     <a class="nav-link" id="grammar" href="grammar.pdf">Grammar</a>
+                  </li>
+               <li class="nav-item px-2">
+                  <a class="nav-link" href="https://github.com/sstone2423/JuiceCompiler">
+                     <img src="dist/images/GitHub_Logo.png" alt="Stephen's Github" height="26px" width="60px" />
+                  </a>
+               </li>
+               <li class="nav-item px-2">
+                  <a class="nav-link" href="https://www.linkedin.com/in/stephen-stone/">
+                     <img id="linkedIn" src="dist/images/LinkedIn_Logo.svg.png" alt="Stephen's LinkedIn" height="23px" width="69px" />
+                  </a>
+               </li>
+            </ul>
    </nav>
    <!-- Enable Bootstrap -->
    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/js/bootstrap4-toggle.min.js"></script>
+   <!-- Enable Copy to Clipboard-->
+   <script src="node_modules/clipboard/dist/clipboard.min.js"></script>
    <!-- Enable Treant -->
    <script src="dist/vendor/raphael.js"></script>
    <script src="dist/scripts/Treant.js"></script>
@@ -169,6 +185,8 @@
    <script type="text/javascript" src="dist/scripts/parser.js"></script>
    <script type="text/javascript" src="dist/scripts/scope.js"></script>
    <script type="text/javascript" src="dist/scripts/semantic.js"></script>
+   <script type="text/javascript" src="dist/scripts/codegen.js"></script>
+   <script type="text/javascript" src="dist/scripts/instruction.js"></script>
    <script type="text/javascript" src="dist/scripts/test.js"></script>
 </body>
 </html>

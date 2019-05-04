@@ -1,23 +1,11 @@
 ///<reference path="globals.ts" />
-/*
-    error.ts
-
-    Error class for the Lexer and Parser that contain the Error Type, Value that was given instead of the one that was expected,
-    and the Line number and Column number of the error instance.
-*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+/**
+ *  error.ts
+ *
+ *  Error class that contains the Error Type, Value that was given instead of the one that was expected,
+ *  and the Line number and Column number of the error instance. Error Type string constants are located
+ *  here as well
+ *  */
 var JuiceC;
 (function (JuiceC) {
     var Error = /** @class */ (function () {
@@ -28,31 +16,16 @@ var JuiceC;
             this.colNum = colNum;
             this.expectedToken = expectedToken;
         }
+        /**
+         * Helper function for logging unknown errors
+         * @param section refers to Lexer, Parser, Semantic, or CodeGen
+         * @param log the section's log
+         */
+        Error.logUnknownError = function (section, log) {
+            log.push(DEBUG + " - " + section + " - " + ERROR + " - Unknown Error has occured");
+            return log;
+        };
         return Error;
     }());
     JuiceC.Error = Error;
-    // For Duplicate Variable and Undeclared Variable
-    var ScopeError = /** @class */ (function (_super) {
-        __extends(ScopeError, _super);
-        function ScopeError(tokenType, value, lineNum, colNum, firstDeclareLine, firstDeclareCol) {
-            var _this = _super.call(this, tokenType, value, lineNum, colNum) || this;
-            _this.firstDeclareLine = firstDeclareLine;
-            _this.firstDeclareCol = firstDeclareCol;
-            return _this;
-        }
-        return ScopeError;
-    }(Error));
-    JuiceC.ScopeError = ScopeError;
-    // For Type Mismatch
-    var TypeError = /** @class */ (function (_super) {
-        __extends(TypeError, _super);
-        function TypeError(tokenType, value, lineNum, colNum, idType, targetType) {
-            var _this = _super.call(this, tokenType, value, lineNum, colNum) || this;
-            _this.targetType = targetType;
-            _this.idType = idType;
-            return _this;
-        }
-        return TypeError;
-    }(Error));
-    JuiceC.TypeError = TypeError;
 })(JuiceC || (JuiceC = {}));

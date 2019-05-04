@@ -1,17 +1,20 @@
 ///<reference path="globals.ts" />
-/* 
-    warning.ts  
-*/
+/**
+ *  warning.ts
+ * 
+ *  Warning class that contains the Warning Type and the Line number and Column number of the warning instance. 
+ *  Warning Type string constants are located here as well
+ *  */ 
 
 module JuiceC {
 
     export const enum WarningType {
         // Lex warnings
-        NO_EOP = "No EOP",
+        NoEOP = "No EOP",
         // Semantic warnings
-        USED_BEFORE_INIT = "Variable Used Before Being Initialized",
-        UNINIT_VAR = "Uninitialized Variable",
-        UNUSED_VAR = "Unused Variable"
+        UsedBeforeInit = "Variable Used Before Being Initialized",
+        UninitVar = "Uninitialized Variable",
+        UnusedVar = "Unused Variable"
     }
 
 	export class Warning {
@@ -25,18 +28,6 @@ module JuiceC {
             this.value = value;
             this.lineNum = lineNum;
             this.colNum = colNum;
-        }
-    }
-
-    export class ScopeWarning extends Warning {
-        scopeLine: number;
-        scopeCol: number;
-        scopeId: number;
-        constructor(tokenType: WarningType, value: String, lineNum: number, colNum: number, node: ScopeHashMap){
-            super(tokenType, value, lineNum, colNum);
-            this.scopeLine = node.lineNum;
-            this.scopeCol = node.colNum;
-            this.scopeId = node.id;
         }
     }
 

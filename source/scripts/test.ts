@@ -1,10 +1,17 @@
-/* 
-    test.ts  
-*/
+/**
+ * test.ts  
+ * 
+ * Provides sample tests for each section of the compiler. The goal is to have 100% 
+ * coverage. Contains passing and failing tests for each section (Lexer, Parser, Semantic,
+ * Code Gen)
+ *  */ 
 
 module JuiceC {
-
     export class Test {
+        /* ----------------------------------
+            Passing Tests
+        ----------------------------------- */
+
         public static simpleTest1(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This is a simple program with no operations */
 {}$`;
@@ -18,7 +25,7 @@ module JuiceC {
         }
 
         public static fullProgram(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program*/
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program. Prints 1true23strastrbtrue */
 {
     int a
     a = 1
@@ -72,13 +79,11 @@ module JuiceC {
         }
 
         public static whileStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement. Prints 23458 */
 {
-    string s
     int a
     a = 1
     {
-        s = "hey there"
         int a
         a = 2
         print(a)
@@ -89,13 +94,12 @@ module JuiceC {
             print(a)
         }
         print(3 + a)
-        print(s)
     }
 } $`;
         }
 
         public static ifStatement(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement. Prints numsidsstringsbooleans */
 {
     int a
     a = 1
@@ -108,7 +112,7 @@ module JuiceC {
     if("hey" == "hey"){
         print("strings")
     }
-    if(true == (a == a)){
+    if(true == true){
         print("booleans")
     }
 } $`;
@@ -123,6 +127,112 @@ module JuiceC {
     s = "hey"
 }`;
         }
+
+        public static infiniteLoopMaxMemory(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This code segment uses the max
+- allotted memory 256 bytes 
+- Also this is an infinite loop. Credit: Tien */
+{
+int a
+a = 1
+if("a" == "a") {
+a = 2
+print("a now is two")
+}
+if(a != 1) {
+a = 3
+print(" a now is three")
+}
+if(a == 1) {
+a = 3
+print("this does not print")
+}
+
+while true {
+print(" this will always be true hahahahahahaha")
+}
+
+if false {
+print("this")
+}
+} $`;
+        }
+
+        public static booleanExpressions(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Boolean Expr Printing: This test case
+- demonstrates the compiler's ability to
+- generate code for computing the result
+- of a BooeleanExpr and printing the result
+- Result: falsefalsetruetruetruetruefalsefalsefalsetrue 
+- Credit: Tien */
+{
+boolean a
+a = false
+print((a == true))
+print((true == a))
+print((a == false))
+print((false == a))
+print((a != true))
+print((true != a))
+print((a != false))
+print((false != a))
+print(a)
+if (a == false) {
+a = true
+}
+print(a)
+}$`;
+        }
+
+        public static variableAddition(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*
+Demonstrates compiler's ability to generate code that properly handles variable addition
+Credit: Tien
+*/
+{
+int a
+a = 1
+int b
+b = 1
+b = 1 + a
+while (2 + a != 3 + b) {
+a = 1 + a
+print("int a is ")
+print(a)
+print(" ")
+}
+print("int b is ")
+print(b)
+}$`;
+        }
+
+        public static longAddition(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This statement shows that addition
+- checking and printing are both valid
+- options that can be performed. Credit: Tien
+- Result: 666addition checkfalse*/
+{
+int a
+while (a != 3) {
+print(1 + 2 + 3)
+a = 1 + a
+}
+if (1+1+1+1+1 == 2+3) {
+print("addition check")
+}
+if (1+5+3 != 8) {
+print(false)
+}
+} $`;
+        }
+
+        /* ------------------------------------
+            Failing Tests
+        -------------------------------------- */
+
+        /* -----------------------------------
+            Lexer
+        ---------------------------------------*/
 
         public static alan(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Provided By 
@@ -166,6 +276,10 @@ module JuiceC {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
 {{{{{{}}} /* comments are ignored */ }}}}$`;
         }
+
+        /* -----------------------------------
+            Parser
+        ------------------------------------- */
 
         public static invalidStatementList(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid StatementList */
@@ -217,30 +331,34 @@ print(a)
 }$`;
         }
 
+        /* --------------------------------------
+            Semantic Analysis
+        --------------------------------------- */
+
         public static semanticWarnings(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* has unused and undeclared variables */
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Has unused and undeclared variables */
 {
-int a
-int b
-a = 3
-b = 4
-{
-string a
-a = "hey"
-print(a)
-print(b)
-}
-print(b)
-string s
-{
-boolean b
-b = false
-}
-string r
-r = "hey"
-int d
-print(d)
-d = 3
+  int a
+  int b
+  a = 3
+  b = 4
+  {
+    string a
+    a = "hey"
+    print(a)
+    print(b)
+  }
+  print(b)
+  string s
+  {
+    boolean b
+    b = false
+  }
+  string r
+  r = "hey"
+  int d
+  print(d)
+  d = 3
 }$`;
         }
 
@@ -297,68 +415,100 @@ a = 4 + false
 }$`;
         }
 
-        public static tienTest(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Thx Tien. */       
+        public static initButNotUsed(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variable initialized but not used. Produces semantic warning*/
+{    
+    int a
+    int b
+    b = 2
+    print(b)
+}$`;
+        }
+
+        /* --------------------------------
+            Code Generation
+        --------------------------------- */
+    
+        public static booleanHell(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This test case is included because it completely messed
+- up my AST with boolean hell and keeping track of boolexpr
+- may it serve as a good benchmark for those who come after 
+- CREDIT: TIEN */
 {
 int a
 a = 0
-string z
-z = "bond"
-while (a != 9) {
-if (a != 5) {
-print("bond")
-}
-{
-a = 1 + a
-string b
-b = "james bond"
-print(b)
-}
-}
-{/*Holy Hell This is Disgusting*/}
+boolean b
+b = false
 boolean c
 c = true
-boolean d
-d = (true == (true == false))
-d = (a == b)
-d = (1 == a)
-d = (1 != 1)
-d = ("string" == 1)
-d = (a != "string")
-d = ("string" != "string")
-if (d == true) {
-int c
-c = 1 + d
-if (c == 1) {
-print("ugh")
-}
-}
-while ("string" == a) {
-while (1 == true) {
-a = 1 + "string"
+while(((a!=9) == ("test" != "alan")) == ((5==5) != (b == c))) {
+print("a")
+string d
+d = "yes"
+print(d)
+{
+    int a
+    a = 5
 }
 }
 }$`;
         }
 
-        public static tienBooleanHell(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Thanks Tien. Assuming you get past Boolean Hell
-- there is a boolean being compared to
-- a string which will cause a type error */
+        public static maxMemory(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Valid code but can't fit into 256 bytes */
 {
 int a
-a = 4
-boolean b
-b = true
-boolean c
-string d
-d = "there is no spoon"
-c = (d != "there is a spoon")
-if(c == (false != (b == (true == (a == 3+1))))) {
-print((b != d))
+int b
+int c
+int d
+a = 2
+{
+b = 5
+print(b)
+a = 1 + a
+{
+    print(a)
+    a = 5
 }
+if(a == b) {
+    print("wowza")
+}
+int d
+d = 5
+{
+    string d
+    d = "hey"
+    print(d)
+    d = "sap"
+    print(d)
+}
+print(d)
+}
+c = 4
+print(c)
+while (c != 7) {
+c = 1 + 1 + 1 + c
+print(c)
+}
+c = 9 + c
+print(c)
 }$`;
         }
 
+        public static stackOverflow(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Stack Overflow */
+{
+int a
+a = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+}$`
+        }
+
+        public static heapOverflow(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Heap Overflow */
+{
+string a
+a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}$`
+        }
     }
 }

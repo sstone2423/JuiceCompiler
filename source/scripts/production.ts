@@ -1,6 +1,12 @@
+/**
+ * production.ts
+ * 
+ * The productions of the grammar
+ */
+
 module JuiceC {
 
-    export enum Production {
+    export const enum Production {
 
         Program = "Program",
         Block = "Block",
@@ -8,7 +14,7 @@ module JuiceC {
         Statement = "Statement",
         PrintStatement = "PrintStatement",
         AssignStatement = "AssignmentStatement",
-        VarDeclaration = "VarDecl",
+        VarDecl = "VarDecl",
         WhileStatement = "WhileStatement",
         IfStatement = "IfStatement",
         Expr = "Expression",

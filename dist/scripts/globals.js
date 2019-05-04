@@ -1,49 +1,30 @@
-/*
-    globals.ts
-        All global variables can be found here.
-*/
+/**
+ *  globals.ts
+ *
+ *  All global variables can be found here.
+ */
 // Global classes
 var _Lexer;
 var _Parser;
 var _Control;
+var _CodeGen;
 // String constants
 var INFO = "INFO";
 var DEBUG = "DEBUG";
 var LEXER = "Lexer";
 var PARSER = "Parser";
 var SEMANTIC = "Semantic";
+var CODEGEN = "Code Gen";
 var VALID = "VALID";
 var EOF = "$";
 var SCOPE = "SCOPE";
 var WARNING = "WARNING";
 var ERROR = "ERROR";
-// Regex
-var rLBRACE = new RegExp('{$'); // Left Brace
-var rRBRACE = new RegExp('}$'); // Right brace
-var rPRINT = new RegExp('print$'); // Print
-var rLPAREN = new RegExp('\\($'); // Left Paren
-var rRPAREN = new RegExp('\\)$'); // Right paren
-var rASSIGN = new RegExp('\=$'); // Assignment operator
-var rWHILE = new RegExp('while$'); // While
-var rIF = new RegExp('if$'); // If
-var rQUOTE = new RegExp('"$'); // Quote
-var rTYPEINT = new RegExp('int$'); // Integer type
-var rTYPEBOOL = new RegExp('boolean$'); // Boolean type
-var rTYPESTR = new RegExp('string$'); // String type
-var rCHAR = new RegExp('[a-z]$'); // Character
-var rSPACE = new RegExp(' $'); // Space
-var rDIGIT = new RegExp('[0-9]$'); // Digit
-var rEOP = new RegExp('\\$$'); // EOP
-var rID = new RegExp('[a-z]$'); // ID
-var rBOOLOPEQUALS = new RegExp('\=\=$'); // Boolean operator equals
-var rBOOLOPNOTEQUALS = new RegExp('\\!\=$'); // Boolean operator not equals
-var rBOOLVALTRUE = new RegExp('true$'); // Boolean true value
-var rBOOLVALFALSE = new RegExp('false$'); // Boolean false value
-var rINTOP = new RegExp('\\+$'); // Integer operation
-var rWHITESPACE = new RegExp(' $|\t$|\n$|\r$'); // Whitespace
-var rNEWLINE = new RegExp('\n$'); // New line
-var rCOMMENTSTART = new RegExp('/\\*$'); // Start of comment
-var rCOMMENTEND = new RegExp('\\*/$'); // End of comment
+var ZERO = "0";
+var BACKPATCH = "Backpatching";
+var TRUE = "true";
+var FALSE = "false";
+// Start with an active verboseCheck
 var onDocumentLoad = function () {
     document.getElementById("verboseCheck").checked = true;
 };
