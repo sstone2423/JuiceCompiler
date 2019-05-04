@@ -167,7 +167,6 @@ module JuiceC {
                             let scope = astNode.children[0].value.scopeId;
                             var tempAddress: string = this.findVariableInStaticMap(tempVar, scope);
                             this.loadYFromMem(tempAddress);
-                            console.log(this.staticDataMap.get(tempAddress)["type"]);
                             if (this.staticDataMap.get(tempAddress)["type"] == VariableType.String || 
                                 this.staticDataMap.get(tempAddress)["type"] == VariableType.Boolean) {
                                 this.loadXWithConst(ZERO_TWO);
@@ -662,12 +661,9 @@ module JuiceC {
         private backPatch(): void {
             // When coming across placeholders for variables, lookup in map, replace with its location
             for (let i = 0; i < this.generatedCode.length; i++) {
-                // found a placeholder for static variable
                 if (this.generatedCode[i].charAt(0) == T) {
                     let temp = this.generatedCode[i];
-                    // lookup in map and get mem address
                     let memAddr = this.staticDataMap.get(temp)["loc"];
-                    // replace
                     this.generatedCode[i] = memAddr;
                     this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Static Variable Placeholder " 
                                 + temp + " at Address: " + i.toString(16).toUpperCase() + " with Memory Address: " + memAddr);
@@ -675,10 +671,7 @@ module JuiceC {
                 // found a placeholder for jump
                 if (this.generatedCode[i].charAt(0) == J) {
                     let temp = this.generatedCode[i];
-                    // lookup in map and get mem address
-                    console.log(this.jumpMap);
                     let jumpAmount = this.jumpMap.get(temp);
-                    // replace
                     this.generatedCode[i] = jumpAmount;
                     this.log.push(DEBUG + " - " + CODEGEN + " - " + BACKPATCH + " Jump Variable Placeholder " 
                                 + temp + " at Address: " + i.toString(16).toUpperCase() + " forward " + jumpAmount + " address(es)");
