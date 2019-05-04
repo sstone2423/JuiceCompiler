@@ -45,6 +45,7 @@ var JuiceC;
             for (var i = rowCount - 1; i > 1; i--) {
                 table.deleteRow(i);
             }
+            _Control.clipboard = new ClipboardJS('#copyClipboard');
         };
         // Output a message to the HTML output log
         Control.prototype.putMessage = function (msg) {

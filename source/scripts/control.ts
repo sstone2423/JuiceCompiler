@@ -9,6 +9,7 @@ module JuiceC {
     
     // Javascript to Typescript library magic
     declare var Treant: any;
+    declare var ClipboardJS: any;
     
     export class Control {
 
@@ -24,6 +25,7 @@ module JuiceC {
         ASTtextElement: HTMLInputElement;
         codeGenElement: HTMLInputElement;
         scopeTreeElement: HTMLInputElement;
+        clipboard;
 
         constructor() { }
 
@@ -60,7 +62,8 @@ module JuiceC {
 			let rowCount: number = table.rows.length;
 			for (let i = rowCount - 1; i > 1; i--) {
 				table.deleteRow(i);
-			}
+            }
+            _Control.clipboard = new ClipboardJS('#copyClipboard');
         }
 
         // Output a message to the HTML output log
