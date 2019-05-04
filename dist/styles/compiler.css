@@ -5,6 +5,14 @@ footer {
 
 #grammar {
     color:black;
+    font-weight: bolder;
+    font-size: 1.05em;
+}
+
+#JuiceC {
+    color:black;
+    font-weight: bolder;
+    font-size: 1.05em;
 }
 
 .tree {
