@@ -2,12 +2,12 @@
 /**
  *  warning.ts
  * 
- *  Warning class that contains the Warning Type and the Line number and Column number of the warning instance. 
+ *  Warning class that contains the Warning Type and the Line 
+ *  number and Column number of the warning instance. 
  *  Warning Type string constants are located here as well
- *  */ 
+ */
 
 module JuiceC {
-
     export const enum WarningType {
         // Lex warnings
         NoEOP = "No EOP",
@@ -17,7 +17,7 @@ module JuiceC {
         UnusedVar = "Unused Variable"
     }
 
-	export class Warning {
+    export class Warning {
         warningType: string;
         value: any;
         lineNum: number;
@@ -30,5 +30,4 @@ module JuiceC {
             this.colNum = colNum;
         }
     }
-
 }

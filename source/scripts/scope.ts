@@ -3,7 +3,7 @@
  * scope.ts
  * 
  * Defines the Scope Tree's Hashmap Nodes
- *  */ 
+ */
 
 module JuiceC {
     export class ScopeVariable {
@@ -28,7 +28,7 @@ module JuiceC {
         String = "string"
     }
 
-	export class ScopeHashMap {
+    export class ScopeHashMap {
         // Buckets hold each key:value pair
         buckets: Array<ScopeVariable>;
         lineNum: number;

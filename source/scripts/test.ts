@@ -4,7 +4,7 @@
  * Provides sample tests for each section of the compiler. The goal is to have 100% 
  * coverage. Contains passing and failing tests for each section (Lexer, Parser, Semantic,
  * Code Gen)
- *  */ 
+ */
 
 module JuiceC {
     export class Test {
@@ -12,19 +12,19 @@ module JuiceC {
             Passing Tests
         ----------------------------------- */
 
-        public static simpleTest1(): void {
+        static simpleTest1(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This is a simple program with no operations */
 {}$`;
         }
 
-        public static simpleTest2(): void {
+        static simpleTest2(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for print statement */
 {
     print("i love compilers")
 }$`;
         }
 
-        public static fullProgram(): void {
+        static fullProgram(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for a 'regular' program. Prints 1true23strastrbtrue */
 {
     int a
@@ -57,7 +57,7 @@ module JuiceC {
 }$`;
         }
 
-        public static multiplePrograms(): void {
+        static multiplePrograms(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for multiple programs */
 {
     print("i love compilers")
@@ -71,14 +71,14 @@ module JuiceC {
     b = 4
     string s
     s = "hey"
-}$`;                
+}$`;
         }
 
-        public static crazyOneLiner(): void {
+        static crazyOneLiner(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for crazy one liner */\n+\${hellotruefalse!======trueprinta=3b=0print(\"false true\")whi33leiftruefalsestring!= stringintbooleanaa truewhileif{hi+++==!==}}/*aaahaha*/hahahahaha/*awao*/$`;
         }
 
-        public static whileStatement(): void {
+        static whileStatement(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for WhileStatement. Prints 23458 */
 {
     int a
@@ -98,7 +98,7 @@ module JuiceC {
 } $`;
         }
 
-        public static ifStatement(): void {
+        static ifStatement(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for IfStatement. Prints numsidsstringsbooleans */
 {
     int a
@@ -118,7 +118,7 @@ module JuiceC {
 } $`;
         }
 
-        public static missingEOP(): void {
+        static missingEOP(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Missing EOP */
 {
     int b
@@ -128,9 +128,9 @@ module JuiceC {
 }`;
         }
 
-        public static infiniteLoopMaxMemory(): void {
+        static infiniteLoopMaxMemory(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This code segment uses the max
-- allotted memory 256 bytes 
+- allotted memory 256 bytes
 - Also this is an infinite loop. Credit: Tien */
 {
 int a
@@ -158,12 +158,12 @@ print("this")
 } $`;
         }
 
-        public static booleanExpressions(): void {
+        static booleanExpressions(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Boolean Expr Printing: This test case
 - demonstrates the compiler's ability to
 - generate code for computing the result
 - of a BooeleanExpr and printing the result
-- Result: falsefalsetruetruetruetruefalsefalsefalsetrue 
+- Result: falsefalsetruetruetruetruefalsefalsefalsetrue
 - Credit: Tien */
 {
 boolean a
@@ -184,7 +184,7 @@ print(a)
 }$`;
         }
 
-        public static variableAddition(): void {
+        static variableAddition(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*
 Demonstrates compiler's ability to generate code that properly handles variable addition
 Credit: Tien
@@ -206,7 +206,7 @@ print(b)
 }$`;
         }
 
-        public static longAddition(): void {
+        static longAddition(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This statement shows that addition
 - checking and printing are both valid
 - options that can be performed. Credit: Tien
@@ -234,8 +234,8 @@ print(false)
             Lexer
         ---------------------------------------*/
 
-        public static alan(): void {
-            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Provided By 
+        static alan(): void {
+            (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Provided By
     - Compiler Tyrant
     - Alan G Labouseur
     - Program 1: Pass Lex, Parse, Semantic
@@ -243,36 +243,36 @@ print(false)
     - Program 3: Pass Lex, fail parse
     - Program 4: Fail Lex
 */
-{}$	
-{{{{{{}}}}}}$	
-{{{{{{}}}}}}}$	
+{}$
+{{{{{{}}}}}}$
+{{{{{{}}}}}}}$
 {int	@}$`;
         }
 
-        public static typeInsideString(): void {
+        static typeInsideString(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Type inside of a String */
-{	
+{
     boolean d
-    d = ("string") != "string")	
+    d = ("string") != "string")
 }$`;
         }
-        
-        public static EOPinsideString(): void {
+
+        static EOPinsideString(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  EOP inside of a String */
 {"$"} $`;
         }
 
-        public static unterminatedComment(): void {
+        static unterminatedComment(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated Comment */
 { int a /* unterminated comment }$`;
         }
 
-        public static unterminatedString(): void {
+        static unterminatedString(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Unterminated String */
 { a = "unterminated string }$`;
         }
 
-        public static extraRightBrace(): void {
+        static extraRightBrace(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/*  Extra Right Brace */
 {{{{{{}}} /* comments are ignored */ }}}}$`;
         }
@@ -281,14 +281,14 @@ print(false)
             Parser
         ------------------------------------- */
 
-        public static invalidStatementList(): void {
+        static invalidStatementList(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid StatementList */
 {
 4 + 2
 }$`;
         }
 
-        public static invalidExpr(): void {
+        static invalidExpr(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Expr */
 {
 int a
@@ -296,21 +296,21 @@ a = a + 2
 }$`;
         }
 
-        public static invalidVarDecl(): void {
+        static invalidVarDecl(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid VarDecl */
 {
 int 4
 }$`;
         }
 
-        public static invalidPrint(): void {
+        static invalidPrint(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for invalid Print pt. 2 */
 {
 print("$)
 }$`;
         }
 
-        public static incompleteBoolExpr(): void {
+        static incompleteBoolExpr(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete BooleanExpr */
 {
 s = "strb"
@@ -322,7 +322,7 @@ print("true")
 }$`;
         }
 
-        public static incompleteIntExpr(): void {
+        static incompleteIntExpr(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Test case for incomplete IntExpr */
 {
 int a
@@ -335,7 +335,7 @@ print(a)
             Semantic Analysis
         --------------------------------------- */
 
-        public static semanticWarnings(): void {
+        static semanticWarnings(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Has unused and undeclared variables */
 {
   int a
@@ -362,7 +362,7 @@ print(a)
 }$`;
         }
 
-        public static undeclaredVar(): void {
+        static undeclaredVar(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being used but not declared first */
 {
 int a
@@ -370,7 +370,7 @@ b = 4
 }$`;
         }
 
-        public static duplicateVar(): void {
+        static duplicateVar(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variables being declared again in same scope*/
 {
 int a
@@ -381,7 +381,7 @@ a = "this is fine"
 boolean a /* this is not fine" */
 }$`;
         }
-        public static typeMismatch(): void {
+        static typeMismatch(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A variable's type is not compatible with its assignment*/
 {
 string s
@@ -389,7 +389,7 @@ s = 4 + 3
 }$`;
         }
 
-        public static incorrectTypeCompar(): void {
+        static incorrectTypeCompar(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Types do not match in Boolean comparison*/
 {
 if(4 == false){
@@ -407,7 +407,7 @@ print("int to int")
 }$`;
         }
 
-        public static incorrectIntExpr(): void {
+        static incorrectIntExpr(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* A digit is added to something other than a digit */
 {
 int a
@@ -415,9 +415,9 @@ a = 4 + false
 }$`;
         }
 
-        public static initButNotUsed(): void {
+        static initButNotUsed(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Variable initialized but not used. Produces semantic warning*/
-{    
+{
     int a
     int b
     b = 2
@@ -428,11 +428,11 @@ a = 4 + false
         /* --------------------------------
             Code Generation
         --------------------------------- */
-    
-        public static booleanHell(): void {
+
+        static booleanHell(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* This test case is included because it completely messed
 - up my AST with boolean hell and keeping track of boolexpr
-- may it serve as a good benchmark for those who come after 
+- may it serve as a good benchmark for those who come after
 - CREDIT: TIEN */
 {
 int a
@@ -454,7 +454,7 @@ print(d)
 }$`;
         }
 
-        public static maxMemory(): void {
+        static maxMemory(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Valid code but can't fit into 256 bytes */
 {
 int a
@@ -495,20 +495,20 @@ print(c)
 }$`;
         }
 
-        public static stackOverflow(): void {
+        static stackOverflow(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Stack Overflow */
 {
 int a
 a = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
-}$`
+}$`;
         }
 
-        public static heapOverflow(): void {
+        static heapOverflow(): void {
             (<HTMLInputElement>document.getElementById("sourceCode")).value = `/* Heap Overflow */
 {
 string a
 a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-}$`
+}$`;
         }
     }
 }

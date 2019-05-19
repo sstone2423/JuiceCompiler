@@ -4,7 +4,7 @@
  * Provides sample tests for each section of the compiler. The goal is to have 100%
  * coverage. Contains passing and failing tests for each section (Lexer, Parser, Semantic,
  * Code Gen)
- *  */
+ */
 var JuiceC;
 (function (JuiceC) {
     var Test = /** @class */ (function () {
@@ -38,10 +38,10 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* Missing EOP */\n{\n    int b\n    b = 4\n    string s\n    s = \"hey\"\n}";
         };
         Test.infiniteLoopMaxMemory = function () {
-            document.getElementById("sourceCode").value = "/* This code segment uses the max\n- allotted memory 256 bytes \n- Also this is an infinite loop. Credit: Tien */\n{\nint a\na = 1\nif(\"a\" == \"a\") {\na = 2\nprint(\"a now is two\")\n}\nif(a != 1) {\na = 3\nprint(\" a now is three\")\n}\nif(a == 1) {\na = 3\nprint(\"this does not print\")\n}\n\nwhile true {\nprint(\" this will always be true hahahahahahaha\")\n}\n\nif false {\nprint(\"this\")\n}\n} $";
+            document.getElementById("sourceCode").value = "/* This code segment uses the max\n- allotted memory 256 bytes\n- Also this is an infinite loop. Credit: Tien */\n{\nint a\na = 1\nif(\"a\" == \"a\") {\na = 2\nprint(\"a now is two\")\n}\nif(a != 1) {\na = 3\nprint(\" a now is three\")\n}\nif(a == 1) {\na = 3\nprint(\"this does not print\")\n}\n\nwhile true {\nprint(\" this will always be true hahahahahahaha\")\n}\n\nif false {\nprint(\"this\")\n}\n} $";
         };
         Test.booleanExpressions = function () {
-            document.getElementById("sourceCode").value = "/* Boolean Expr Printing: This test case\n- demonstrates the compiler's ability to\n- generate code for computing the result\n- of a BooeleanExpr and printing the result\n- Result: falsefalsetruetruetruetruefalsefalsefalsetrue \n- Credit: Tien */\n{\nboolean a\na = false\nprint((a == true))\nprint((true == a))\nprint((a == false))\nprint((false == a))\nprint((a != true))\nprint((true != a))\nprint((a != false))\nprint((false != a))\nprint(a)\nif (a == false) {\na = true\n}\nprint(a)\n}$";
+            document.getElementById("sourceCode").value = "/* Boolean Expr Printing: This test case\n- demonstrates the compiler's ability to\n- generate code for computing the result\n- of a BooeleanExpr and printing the result\n- Result: falsefalsetruetruetruetruefalsefalsefalsetrue\n- Credit: Tien */\n{\nboolean a\na = false\nprint((a == true))\nprint((true == a))\nprint((a == false))\nprint((false == a))\nprint((a != true))\nprint((true != a))\nprint((a != false))\nprint((false != a))\nprint(a)\nif (a == false) {\na = true\n}\nprint(a)\n}$";
         };
         Test.variableAddition = function () {
             document.getElementById("sourceCode").value = "/*\nDemonstrates compiler's ability to generate code that properly handles variable addition\nCredit: Tien\n*/\n{\nint a\na = 1\nint b\nb = 1\nb = 1 + a\nwhile (2 + a != 3 + b) {\na = 1 + a\nprint(\"int a is \")\nprint(a)\nprint(\" \")\n}\nprint(\"int b is \")\nprint(b)\n}$";
@@ -56,10 +56,10 @@ var JuiceC;
             Lexer
         ---------------------------------------*/
         Test.alan = function () {
-            document.getElementById("sourceCode").value = "/*  Provided By \n    - Compiler Tyrant\n    - Alan G Labouseur\n    - Program 1: Pass Lex, Parse, Semantic\n    - Program 2: Pass Lex, Parse, Semantic\n    - Program 3: Pass Lex, fail parse\n    - Program 4: Fail Lex\n*/\n{}$\t\n{{{{{{}}}}}}$\t\n{{{{{{}}}}}}}$\t\n{int\t@}$";
+            document.getElementById("sourceCode").value = "/*  Provided By\n    - Compiler Tyrant\n    - Alan G Labouseur\n    - Program 1: Pass Lex, Parse, Semantic\n    - Program 2: Pass Lex, Parse, Semantic\n    - Program 3: Pass Lex, fail parse\n    - Program 4: Fail Lex\n*/\n{}$\n{{{{{{}}}}}}$\n{{{{{{}}}}}}}$\n{int\t@}$";
         };
         Test.typeInsideString = function () {
-            document.getElementById("sourceCode").value = "/*  Type inside of a String */\n{\t\n    boolean d\n    d = (\"string\") != \"string\")\t\n}$";
+            document.getElementById("sourceCode").value = "/*  Type inside of a String */\n{\n    boolean d\n    d = (\"string\") != \"string\")\n}$";
         };
         Test.EOPinsideString = function () {
             document.getElementById("sourceCode").value = "/*  EOP inside of a String */\n{\"$\"} $";
@@ -116,13 +116,13 @@ var JuiceC;
             document.getElementById("sourceCode").value = "/* A digit is added to something other than a digit */\n{\nint a\na = 4 + false\n}$";
         };
         Test.initButNotUsed = function () {
-            document.getElementById("sourceCode").value = "/* Variable initialized but not used. Produces semantic warning*/\n{    \n    int a\n    int b\n    b = 2\n    print(b)\n}$";
+            document.getElementById("sourceCode").value = "/* Variable initialized but not used. Produces semantic warning*/\n{\n    int a\n    int b\n    b = 2\n    print(b)\n}$";
         };
         /* --------------------------------
             Code Generation
         --------------------------------- */
         Test.booleanHell = function () {
-            document.getElementById("sourceCode").value = "/* This test case is included because it completely messed\n- up my AST with boolean hell and keeping track of boolexpr\n- may it serve as a good benchmark for those who come after \n- CREDIT: TIEN */\n{\nint a\na = 0\nboolean b\nb = false\nboolean c\nc = true\nwhile(((a!=9) == (\"test\" != \"alan\")) == ((5==5) != (b == c))) {\nprint(\"a\")\nstring d\nd = \"yes\"\nprint(d)\n{\n    int a\n    a = 5\n}\n}\n}$";
+            document.getElementById("sourceCode").value = "/* This test case is included because it completely messed\n- up my AST with boolean hell and keeping track of boolexpr\n- may it serve as a good benchmark for those who come after\n- CREDIT: TIEN */\n{\nint a\na = 0\nboolean b\nb = false\nboolean c\nc = true\nwhile(((a!=9) == (\"test\" != \"alan\")) == ((5==5) != (b == c))) {\nprint(\"a\")\nstring d\nd = \"yes\"\nprint(d)\n{\n    int a\n    a = 5\n}\n}\n}$";
         };
         Test.maxMemory = function () {
             document.getElementById("sourceCode").value = "/* Valid code but can't fit into 256 bytes */\n{\nint a\nint b\nint c\nint d\na = 2\n{\nb = 5\nprint(b)\na = 1 + a\n{\n    print(a)\n    a = 5\n}\nif(a == b) {\n    print(\"wowza\")\n}\nint d\nd = 5\n{\n    string d\n    d = \"hey\"\n    print(d)\n    d = \"sap\"\n    print(d)\n}\nprint(d)\n}\nc = 4\nprint(c)\nwhile (c != 7) {\nc = 1 + 1 + 1 + c\nprint(c)\n}\nc = 9 + c\nprint(c)\n}$";

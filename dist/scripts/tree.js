@@ -5,7 +5,7 @@
  * Defines the Tree structure and logic used by the Scope Tree, CST, and AST
  *
  * Created with the help from Kai's Kompailer. Many thanks!
- *  */
+ */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -26,7 +26,12 @@ var JuiceC;
             this.curr = null;
             this.root = null;
         }
-        // Adds non-terminal node to tree
+        /**
+         * Adds non-terminal node to tree
+         * @param production
+         * @param lineNum
+         * @param colNum
+         */
         Tree.prototype.addNTNode = function (production, lineNum, colNum) {
             var node = new NonTerminalTreeNode(production);
             node.lineNum = lineNum;
@@ -42,7 +47,12 @@ var JuiceC;
             this.curr.children.push(node);
             this.descendTree();
         };
-        // Adds terminal node to tree AKA leaf node
+        /**
+         * Adds terminal node to tree AKA leaf node
+         * @param token
+         * @param lineNum
+         * @param colNum
+         */
         Tree.prototype.addTNode = function (token, lineNum, colNum) {
             var node = new TerminalTreeNode(token);
             node.lineNum = lineNum;
@@ -57,7 +67,10 @@ var JuiceC;
             // Add to children of curr node
             this.curr.children.push(node);
         };
-        // Add general node
+        /**
+         * Add general node
+         * @param input
+         */
         Tree.prototype.addNode = function (input) {
             var node = new GeneralTreeNode(input);
             if (this.root == null) {
@@ -71,7 +84,9 @@ var JuiceC;
             this.curr.children.push(node);
             this.descendTree();
         };
-        // Sets the current node as the latest child
+        /**
+         * Sets the current node as the latest child
+         */
         Tree.prototype.descendTree = function () {
             if (this.curr == null) {
                 return;
@@ -79,11 +94,17 @@ var JuiceC;
             var latestChild = this.curr.children[this.curr.children.length - 1];
             this.curr = latestChild;
         };
-        // Sets the current node as the parent of the current node
+        /**
+         * Sets the current node as the parent of the current node
+         */
         Tree.prototype.ascendTree = function () {
             this.curr = this.curr.parent;
         };
-        // Prints the tree in depth-first search order for CST display
+        /**
+         * Prints the tree in depth-first search order for CST display
+         * @param treantTree
+         * @param programCounter
+         */
         Tree.prototype.traverseTreeCST = function (treantTree, programCounter) {
             var tree = [];
             var level = 0;
@@ -99,6 +120,8 @@ var JuiceC;
         };
         /**
          * Prints the tree in dfs for AST display
+         * @param treantTree
+         * @param programCounter
          */
         Tree.prototype.traverseTreeAST = function (treantTree, programCounter) {
             var tree = [];
@@ -113,7 +136,10 @@ var JuiceC;
             };
             return result;
         };
-        // Returns an array representation of depth-first search of tree
+        // 
+        /**
+         * Returns an array representation of depth-first search of tree
+         */
         Tree.prototype.traverseTree = function () {
             var tree = [];
             if (this.root != null) {
@@ -121,7 +147,11 @@ var JuiceC;
             }
             return tree;
         };
-        // Recursively push nodes into the traverseTree() tree
+        /**
+         * Recursively push nodes into the traverseTree() tree
+         * @param node
+         * @param tree
+         */
         Tree.prototype.DFSTree = function (node, tree) {
             tree.push(node);
             for (var i = 0; i < node.children.length; i++) {
@@ -161,13 +191,20 @@ var JuiceC;
                 treantTree.push(child);
             }
             for (var i = 0; i < node.children.length; i++) {
-                // to next call of DFS, increase level, pass the tree array, increase the dash by one dash, and pass
+                // to next call of DFS, increase level, pass the tree array, 
+                // increase the dash by one dash, and pass
                 // the reference to the next children array
                 this.DFSCST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
             }
         };
         /**
          * Helper for traverseTreeAST
+         * @param node
+         * @param level
+         * @param tree
+         * @param dash
+         * @param treantTree
+         * @param programCounter
          */
         Tree.prototype.DFSAST = function (node, level, tree, dash, treantTree, programCounter) {
             var child = {};
@@ -204,8 +241,8 @@ var JuiceC;
             }
             treantTree.push(child);
             for (var i = 0; i < node.children.length; i++) {
-                // to next call of DFS, increase level, pass the tree array, increase the dash by one dash, and pass
-                // the reference to the next children array
+                // to next call of DFS, increase level, pass the tree array,
+                // increase the dash by one dash, and pass the reference to the next children array
                 this.DFSAST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
             }
         };

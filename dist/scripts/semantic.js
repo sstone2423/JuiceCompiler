@@ -2,9 +2,10 @@
 /**
  * semantic.ts
  *
- * The Semantic Analyzer takes in the CST from a successful Parse, then scope and type checks the tokens
- * to enforce the grammar as the context-sensitive level. A successful result will return a scope tree,
- * symbol table, and AST.
+ * The Semantic Analyzer takes in the CST from a successful Parse,
+ * then scope and type checks the tokens to enforce the grammar as
+ * the context-sensitive level. A successful result will return a
+ * scope tree, symbol table, and AST.
  */
 var JuiceC;
 (function (JuiceC) {
@@ -20,7 +21,10 @@ var JuiceC;
             this.log = [];
             this.symbols = [];
         }
-        // Traverses the CST type and scope checking, checks the scopeTree for warnings, and returns the results to control
+        /**
+         * Traverses the CST type and scope checking, checks the scopeTree
+         *  for warnings, and returns the results to control
+         */
         Semantic.prototype.analyze = function () {
             // Traverse the CST looking for the "good stuff"
             this.traverse(this.cst.root);
@@ -37,11 +41,14 @@ var JuiceC;
             return result;
         };
         /**
-         * Recursive function that traverses the CST in top-to-down, left-most descent looking for the key parts of the language.
+         * Recursive function that traverses the CST in top-to-down,
+         * left-most descent looking for the key parts of the language.
          * When found, construct and add them to the AST
          * @param node is the current tree node being evaluated
          */
         Semantic.prototype.traverse = function (node) {
+            var idType;
+            var id;
             switch (node.value) {
                 case "Block" /* Block */:
                     // Scope tree: add a scope to the tree whenever we encounter a Block
@@ -57,7 +64,8 @@ var JuiceC;
                     for (var i = 0; i < node.children.length; i++) {
                         this.traverse(node.children[i]);
                     }
-                    // Ascend the AST once all traversals are finished. If the current node is null, we have reached the end of the tree
+                    // Ascend the AST once all traversals are finished. If the current 
+                    // node is null, we have reached the end of the tree
                     if (this.ast.curr != null) {
                         this.ast.ascendTree();
                     }
@@ -76,7 +84,7 @@ var JuiceC;
                     this.ast.addNode(token.value);
                     this.ast.ascendTree();
                     // Get the id
-                    var id = node.children[1].children[0].value;
+                    id = node.children[1].children[0].value;
                     // Set the scope on the id
                     id.scopeId = this.scopeTree.curr.value.id;
                     this.ast.addNode(id);
@@ -99,11 +107,13 @@ var JuiceC;
                     // Throw error if variable already declared in scope
                     else {
                         this.errors++;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Duplicate Variable - [ "
-                            + node.children[1].children[0].value.value + " ] was declared at ( " + node.children[1].lineNum
-                            + " : " + node.children[1].children[0].colNum
-                            + " ), but the variable was already declared within the same scope starting at ( "
-                            + this.scopeTree.curr.value.lineNum + " : " + this.scopeTree.curr.value.colNum + " )");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR
+                            + ": Duplicate Variable - [ " + node.children[1].children[0].value.value
+                            + " ] was declared at ( " + node.children[1].lineNum + " : "
+                            + node.children[1].children[0].colNum + " ), but the variable was "
+                            + "already declared within the same scope starting at ( "
+                            + this.scopeTree.curr.value.lineNum + " : "
+                            + this.scopeTree.curr.value.colNum + " )");
                     }
                     break;
                 case "PrintStatement" /* PrintStatement */:
@@ -117,12 +127,12 @@ var JuiceC;
                     // Add the AssignStatement node
                     this.ast.addNode("AssignmentStatement" /* AssignStatement */);
                     // Get the id
-                    var id = node.children[0].children[0].value;
+                    id = node.children[0].children[0].value;
                     // Set the scope on the id
                     id.scopeId = this.scopeTree.curr.value.id;
                     this.ast.addNode(node.children[0].children[0].value);
                     // Check if id is in scope and get its type
-                    var idType = this.checkScopes(node.children[0].children[0]);
+                    idType = this.checkScopes(node.children[0].children[0]);
                     this.ast.ascendTree();
                     // Find the expression and get the type returned by the expression
                     var expressionType = this.traverse(node.children[2]);
@@ -132,7 +142,8 @@ var JuiceC;
                         expressionType = expressionType.value;
                     }
                     this.checkTypeMatch(node.children[0].children[0].value, idType, expressionType, node.children[2].lineNum, node.children[2].colNum);
-                    // Update scope tree node object initialized flag. variable has been initialized.
+                    // Update scope tree node object initialized flag. variable 
+                    // has been initialized.
                     this.markAsInitialized(node.children[0].children[0]);
                     break;
                 case "WhileStatement" /* WhileStatement */:
@@ -149,7 +160,7 @@ var JuiceC;
                     break;
                 case "Id" /* Id */:
                     // Get the id and also assign its scope
-                    var id = node.children[0].value;
+                    id = node.children[0].value;
                     // Set the scope on the id
                     id.scopeId = this.scopeTree.curr.value.id;
                     this.ast.addNode(node.children[0].value);
@@ -175,8 +186,11 @@ var JuiceC;
                         }
                         if (exprType != "int" /* Int */) {
                             this.errors++;
-                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Int Expression - [ " + node.value + " ] of type [ " + node.targetType + " ] was assigned to type [ " + node.idType
-                                + " ] at ( " + node.lineNum + " : " + node.colNum + " )");
+                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR
+                                + ": Incorrect Int Expression - [ " + node.value
+                                + " ] of type [ " + node.targetType + " ] was assigned to type [ "
+                                + node.idType + " ] at ( " + node.lineNum + " : " + node.colNum
+                                + " )");
                         }
                         this.ast.ascendTree();
                     }
@@ -196,7 +210,8 @@ var JuiceC;
                         else {
                             this.ast.addNode(new JuiceC.Token("NotEquals" /* NotEquals */, "NotEquals", null, null));
                         }
-                        // Get types returned by the two Expr children and make sure they're the same
+                        // Get types returned by the two Expr children and make
+                        // sure they're the same
                         var firstExprType = this.traverse(node.children[1]);
                         var secondExprType = this.traverse(node.children[3]);
                         if (firstExprType != null && firstExprType.value != null) {
@@ -207,7 +222,10 @@ var JuiceC;
                         }
                         if (firstExprType != secondExprType) {
                             this.errors++;
-                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Incorrect Type Comparison - [ " + node.value + " ] of type [ " + node.targetType + " ] was compared to type [ " + node.idType
+                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR
+                                + ": Incorrect Type Comparison - [ " + node.value
+                                + " ] of type [ " + node.targetType
+                                + " ] was compared to type [ " + node.idType
                                 + " ] at ( " + node.lineNum + " : " + node.colNum + " )");
                         }
                         this.ast.ascendTree();
@@ -238,14 +256,15 @@ var JuiceC;
                         currCharList = currCharList.children[1];
                     }
                     stringBuilder.push("\"");
-                    var resString = stringBuilder.join("");
-                    this.ast.addNode(new JuiceC.Token("String" /* String */, resString, null, null));
+                    var concatString = stringBuilder.join("");
+                    this.ast.addNode(new JuiceC.Token("String" /* String */, concatString, null, null));
                     this.ast.ascendTree();
                     return "string" /* String */;
                 default:
                     // Traverse node's children
                     for (var i = 0; i < node.children.length; i++) {
-                        // If node is an Expression, return, so we can properly return the type of the expression
+                        // If node is an Expression, return, so we can properly
+                        // return the type of the expression
                         if (node.value == "Expression" /* Expr */) {
                             return this.traverse(node.children[i]);
                         }
@@ -266,11 +285,16 @@ var JuiceC;
             if (targetType != null && idType != null) {
                 if (idType != targetType) {
                     this.errors++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Type Mismatch - Variable [ " + id.value + " ] of type [ " + idType + " ] was assigned to type [ " + targetType
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR
+                        + ": Type Mismatch - Variable [ " + id.value + " ] of type [ "
+                        + idType + " ] was assigned to type [ " + targetType
                         + " ] at ( " + targetLine + " : " + targetCol + " )");
                 }
                 else {
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + id.value + " ] of type " + idType + " matches its assignment type of " + targetType + " at ( " + targetLine + " : " + targetCol + " )");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID
+                        + " - Variable [ " + id.value + " ] of type " + idType
+                        + " matches its assignment type of " + targetType
+                        + " at ( " + targetLine + " : " + targetCol + " )");
                 }
             }
         };
@@ -285,7 +309,9 @@ var JuiceC;
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
                 ptr.value.buckets[node.value.value].initialized = true;
-                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been initialized at ( " + node.lineNum + " : " + node.colNum + " )");
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ "
+                    + node.value.value + " ] has been initialized at ( " + node.lineNum
+                    + " : " + node.colNum + " )");
                 return;
             }
             // Check parent scopes
@@ -296,7 +322,10 @@ var JuiceC;
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                         // Mark as initialized
                         ptr.value.buckets[node.value.value].initialized = true;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been initialized at ( " + node.lineNum + " : " + node.colNum + " )");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID
+                            + " - Variable [ " + node.value.value
+                            + " ] has been initialized at ( " + node.lineNum
+                            + " : " + node.colNum + " )");
                         return;
                     }
                 }
@@ -313,7 +342,9 @@ var JuiceC;
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 // Mark as initialized
                 ptr.value.buckets[node.value.value].used = true;
-                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been used at ( " + node.lineNum + " : " + node.colNum + " )");
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ "
+                    + node.value.value + " ] has been used at ( " + node.lineNum + " : "
+                    + node.colNum + " )");
                 return;
             }
             // Check parent scopes
@@ -324,7 +355,9 @@ var JuiceC;
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                         // Mark as initialized
                         ptr.value.buckets[node.value.value].used = true;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " - Variable [ " + node.value.value + " ] has been used at ( " + node.lineNum + " : " + node.colNum + " )");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID
+                            + " - Variable [ " + node.value.value + " ] has been used at ( "
+                            + node.lineNum + " : " + node.colNum + " )");
                         return;
                     }
                 }
@@ -332,7 +365,7 @@ var JuiceC;
         };
         /**
          * Checks to see if a variable is used before being initialized
-         * @param node the node in tree we're starting at
+         * @param node
          */
         Semantic.prototype.checkUsedButUninit = function (node) {
             // Pointer to current position in scope tree
@@ -341,7 +374,9 @@ var JuiceC;
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                 if (ptr.value.buckets[node.value.value].initialized == false) {
                     this.warnings++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + node.value.value + " ] was used at ( " + node.lineNum + " : " + node.colNum + " ), before being initialized");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING
+                        + " - Variable [ " + node.value.value + " ] was used at ( "
+                        + node.lineNum + " : " + node.colNum + " ), before being initialized");
                 }
                 return;
             }
@@ -353,7 +388,10 @@ var JuiceC;
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
                         if (ptr.value.buckets[node.value.value].initialized == false) {
                             this.warnings++;
-                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + node.value.value + " ] was used at ( " + node.lineNum + " : " + node.colNum + " ), before being initialized");
+                            this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING
+                                + " - Variable [ " + node.value.value + " ] was used at ( "
+                                + node.lineNum + " : " + node.colNum
+                                + " ), before being initialized");
                         }
                         return;
                     }
@@ -362,7 +400,7 @@ var JuiceC;
         };
         /**
          * Checks to see if id is declared in current or parent scope
-         * @param node the node whose value we're checking is in scope or not
+         * @param node the node being checked
          * @return the scope object if any
          */
         Semantic.prototype.checkScopes = function (node) {
@@ -370,7 +408,9 @@ var JuiceC;
             var ptr = this.scopeTree.curr;
             // Check current scope
             if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
-                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " "
+                    + SCOPE + " - Variable [ " + node.value.value
+                    + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
                 return ptr.value.buckets[node.value.value].token.value;
             }
             // Check parent scopes
@@ -379,12 +419,17 @@ var JuiceC;
                     ptr = ptr.parent;
                     // Check if id in scope
                     if (ptr.value.buckets.hasOwnProperty(node.value.value)) {
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID + " " + SCOPE + " - Variable [ " + node.value.value + " ] has been declared at ( " + node.lineNum + " : " + node.colNum + " )");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + VALID
+                            + " " + SCOPE + " - Variable [ " + node.value.value
+                            + " ] has been declared at ( " + node.lineNum + " : "
+                            + node.colNum + " )");
                         return ptr.value.buckets[node.value.value].token.value;
                     }
                 }
                 // Didn't find id in scope, push error
-                this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR + ": Undeclared Variable - [ " + node.value.value + " ] was assigned at ( " + node.lineNum + " : " + node.colNum
+                this.log.push(DEBUG + " - " + SEMANTIC + " - " + ERROR
+                    + ": Undeclared Variable - [ " + node.value.value
+                    + " ] was assigned at ( " + node.lineNum + " : " + node.colNum
                     + " ), but was not declared beforehand");
                 this.errors++;
             }
@@ -399,16 +444,26 @@ var JuiceC;
                 // Look for declared but uninitialized variables
                 if (node.value.buckets[key].initialized == false) {
                     this.warnings++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] has been declared at ( " + node.value.lineNum + " : " + node.value.colNum + " ), but was never initialized");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING
+                        + " - Variable [ " + key + " ] has been declared at ( "
+                        + node.value.lineNum + " : " + node.value.colNum
+                        + " ), but was never initialized");
                     if (node.value.buckets[key].used == true) {
                         this.warnings++;
-                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was used at ( " + node.value.lineNum + " : " + node.value.colNum + " ), before being initialized");
+                        this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING
+                            + " - Variable [ " + key + " ] was used at ( "
+                            + node.value.lineNum + " : " + node.value.colNum
+                            + " ), before being initialized");
                     }
                 }
                 // Look for unused variables
-                if (node.value.buckets[key].used == false && node.value.buckets[key].initialized == true) {
+                if (node.value.buckets[key].used == false &&
+                    node.value.buckets[key].initialized == true) {
                     this.warnings++;
-                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING + " - Variable [ " + key + " ] was declared at ( " + node.value.lineNum + " : " + node.value.colNum + " ), but was never used");
+                    this.log.push(DEBUG + " - " + SEMANTIC + " - " + WARNING
+                        + " - Variable [ " + key + " ] was declared at ( "
+                        + node.value.lineNum + " : " + node.value.colNum
+                        + " ), but was never used");
                 }
             }
             // Continue traversing in preorder fashion

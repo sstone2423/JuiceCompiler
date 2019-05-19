@@ -3,7 +3,7 @@
  * scope.ts
  *
  * Defines the Scope Tree's Hashmap Nodes
- *  */
+ */
 var JuiceC;
 (function (JuiceC) {
     var ScopeVariable = /** @class */ (function () {

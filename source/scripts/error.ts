@@ -2,10 +2,11 @@
 /**
  *  error.ts
  * 
- *  Error class that contains the Error Type, Value that was given instead of the one that was expected,
- *  and the Line number and Column number of the error instance. Error Type string constants are located
+ *  Error class that contains the Error Type, Value that was given instead 
+ *  of the one that was expected, and the Line number and Column number
+ *  of the error instance. Error Type string constants are located
  *  here as well
- *  */ 
+ */
 
 module JuiceC {
     export const enum ErrorType {
@@ -53,14 +54,18 @@ module JuiceC {
         NestedBoolean = "Nested Boolean"
     }
 
-	export class Error {
+    export class Error {
         errorType: string;
         value: any;
         lineNum: number;
         colNum: number;
         expectedToken: TokenType;
 
-        constructor (errorType: string, value: any, lineNum: number, colNum: number, expectedToken?: TokenType) {
+        constructor (errorType: string,
+                    value: any,
+                    lineNum: number,
+                    colNum: number,
+                    expectedToken?: TokenType) {
             this.errorType = errorType;
             this.value = value;
             this.lineNum = lineNum;
@@ -73,8 +78,9 @@ module JuiceC {
          * @param section refers to Lexer, Parser, Semantic, or CodeGen
          * @param log the section's log
          */
-        public static logUnknownError(section: string, log: Array<string>): Array<string> {
+        static logUnknownError(section: string, log: Array<string>): Array<string> {
             log.push(DEBUG + " - " + section + " - " + ERROR + " - Unknown Error has occured");
+
             return log;
         }
     }

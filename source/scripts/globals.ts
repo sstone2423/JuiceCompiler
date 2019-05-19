@@ -11,21 +11,21 @@ let _Control: JuiceC.Control;
 let _CodeGen: JuiceC.CodeGen;
 
 // String constants
-const INFO: string = "INFO";
-const DEBUG: string = "DEBUG";
-const LEXER: string = "Lexer";
-const PARSER: string = "Parser";
-const SEMANTIC: string = "Semantic";
-const CODEGEN: string = "Code Gen";
-const VALID: string = "VALID";
-const EOF: string = "$";
-const SCOPE: string = "SCOPE";
-const WARNING: string = "WARNING";
-const ERROR: string = "ERROR";
-const ZERO: string = "0";
-const BACKPATCH: string = "Backpatching";
-const TRUE: string = "true";
-const FALSE: string = "false";
+const INFO = "INFO";
+const DEBUG = "DEBUG";
+const LEXER = "Lexer";
+const PARSER = "Parser";
+const SEMANTIC = "Semantic";
+const CODEGEN = "Code Gen";
+const VALID = "VALID";
+const EOF = "$";
+const SCOPE = "SCOPE";
+const WARNING = "WARNING";
+const ERROR = "ERROR";
+const ZERO = "0";
+const BACKPATCH = "Backpatching";
+const TRUE = "true";
+const FALSE = "false";
 
 // Start with an active verboseCheck
 let onDocumentLoad = () => {

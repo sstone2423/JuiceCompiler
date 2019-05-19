@@ -5,9 +5,7 @@
  */
 
 module JuiceC {
-
     export const enum Production {
-
         Program = "Program",
         Block = "Block",
         StatementList = "StatementList",
@@ -31,7 +29,5 @@ module JuiceC {
         BoolVal = "BoolVal",
         IntOp = "IntOp",
         Epsilon = "&epsilon;"
-
     }
-
 }

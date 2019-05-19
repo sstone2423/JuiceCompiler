@@ -4,7 +4,7 @@
  * 
  * Represents the Token object created in the Lexer. These tokens are defined from the grammar
  * and contain information about the TokenType, value, line number, and column number
- *  */ 
+ */
 
 module JuiceC {
     export const enum TokenType {
@@ -33,12 +33,12 @@ module JuiceC {
         NotEquals = "NotEquals",
     }
 
-	export class Token {
+    export class Token {
         type: string;
         value: any;
         lineNum: number;
         colNum: number;
-        
+
         constructor (tokenType: TokenType, value: any, lineNum: number, colNum: number) {
             this.type = tokenType;
             this.value = value;

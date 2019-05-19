@@ -5,12 +5,12 @@
  * Defines the Tree structure and logic used by the Scope Tree, CST, and AST
  * 
  * Created with the help from Kai's Kompailer. Many thanks!
- *  */
+ */
 
 module JuiceC {
     export interface TreantResult {
-        tree: Array <string>,
-        treant: any
+        tree: Array <string>;
+        treant: any;
     }
 
     export class Tree {
@@ -24,14 +24,20 @@ module JuiceC {
             this.root = null;
         }
 
-        // Adds non-terminal node to tree
-        public addNTNode(production: Production, lineNum: number, colNum: number): void {
-            let node = new NonTerminalTreeNode(production);
+        /**
+         * Adds non-terminal node to tree
+         * @param production 
+         * @param lineNum 
+         * @param colNum 
+         */
+        addNTNode(production: Production, lineNum: number, colNum: number): void {
+            const node = new NonTerminalTreeNode(production);
             node.lineNum = lineNum;
             node.colNum = colNum;
             if (this.root == null) {
                 this.root = node;
                 this.curr = node;
+
                 return;
             }
             // Set parent node
@@ -41,14 +47,20 @@ module JuiceC {
             this.descendTree();
         }
 
-        // Adds terminal node to tree AKA leaf node
-        public addTNode(token: Token, lineNum: number, colNum: number): void {
-            let node = new TerminalTreeNode(token);
+        /**
+         * Adds terminal node to tree AKA leaf node
+         * @param token 
+         * @param lineNum 
+         * @param colNum 
+         */
+        addTNode(token: Token, lineNum: number, colNum: number): void {
+            const node = new TerminalTreeNode(token);
             node.lineNum = lineNum;
             node.colNum = colNum;
             if (this.root == null) {
                 this.root = node;
                 this.curr = node;
+
                 return;
             }
             // Set parent node
@@ -57,12 +69,16 @@ module JuiceC {
             this.curr.children.push(node);
         }
 
-        // Add general node
-        public addNode(input: any): void {
-            let node = new GeneralTreeNode(input);
+        /**
+         * Add general node
+         * @param input 
+         */
+        addNode(input: any): void {
+            const node = new GeneralTreeNode(input);
             if (this.root == null) {
                 this.root = node;
                 this.curr = node;
+
                 return;
             }
             // Set parent node
@@ -72,63 +88,86 @@ module JuiceC {
             this.descendTree();
         }
 
-        // Sets the current node as the latest child
-        public descendTree(): void {
+        /**
+         * Sets the current node as the latest child
+         */
+        descendTree(): void {
             if (this.curr == null) {
                 return;
             }
-            let latestChild = this.curr.children[this.curr.children.length - 1];
+            const latestChild = this.curr.children[this.curr.children.length - 1];
             this.curr = latestChild;
         }
 
-        // Sets the current node as the parent of the current node
-        public ascendTree(): void {
+        /**
+         * Sets the current node as the parent of the current node
+         */
+        ascendTree(): void {
             this.curr = this.curr.parent;
         }
 
-        // Prints the tree in depth-first search order for CST display
-        public traverseTreeCST(treantTree, programCounter: number): TreantResult {
-            let tree: Array <string> = [];
-            let level: number = 0;
+        /**
+         * Prints the tree in depth-first search order for CST display
+         * @param treantTree 
+         * @param programCounter 
+         */
+        traverseTreeCST(treantTree, programCounter: number): TreantResult {
+            const tree: Array <string> = [];
+            const level = 0;
             if (this.root != null) {
-                this.DFSCST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
+                this.DFSCST(
+                    this.root, level, tree, "",
+                    treantTree['nodeStructure'].children, programCounter);
             }
             // Return array of nodes and tree config
-            let result: TreantResult = {
+            const result: TreantResult = {
                 "tree": tree,
                 "treant": treantTree
             };
+
             return result;
         }
 
         /**
          * Prints the tree in dfs for AST display
+         * @param treantTree 
+         * @param programCounter 
          */
-        public traverseTreeAST(treantTree, programCounter: number): TreantResult {
-            let tree: Array <string> = [];
-            let level: number = 0;
+        traverseTreeAST(treantTree, programCounter: number): TreantResult {
+            const tree: Array <string> = [];
+            const level = 0;
             if (this.root != null) {
-                this.DFSAST(this.root, level, tree, "", treantTree['nodeStructure'].children, programCounter);
+                this.DFSAST(this.root, level, tree, "",
+                    treantTree['nodeStructure'].children, programCounter);
             }
             // Return array of nodes and tree config
-            let result: TreantResult = {
+            const result: TreantResult = {
                 "tree": tree,
                 "treant": treantTree
             };
+
             return result;
         }
 
-        // Returns an array representation of depth-first search of tree
-        public traverseTree() {
-            let tree: Array < TreeNode > = [];
+        // 
+        /**
+         * Returns an array representation of depth-first search of tree
+         */
+        traverseTree() {
+            const tree: Array<TreeNode> = [];
             if (this.root != null) {
                 this.DFSTree(this.root, tree);
             }
+
             return tree;
         }
 
-        // Recursively push nodes into the traverseTree() tree
-        public DFSTree(node, tree) {
+        /**
+         * Recursively push nodes into the traverseTree() tree
+         * @param node 
+         * @param tree 
+         */
+        DFSTree(node, tree) {
             tree.push(node);
             for (let i = 0; i < node.children.length; i++) {
                 this.DFSTree(node.children[i], tree);
@@ -139,7 +178,7 @@ module JuiceC {
         private DFSCST(node, level, tree, dash, treantTree, programCounter) {
             let child = {};
             if (node.value instanceof Token) {
-                tree.push(dash + "[ " + node.value.value + " ]")
+                tree.push(dash + "[ " + node.value.value + " ]");
                 // Add new node to children array passed
                 // Pass reference to new children array to next call
                 child = {
@@ -147,7 +186,7 @@ module JuiceC {
                         name: "[ " + node.value.value + " ]"
                     },
                     children: []
-                }
+                };
                 treantTree.push(child);
             } else {
                 let nodeValue = node.value;
@@ -155,7 +194,7 @@ module JuiceC {
                 if (nodeValue == "Program") {
                     nodeValue = nodeValue + "" + programCounter;
                 }
-                tree.push(dash + "< " + nodeValue + " >")
+                tree.push(dash + "< " + nodeValue + " >");
                 // Add new node to children array passed
                 // Pass reference to new children array to next call
                 child = {
@@ -163,18 +202,26 @@ module JuiceC {
                         name: "< " + nodeValue + " >"
                     },
                     children: []
-                }
+                };
                 treantTree.push(child);
             }
             for (let i = 0; i < node.children.length; i++) {
-                // to next call of DFS, increase level, pass the tree array, increase the dash by one dash, and pass
+                // to next call of DFS, increase level, pass the tree array, 
+                // increase the dash by one dash, and pass
                 // the reference to the next children array
-                this.DFSCST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
+                this.DFSCST(node.children[i], level + 1,
+                    tree, dash + "-", child['children'], programCounter);
             }
         }
 
         /**
          * Helper for traverseTreeAST
+         * @param node 
+         * @param level 
+         * @param tree 
+         * @param dash 
+         * @param treantTree 
+         * @param programCounter 
          */
         private DFSAST(node, level: number, tree, dash: string, treantTree, programCounter: number) {
             let child = {};
@@ -193,7 +240,7 @@ module JuiceC {
                         name: nodeValue + " "
                     },
                     children: []
-                }
+                };
             } else {
                 var nodeValue = node.value;
                 // if node value is Block, put what program number it is
@@ -206,13 +253,14 @@ module JuiceC {
                         name: nodeValue + " "
                     },
                     children: []
-                }
+                };
             }
             treantTree.push(child);
             for (let i = 0; i < node.children.length; i++) {
-                // to next call of DFS, increase level, pass the tree array, increase the dash by one dash, and pass
-                // the reference to the next children array
-                this.DFSAST(node.children[i], level + 1, tree, dash + "-", child['children'], programCounter);
+                // to next call of DFS, increase level, pass the tree array,
+                // increase the dash by one dash, and pass the reference to the next children array
+                this.DFSAST(node.children[i], level + 1,
+                    tree, dash + "-", child['children'], programCounter);
             }
         }
     }

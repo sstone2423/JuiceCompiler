@@ -2,10 +2,11 @@
 /**
  *  error.ts
  *
- *  Error class that contains the Error Type, Value that was given instead of the one that was expected,
- *  and the Line number and Column number of the error instance. Error Type string constants are located
+ *  Error class that contains the Error Type, Value that was given instead
+ *  of the one that was expected, and the Line number and Column number
+ *  of the error instance. Error Type string constants are located
  *  here as well
- *  */
+ */
 var JuiceC;
 (function (JuiceC) {
     var Error = /** @class */ (function () {
