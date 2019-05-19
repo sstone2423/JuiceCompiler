@@ -10,7 +10,7 @@ Juice your code into Machine Language!
 ## Usage
 1. Go to https://sstone2423.github.io/JuiceCompiler/
 2. Write your own program based on the support grammar, https://sstone2423.github.io/JuiceCompiler/grammar.pdf
-  - Or use one of the sample programs provided under the *Sample Tests* dropdown
+    - Or use one of the sample programs provided under the *Sample Tests* dropdown
 3. Click *Compile*
 4. View the verbose output logs and graphics
 5. Copy the *Generated Code*, paste and load it into MelonOS, the supported operating system, https://sstone2423.github.io/MelonOS/
