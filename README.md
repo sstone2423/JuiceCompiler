@@ -1,4 +1,4 @@
-# Juice : A browser-based Compiler in Typescript
+# JuiceC : A browser-based Compiler in Typescript
 
 Juice your code into Machine Language!
 
